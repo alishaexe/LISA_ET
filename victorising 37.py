@@ -645,8 +645,8 @@ def Abplmincomb(fs, n1, n2):
 elmin = np.log10(ffmin)
 elmax = np.log10(ffmax)
 elstepc = 0.2
-#elc = np.linspace(elmin, elmax, 50)
-elc = np.arange(elmin, elmax, 0.25)
+elc = np.linspace(elmin, elmax, 36)
+#elc = np.arange(elmin, elmax, 0.25)
 
 
 n1c = np.arange(ntmin, ntmax, 0.25)
