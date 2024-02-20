@@ -462,29 +462,42 @@ Atab2 = Atab2.reshape(len(n1r),len(n1r),len(n1r),4)
 end = time.time()
 print(end-start)
 #%%
-i = range(len(fs))
-j = range(len(n1r))
-k = range(len(n2r))
-coords = np.array(np.meshgrid(i,j,k)).T.reshape(-1,3)
-sort = np.argsort(coords[:,0])
-coords = coords[sort]
-
-def fbpltab(i, j, k):
-    res = []
-    bplres = bpl(fs[i], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
-    res.append([Atab2[i,j,k,3]*bplres])
-    return res
+i = np.array(range(len(fs)))#defining them as arrays here means that in
+j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
+k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
+m = np.array(range(len(fs)))
+#here in meshgrid have done ikj purely because this may it will sort j
+#like it sorts i and lets k change; we then switch round the columns so that
+#it is i,j,k
+coords = np.array(np.meshgrid(i,j,k,m)).T.reshape(-1,4)
+#coords[:,[0,1,2]] = coords[:,[0,2,1]]#this makes it so its cols
+#are (i,j,k)
 
 
 
 
+
+# sorted_indices = np.lexsort((original_array[:, 2], original_array[:, 1], original_array[:, 0]))
+# sorted_array = original_array[sorted_indices]
+#sort = np.lexsort((coords[:,2], coords[:,1], coords[:,0]))
+#coords = coords[sort]
+
+beep = []
+#def fblwork(i,j,k):
+    
+res = np.zeros((len(fs),len(fs),len(fs)))
+def fbpltab(i, j, k, m):
+    #res = []
+    bplres = bpl(fs[m], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
+    return Atab2[i,j,k,3]*bplres
+    #return [help[i,j,k]*bplres]
 
 Ftab2 = []
 freqlist = []
 
 
-Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(-1,1369,1)
-        
+Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+       
             #i get correct values for Ftab2 but incorrect dims
 
 #end = time.time()
@@ -646,7 +659,7 @@ elmin = np.log10(ffmin)
 elmax = np.log10(ffmax)
 elstepc = 0.2
 elc = np.linspace(elmin, elmax, 36)
-#elc = np.arange(elmin, elmax, 0.25)
+#elc = np.arange(elmin, elmax, 0.19)
 
 
 n1c = np.arange(ntmin, ntmax, 0.25)
@@ -670,13 +683,14 @@ Atab4 = Atab4.reshape(len(fsc),len(n1c),len(n1c),4)
 ic = range(len(fsc))
 jc = range(len(n1c))
 kc = range(len(n2c))
-coordsc = np.array(np.meshgrid(ic,jc,kc)).T.reshape(-1,3)
-sortc = np.argsort(coordsc[:,0])
-coordsc = coordsc[sortc]
+mc = range(len(fsc))
+coordsc = np.array(np.meshgrid(ic,jc,kc, mc)).T.reshape(-1,4)
+#sortc = np.argsort(coordsc[:,0])
+#coordsc = coordsc[sortc]
 #%%
-def fbpltabcomb(i, j, k):
+def fbpltabcomb(i, j, k, m):
     res = []
-    bplres = combbpl(fsc[i], Atab4[i,j,k,0], Atab4[i,j,k,1], Atab4[i,j,k,2])
+    bplres = combbpl(fsc[m], Atab4[i,j,k,0], Atab4[i,j,k,1], Atab4[i,j,k,2])
     res.append([Atab4[i,j,k,3]*bplres])
     return res
 
@@ -688,10 +702,10 @@ Ftab4 = []
 freqlist = []
 
 
-Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(-1,len(fsc)**2,1)
+Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc)))#.reshape(-1,len(fsc)**2,1)
         
             #i get correct values for Ftab2 but incorrect dims
-
+#%%
 maximsc = []
 def combmaxbplvals(i):
     #maxims.append(np.log(np.max(Ftab2[i])))
