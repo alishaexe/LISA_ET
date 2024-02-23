@@ -32,12 +32,19 @@ snr5 = 5
 
 ffmin = 10**(-6)
 ffmax = 10**3
+###############
+#Change this value for how many 'steps' you want in the range of values
 
+itera = 100
+
+##########
 elmin = (np.log10(ffmin))
 elmax = (np.log10(ffmax))
 ntmin = -9/2
 ntmax = 9/2
-step = (ntmax-ntmin)/100
+step = (ntmax-ntmin)/itera
+
+
 #%%
 #function for creating the table of the ET data
 #we use i to iterate through each row of the data
@@ -127,7 +134,7 @@ def AETmin(nt):
 
 ntmin = -9/2
 ntmax = 9/2
-step = (ntmax-ntmin)/100
+step = (ntmax-ntmin)/itera
 ntetvals = np.arange(ntmin, ntmax, step)
 
 #this array/list/map function does the same as earlier by mapping the nt values across
@@ -140,7 +147,7 @@ def FETtab(i, j):
     return res
 #%%
 
-elstep = (elmax-elmin)/100
+elstep = (elmax-elmin)/itera
 elET = np.arange(elmin, elmax, elstep)
 i = range(len(elET))
 j = range(len(AETtab))
@@ -194,8 +201,8 @@ def AbplminET(fs, n1, n2):
     res = snr5/np.sqrt(T*(I1+I2+I3+I4))
     return res
 
-n1r = np.linspace(ntmin, ntmax, 100)
-n2r = np.linspace(ntmin, ntmax, 100)
+n1r = np.linspace(ntmin, ntmax, itera)
+n2r = np.linspace(ntmin, ntmax, itera)
 fs = 10**elET
 
 inputsET = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
@@ -311,7 +318,7 @@ def N2(f):
     return n2
 
 #%%    
-freqvals = np.logspace(np.log10(ffmin), np.log10(ffmax),100)   
+freqvals = np.logspace(np.log10(ffmin), np.log10(ffmax), itera)   
 sigvals = np.array(list(map(SigmaLisaApprox, freqvals)))
 
 
@@ -355,7 +362,7 @@ def Ftab(i, j):
 
 
 
-elstep = (elmax-elmin)/100
+elstep = (elmax-elmin)/itera
 elLISA = np.arange(elmin, elmax, elstep)
 i = range(len(elLISA))
 j = range(len(Atab))
@@ -414,8 +421,8 @@ def Abplmin(fs, n1, n2):
     return res
 
 elbpl = np.arange(elmin, elmax, elstep)
-n1r = np.linspace(ntmin, ntmax, 100)
-n2r = np.linspace(ntmin, ntmax, 100)
+n1r = np.linspace(ntmin, ntmax, itera)
+n2r = np.linspace(ntmin, ntmax, itera)
 fs = 10**elbpl
 
 inputs = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
@@ -521,7 +528,7 @@ def Amincomb(nt):
     return res    
 
 Amin3 = []
-ntcombvals = np.linspace(ntmin, ntmax, 100)
+ntcombvals = np.linspace(ntmin, ntmax, itera)
 Amin3 = np.array(list(map(Amincomb, ntcombvals)))
 
 
@@ -533,7 +540,7 @@ def ftab3(i, j):
     return res
 
 
-combel = np.linspace(elmin, elmax, 100)
+combel = np.linspace(elmin, elmax, itera)
 i = range(len(combel))
 j = range(len(Atab3))
 coordsc1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
@@ -589,7 +596,7 @@ def Abplmincomb(fs, n1, n2):
 
 
 
-elc = np.linspace(elmin, elmax, 100)
+elc = np.linspace(elmin, elmax, itera)
 
 n1c = np.arange(ntmin, ntmax, step)
 n2c = np.arange(ntmin, ntmax, step)
