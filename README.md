@@ -3,6 +3,9 @@
 ## Data files
 Rtab is the data file for LISA and ciao4 is the data file for ET.
 
+## 50_iteration script
+This is the same as the other main scripts but with 50 values for the iterations again BPL curves take a while since 50*50*50*50 probably about 10-20 mins to run the full script in total. If it takes too long change the value of ITERA at the beginning to something like 37 and that will mean the code will run fast but you will see if the plots produced that the functions are more jagged.
+
 ## 100_iteration_table folder 
 This folder contains a link to the .npy files which are the data for the Amin, Atab, Ftab values for all the BPLS curves in the instances of ET, LISA, and combines curves. The accompnying Python script
 contains the code, similar to the main script for 100 iterations, but does not contain the functions for calculating the data tables. It only loads the files.
