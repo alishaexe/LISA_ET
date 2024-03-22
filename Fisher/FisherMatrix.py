@@ -56,17 +56,7 @@ def SigmaLisaApprox(f):#Sigma_Ohm approx
 L = 25/3
 fLisa = 1/(2*pi*L)
 #%%
-# def sigp(f):
-#     res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
-#                 *(1/2-1/2*sp.tanh(0.1*(f-42)))+(1/2*sp.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
-#                                                                           +10**(-13)*f**3))
-#     return res
 
-def sigp(f):
-    res = (9*f**(-30)) + (5*10**(-6)*f**(-4.5)) + (3*10**(-11)*f**2.1)
-    return res 
-
-#%%
 
 f0 = Symbol('f0')
 omegstar = Symbol('omegstar')
@@ -90,7 +80,7 @@ diffs = np.array(list(map(lambda args: diff(*args), params)))
 start = time.time()
 
 def Fisher(differential):
-    os = 5*10**(-13)
+    os = 10**(-10)
     ntv = 2/3
     f0v = 0.1
     integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/SigmaLisaApprox(f)**2
@@ -103,7 +93,7 @@ def Fisher(differential):
 FM = np.array(list(map(Fisher, diffs))).reshape(2,2)
 FM = FM.astype(np.float64)
 FM2 = T * FM
-np.save("FMLISA.npy", FM2)
+np.save("FMLISAA.npy", FM2)
 pause = time.time()
 print(pause-start, "Just LISA")
 
@@ -111,13 +101,23 @@ print(pause-start, "Just LISA")
 #%%
 #This calculates the Fishermatrix for ET if it ever finishes running
 
+# def sigp(f):
+#     res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
+#                 *(1/2-1/2*sp.tanh(0.1*(f-42)))+(1/2*sp.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
+#                                                                           +10**(-13)*f**3))
+#     return res
 
+def sigp(f):
+    res = (9*f**(-30)) + (5*10**(-6)*f**(-4.5)) + (3*10**(-11)*f**2.1)
+    return res 
+
+#%%
 secstart = time.time()
 def FisherET(differential):
     os = 10**(-10)
     ntv = 2/3
     f0v = 0.1
-    integrand = lambda f: differential/sigp(f)**2
+    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/sigp(f)**2
     print('after integrand', differential)
     res = integrate(integrand(f), (f,1.6,445))
     print('finished this int', differential)
@@ -127,4 +127,45 @@ FMET = np.array(list(map(FisherET, diffs))).reshape(2,2)
 FMET = FMET.astype(np.float64)
 FMet2 = T* FMET
 end = time.time()
-np.save("FMET.npy", FMet2)
+np.save("FMETA.npy", FMet2)
+#&&
+###############################
+#Now doing the scenario B
+
+def Fisher(differential):
+    os = 10**(-9)
+    ntv = 0.01
+    f0v = 0.1
+    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/SigmaLisaApprox(f)**2
+    print('after integrand', differential)
+    res = integrate(integrand(f), (f, 1e-5, 10**(-1)))
+    print('finished this int', differential)
+    return res
+
+    
+FM = np.array(list(map(Fisher, diffs))).reshape(2,2)
+FM = FM.astype(np.float64)
+FM2 = T * FM
+np.save("FMLISAB.npy", FM2)
+pause = time.time()
+print(pause-start, "Just LISA")
+
+
+#%%
+#This calculates the Fishermatrix for ET if it ever finishes running
+secstart = time.time()
+def FisherET(differential):
+    os = 10**(-9)
+    ntv = 2/3
+    f0v = 0.01
+    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/sigp(f)**2
+    print('after integrand', differential)
+    res = integrate(integrand(f), (f,1.6,445))
+    print('finished this int', differential)
+    return res.subs({omegstar: os, nt: ntv, f0: f0v})
+
+FMET = np.array(list(map(FisherET, diffs))).reshape(2,2)
+FMET = FMET.astype(np.float64)
+FMet2 = T* FMET
+end = time.time()
+np.save("FMETB.npy", FMet2)
