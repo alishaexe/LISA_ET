@@ -143,10 +143,10 @@ def Fisher(differential):
     return res
 
     
-FM = np.array(list(map(Fisher, diffs))).reshape(2,2)
-FM = FM.astype(np.float64)
-FM2 = T * FM
-np.save("FMLISAB.npy", FM2)
+FMB = np.array(list(map(Fisher, diffs))).reshape(2,2)
+FMB = FM.astype(np.float64)
+FM2B = T * FM
+np.save("FMLISAB.npy", FM2B)
 pause = time.time()
 print(pause-start, "Just LISA")
 
@@ -164,8 +164,8 @@ def FisherET(differential):
     print('finished this int', differential)
     return res.subs({omegstar: os, nt: ntv, f0: f0v})
 
-FMET = np.array(list(map(FisherET, diffs))).reshape(2,2)
-FMET = FMET.astype(np.float64)
-FMet2 = T* FMET
+FMETB = np.array(list(map(FisherET, diffs))).reshape(2,2)
+FMETB = FMET.astype(np.float64)
+FMet2B = T* FMET
 end = time.time()
-np.save("FMETB.npy", FMet2)
+np.save("FMETB.npy", FMet2B)
