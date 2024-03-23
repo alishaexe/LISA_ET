@@ -1,9 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import quad
-import sympy as sp
-from sympy import *
-from sympy import Array, Symbol
 import getdist
 from getdist import plots, MCSamples
 from scipy.interpolate import UnivariateSpline
@@ -55,117 +52,158 @@ def SigmaLisaApprox(f):#Sigma_Ohm approx
 
 L = 25/3
 fLisa = 1/(2*pi*L)
+
 #%%
+def f00(f0, nt, omegstar):
+    integrand = lambda f, f0, nt: (f/f0)**(2*nt)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, nt))[0]
+    return T*res
+
+def f01(f0, nt, omegstar):
+    integrand = lambda f, f0, nt, omegstar: omegstar*(f/f0)**(2*nt)*np.log(f/f0)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, omegstar))[0]
+    return T*res
+
+def f11(f0, nt, omegstar):
+    integrand = lambda f, f0, nt, omegstar: omegstar**2*(f/f0)**(2*nt)*np.log(f/f0)**2/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, omegstar))[0]
+    return T*res
 
 
-f0 = Symbol('f0')
-omegstar = Symbol('omegstar')
-f = Symbol('f')
-nt = Symbol('nt')
-
-
-ogw = omegstar * (f/f0)**(nt)
-siget = (9*f**(-30)) + (5*10**(-6)*f**(-4.5)) + (3*10**(-11)*f**2.1)
-
-def diff(param1, param2):
-    res = ogw.diff(param1)*ogw.diff(param2)
+def fisher(f0, nt, omegstar):
+    res = np.array(((f00(f0, nt, omegstar), f01(f0, nt, omegstar)), 
+                        (f01(f0, nt, omegstar), f11(f0, nt, omegstar))))
     return res
 
-paramlist = np.array([omegstar, nt])
-params = np.array(np.meshgrid(paramlist, paramlist)).T.reshape(-1,2)
-diffs = np.array(list(map(lambda args: diff(*args), params)))
+lisa = np.array(((0.1, 2/3, 1e-10), (0.1, 0.01, 1e-9)))
+LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
+
+FMLA = LISAfm[0]
+FMLB = LISAfm[1]
+#%%
+covmA = np.linalg.inv((FMLA))
+covmB = np.linalg.inv((FMLB))
+
+
+meansA = np.array((10**(-10),2/3))
+meansB = np.array((10**(-9),0.01))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples], contour_colors = ['teal'],
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A')
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples2], contour_colors = ['green'], 
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario B')
+
 
 #%%
-#This calculates the fisher matrix for LISA
-start = time.time()
+def f00et(f0, nt, omegstar):
+    integrand = lambda f, f0, nt: (f/f0)**(2*nt)/SigmaLisaApprox(f)
+    res = quad(integrand, 1.6, 445, args=(f0, nt))[0]
+    return T*res
 
-def Fisher(differential):
-    os = 10**(-10)
-    ntv = 2/3
-    f0v = 0.1
-    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/SigmaLisaApprox(f)**2
-    print('after integrand', differential)
-    res = integrate(integrand(f), (f, 1e-5, 10**(-1)))
-    print('finished this int', differential)
+def f01et(f0, nt, omegstar):
+    integrand = lambda f, f0, nt, omegstar: omegstar*(f/f0)**(2*nt)*np.log(f/f0)/SigmaLisaApprox(f)
+    res = quad(integrand, 1.6, 445, args=( f0, nt, omegstar))[0]
+    return T*res
+
+def f11et(f0, nt, omegstar):
+    integrand = lambda f, f0, nt, omegstar: omegstar**2*(f/f0)**(2*nt)*np.log(f/f0)**2/SigmaLisaApprox(f)
+    res = quad(integrand, 1.6, 445, args=( f0, nt, omegstar))[0]
+    return T*res
+
+
+def fisheret(f0, nt, omegstar):
+    res = np.array(((f00et(f0, nt, omegstar), f01et(f0, nt, omegstar)), 
+                        (f01et(f0, nt, omegstar), f11et(f0, nt, omegstar))))
     return res
 
-    
-FM = np.array(list(map(Fisher, diffs))).reshape(2,2)
-FM = FM.astype(np.float64)
-FM2 = T * FM
-np.save("FMLISAA.npy", FM2)
-pause = time.time()
-print(pause-start, "Just LISA")
+ET = np.array(((0.1, 2/3, 1e-10), (0.1, 0.01, 1e-9)))
+ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
+FMEA = ETfm[0]
+FMEB = ETfm[0]
+#%%
+covmA = np.linalg.inv((FMEA))
+covmB = np.linalg.inv((FMEB))
+
+
+meansA = np.array((10**(-10),2/3))
+meansB = np.array((10**(-9),0.01))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples], contour_colors = ['teal'],
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A')
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples2], contour_colors = ['green'], 
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B')
 
 #%%
-#This calculates the Fishermatrix for ET if it ever finishes running
+#all together now
+FMA = FMLA + FMEA
+FMB = FMLB + FMEB
 
-# def sigp(f):
-#     res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
-#                 *(1/2-1/2*sp.tanh(0.1*(f-42)))+(1/2*sp.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
-#                                                                           +10**(-13)*f**3))
-#     return res
-
-def sigp(f):
-    res = (9*f**(-30)) + (5*10**(-6)*f**(-4.5)) + (3*10**(-11)*f**2.1)
-    return res 
-
-#%%
-secstart = time.time()
-def FisherET(differential):
-    os = 10**(-10)
-    ntv = 2/3
-    f0v = 0.1
-    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/sigp(f)**2
-    print('after integrand', differential)
-    res = integrate(integrand(f), (f,1.6,445))
-    print('finished this int', differential)
-    return res.subs({omegstar: os, nt: ntv, f0: f0v})
-
-FMET = np.array(list(map(FisherET, diffs))).reshape(2,2)
-FMET = FMET.astype(np.float64)
-FMet2 = T* FMET
-end = time.time()
-np.save("FMETA.npy", FMet2)
-#&&
-###############################
-#Now doing the scenario B
-
-def Fisher(differential):
-    os = 10**(-9)
-    ntv = 0.01
-    f0v = 0.1
-    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/SigmaLisaApprox(f)**2
-    print('after integrand', differential)
-    res = integrate(integrand(f), (f, 1e-5, 10**(-1)))
-    print('finished this int', differential)
-    return res
-
-    
-FMB = np.array(list(map(Fisher, diffs))).reshape(2,2)
-FMB = FM.astype(np.float64)
-FM2B = T * FM
-np.save("FMLISAB.npy", FM2B)
-pause = time.time()
-print(pause-start, "Just LISA")
+covmA = np.linalg.inv((FMA))
+covmB = np.linalg.inv((FMB))
 
 
-#%%
-#This calculates the Fishermatrix for ET if it ever finishes running
-secstart = time.time()
-def FisherET(differential):
-    os = 10**(-9)
-    ntv = 2/3
-    f0v = 0.01
-    integrand = lambda f: differential.subs({omegstar: os, nt: ntv, f0:f0v})/sigp(f)**2
-    print('after integrand', differential)
-    res = integrate(integrand(f), (f,1.6,445))
-    print('finished this int', differential)
-    return res.subs({omegstar: os, nt: ntv, f0: f0v})
+meansA = np.array((10**(-10),2/3))
+meansB = np.array((10**(-9),0.01))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-FMETB = np.array(list(map(FisherET, diffs))).reshape(2,2)
-FMETB = FMET.astype(np.float64)
-FMet2B = T* FMET
-end = time.time()
-np.save("FMETB.npy", FMet2B)
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples], contour_colors = ['teal'],
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario A')
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples2], contour_colors = ['green'], 
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario B')
