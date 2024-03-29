@@ -53,6 +53,37 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 #%%
+#All the functions for ET and LISA
+#Not combined ones though
+def SI(f):
+    si = 5.76*10**(-48)*(1+(fi/f)**2)
+    return si
+def Sa(f):
+    sa = 1/4 *SI(f)/((2*pi*f)**4)
+    return sa
+
+SII = 3.6*10**(-41)
+Ss = SII
+
+f2 = 25*10**(-3)
+
+####LOW FREQUENCY APPROXIMATION
+#Now make the low frequency approximation
+#this is equation 63 in the paper
+
+def sigI(f):#Sigma_I
+    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/f2)**2)
+    return sig
+
+def SigmaLisaApprox(f):#Sigma_Ohm approx
+    const = ((4*pi**2/(3*H0**2)))
+    res = const * f**3 *sigI(f)
+    return res
+
+L = 25/3
+fLisa = 1/(2*pi*L)
+
+#%%
 #function for creating the table of the ET data
 #we use i to iterate through each row of the data
 def tabETapp(i):
