@@ -1,0 +1,5 @@
+/tmp/slurmd/job7796079/slurm_script: line 24: ./lisa/bin/activate: No such file or directory
+Traceback (most recent call last):
+  File "/lustrehome/home/s.2347066/LISA4cosmo/FisherMatrix.py", line 7, in <module>
+    import getdist
+ModuleNotFoundError: No module named 'getdist'
