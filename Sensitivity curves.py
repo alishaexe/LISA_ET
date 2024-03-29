@@ -123,7 +123,7 @@ def sigp(f):
 def etnomonly(f):
     res = sigp(f)
     if res > 10**(-5):
-        res = 10**(-5)
+        return
     return res
 
 def sigETapp(f):#Sigma_Ohm approx
