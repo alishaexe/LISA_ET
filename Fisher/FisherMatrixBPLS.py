@@ -106,8 +106,8 @@ meansB = np.array((-8,0.01, 2/3))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\a_*',r'nt', r'n2']
-labels =  [r'\a_*',r'n1', r'n2']
+names = [r'\alpha_*',r'nt', r'n2']
+labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -117,7 +117,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
-                filled=True, markers={r'\a_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A : 2/3, 0.01', fontsize = 18)
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -125,7 +125,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], conour_colors = ['green'], 
-                filled=True, markers={r'\a_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario B: 0.01, 2/3', fontsize = 18)
 
 
@@ -191,8 +191,8 @@ meansB = np.array((-8,0.01,2/3))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\a_*',r'n1', r'n2']
-labels =  [r'\a_*',r'n1', r'n2']
+names = [r'\alpha_*',r'n1', r'n2']
+labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -202,7 +202,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
-                filled=True, markers={r'\a_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A: 2/3, 0.01')
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -210,7 +210,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['green'], 
-                filled=True, markers={r'\a_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B: 0.01, 2/3')
 
 #%%
@@ -227,8 +227,8 @@ meansB = np.array((10**(-9),0.01, 2/3))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\a_*',r'n1', r'n2']
-labels =  [r'\a_*',r'n1', r'n2']
+names = [r'\alpha_*',r'n1', r'n2']
+labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -238,7 +238,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
-                filled=True, markers={r'\a_*': meansA[0],'n1': meansA[1], 'n2': meansA[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2': meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario A: 2/3, 0.01')
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -246,7 +246,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['green'], 
-                filled=True, markers={r'\a_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario B: 0.01, 2/3')
 
 
