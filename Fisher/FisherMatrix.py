@@ -85,6 +85,8 @@ FMLB = LISAfm[1]
 covmA = np.linalg.inv((FMLA))
 covmB = np.linalg.inv((FMLB))
 
+param_limitsA = {'r\alpha_*': (-60, 60), 'nt': (-60, 60)}
+param_limitsB = {'r\alpha_*': (-60, 60)}#, 'nt': (0, 0.1)}
 
 meansA = np.array((-8,2/3))
 meansB = np.array((-8,0.01))
@@ -96,16 +98,15 @@ labels =  [r'\alpha_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=18
-g.settings.legend_fontsize = 18
-g.settings.axes_labelsize = 18
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'],
-                #param_limits=param_limitsA,
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
