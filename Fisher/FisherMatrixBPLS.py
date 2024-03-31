@@ -222,8 +222,8 @@ covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
 
 
-meansA = np.array((10**(-10),2/3, 0.01))
-meansB = np.array((10**(-9),0.01, 2/3))
+meansA = np.array((-8,2/3, 0.01))
+meansB = np.array((-8,0.01, 2/3))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
