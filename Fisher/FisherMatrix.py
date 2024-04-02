@@ -106,6 +106,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
+plt.savefig('FISHERLISA_A.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
@@ -115,13 +116,16 @@ g.triangle_plot([samples2], contour_colors = ['green'],
                 #param_limits=param_limitsB,
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario B', fontsize = 18)
-
+plt.savefig('FISHERLISA_B.png')
 #%%
 def sigp(f):
-    res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
-               *(1/2-1/2*np.tanh(0.1*(f-42)))+(1/2*np.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
-                                                                         +10**(-13)*f**3))
+    res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
+            0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
+            1/2 * np.tanh(0.04 * (f - 42))) + (1/2 * np.tanh(0.04 * (f - 42))) * 
+            (0.4 * 10**(-11) * f**(1.4) + 7.9 * 10**(-13) * f**(2.98))) * (1 - 
+            0.38 * np.exp(-(f - 25)**2/50))
     return res
+
 def f00et(f0, nt, astar):
     integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/sigp(f)
     res = quad(integrand, 1.6, 445, args=(f0, nt, astar))[0]
@@ -165,14 +169,15 @@ samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scena
 
 #param_limitsA = {r'\Omega_*': (0, 1e-10), 'nt': (0, 1.2)}
 
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'], #param_limits=param_limitsA,
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis of ET Scenario A')
+plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
+plt.savefig('FISHERET_A.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
@@ -180,16 +185,16 @@ g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis of ET Scenario B')
-
+plt.suptitle(r'Fisher Analysis of ET Scenario B', fontsize = 18)
+plt.savefig('FISHERET_B.png')
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=14
-g.settings.legend_fontsize = 16
-g.settings.axes_labelsize = 16
-g.triangle_plot([samples2], contour_colors = ['green'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis of ET Scenario B')
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=14
+# g.settings.legend_fontsize = 16
+# g.settings.axes_labelsize = 16
+# g.triangle_plot([samples2], contour_colors = ['green'], 
+#                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+# plt.suptitle(r'Fisher Analysis of ET Scenario B')
 #%%
 #all together now
 FMA = FMLA + FMEA
@@ -209,14 +214,15 @@ labels =  [r'\alpha_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A')
+plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
+plt.savefig('FISHERcomb_A.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
@@ -224,8 +230,8 @@ g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis of LISA + ET Scenario B')
-
+plt.suptitle(r'Fisher Analysis of LISA + ET Scenario B', fontsize = 18)
+plt.savefig('FISHERcomb_B.png')
 
 
 
