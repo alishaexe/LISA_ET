@@ -91,7 +91,7 @@ def fisher(f0, n1, n2, astar):
                     (f02(f0, n1, n2, astar), f12(f0, n1, n2, astar), f22(f0, n1, n2, astar))))
     return res
 
-lisa = np.array(((0.1, 2/3, 0.01, -8), (0.1, 0.01, 2/3, -8)))
+lisa = np.array(((0.45, -2, 0.01, -9), (0.45, 0.01, -2, -9)))
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 
 FMLA = LISAfm[0]
@@ -101,8 +101,8 @@ covmA = np.linalg.inv((FMLA))
 covmB = np.linalg.inv((FMLB))
 
 
-meansA = np.array((-8,2/3, 0.01))
-meansB = np.array((-8,0.01, 2/3))
+meansA = np.array((-9,-2, 0.01))
+meansB = np.array((-9,0.01, -2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
@@ -118,7 +118,8 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A : 2/3, 0.01', fontsize = 18)
+plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A : -2, 0.01', fontsize = 18)
+plt.savefig('FISHERBPL_LISA_A.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
@@ -126,8 +127,8 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], conour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario B: 0.01, 2/3', fontsize = 18)
-
+plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario B: 0.01, -2', fontsize = 18)
+plt.savefig('FISHERBPL_LISA_B.png')
 
 #%%
 def sigp(f):
@@ -180,7 +181,7 @@ def fisheret(f0, n1, n2, astar):
                     (f02et(f0, n1, n2, astar), f12et(f0, n1, n2, astar), f22et(f0, n1, n2, astar))))
     return res
 
-ET = np.array(((0.1, 2/3, 0.01,-8), (0.1, 0.01, 2/3, -8)))
+ET = np.array(((0.45, -2, 0.01,-9), (0.45, 0.01, -2, -9)))
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
@@ -190,8 +191,8 @@ covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((-8,2/3, 0.01))
-meansB = np.array((-8,0.01,2/3))
+meansA = np.array((-9,-2, 0.01))
+meansB = np.array((-9,0.01,-2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
@@ -207,8 +208,8 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A: 2/3, 0.01')
-
+plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A: -2, 0.01')
+plt.savefig('FISHERBPL_ET_A.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
@@ -216,8 +217,8 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B: 0.01, 2/3',fontsize=18)
-
+plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B: 0.01, -2',fontsize=18)
+plt.savefig('FISHERBPL_ET_B.png')
 #%%
 #all together now
 FMA = FMLA + FMEA
@@ -245,7 +246,7 @@ g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2': meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario A: 2/3, 0.01')
-
+plt.savefig('FISHERBPL_COMB_A.png')
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
@@ -253,7 +254,7 @@ g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario B: 0.01, 2/3')
-
+plt.savefig('FISHERBPL_COMB_B.png')
 
 
 
