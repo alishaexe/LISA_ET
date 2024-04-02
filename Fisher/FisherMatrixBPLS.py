@@ -111,7 +111,7 @@ labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
@@ -119,7 +119,7 @@ g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A : 2/3, 0.01', fontsize = 18)
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
@@ -135,7 +135,9 @@ def sigp(f):
                *(1/2-1/2*np.tanh(0.1*(f-42)))+(1/2*np.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
                                                                          +10**(-13)*f**3))
     return res
-
+def sigp(f):
+    res = (9*f**(-30)) + (5*10**(-6)*f**(-4.5)) + (3*10**(-11)*f**2.1)
+    return res 
 def f00et(f0, n1, n2, astar):
     integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)**2)/sigp(f)
     res = quad(integrand, 1.6, 445, args=(f0, n1, n2, astar))[0]
@@ -150,8 +152,10 @@ def f01et(f0, n1, n2, astar):
 
 def f02et(f0, n1, n2, astar):
     integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)*np.log(f**10/f0**10 + 1)/10)/sigp(f)
-    res = quad(integrand, 1.6, 445, args=(f0, n1, n2, astar))[0]
-    return T*res
+    res1 = quad(integrand, 1.6, 100, args=(f0, n1, n2, astar))[0]
+    res2 = quad(integrand, 100, 250, args=(f0, n1, n2, astar))[0]
+    res3 = quad(integrand, 250, 445, args=(f0, n1, n2, astar))[0]
+    return T*sum((res1,res2,res3))
 
 def f11et(f0, n1, n2, astar):
     integrand = lambda f, f0, n1, n2, astar: ((10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*
@@ -180,7 +184,7 @@ ET = np.array(((0.1, 2/3, 0.01,-8), (0.1, 0.01, 2/3, -8)))
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
-FMEB = ETfm[0]
+FMEB = ETfm[1]
 #%%
 covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
@@ -196,7 +200,7 @@ labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
@@ -205,13 +209,14 @@ g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A: 2/3, 0.01')
 
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B: 0.01, 2/3')
+plt.suptitle(r'Fisher Analysis for SNR of ET Scenario B: 0.01, 2/3',fontsize=18)
 
 #%%
 #all together now
