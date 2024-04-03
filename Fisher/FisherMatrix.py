@@ -105,7 +105,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples], contour_colors = ['teal'],
+g.triangle_plot([samples], contour_colors = ['red'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
@@ -114,7 +114,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
-g.triangle_plot([samples2], contour_colors = ['green'], 
+g.triangle_plot([samples2], contour_colors = ['orangered'], 
                 #param_limits=param_limitsB,
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario B', fontsize = 18)
@@ -176,7 +176,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples], contour_colors = ['teal'], #param_limits=param_limitsA,
+g.triangle_plot([samples], contour_colors = ['darkblue'], #param_limits=param_limitsA,
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
@@ -185,7 +185,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples2], contour_colors = ['green'], 
+g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of ET Scenario B', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_B.png')
@@ -221,7 +221,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples], contour_colors = ['teal'],
+g.triangle_plot([samples], contour_colors = ['indigo'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
@@ -230,7 +230,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples2], contour_colors = ['green'], 
+g.triangle_plot([samples2], contour_colors = ['darkviolet'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario B', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_B.png')

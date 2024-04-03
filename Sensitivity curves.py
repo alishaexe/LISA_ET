@@ -266,8 +266,8 @@ plt.xlabel("f (Hz)")
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLSlisa.png')
+plt.show()
 #%%
 #Now the BPLS for ET
 #Now for BPL
@@ -366,8 +366,8 @@ plt.legend(fontsize="10", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png')
+plt.show()
 #%%
 ###########################
 #LISA
@@ -504,16 +504,16 @@ plt.xscale('log')
 plt.show()
 #%%
 plt.figure(figsize=(6, 8)) 
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS")
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal")
+plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS")
 plt.loglog(np.exp(flogom[:,0]), np.exp(maxhlp),':' ,color = "teal", label = 'ET Sensitivity included')
 plt.ylabel(r"$\Omega_{gw}$")
 plt.legend()
 plt.grid(True)
 plt.xlabel("f (Hz)")
 plt.title("Nominal and PLS curve LISA")
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLSet.png')
+plt.show()
 #%%
 #Now for BPL
 
@@ -623,8 +623,8 @@ plt.ylim(1e-14, 1e-4)
 plt.show()
 #%%
 plt.figure(figsize=(6, 8))
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime")
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo")
+plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime")
 plt.loglog(np.exp(fbplo[:,0]), np.exp(maxbplc), ':',label = "With ET", color = "teal")
 plt.grid(True)
 plt.title("LISA BPLS Curves")
@@ -633,8 +633,8 @@ plt.xlabel('f (Hz)')
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
 plt.xscale('log')
 plt.ylim(1e-14, 1e-4)
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLSet.png')
+plt.show()
 #%%
 ######################
 #LogNS curves
@@ -726,8 +726,8 @@ plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png')
+plt.show()
 #%%
 #LISA logns plots
 
@@ -823,8 +823,8 @@ plt.legend()
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png')
+plt.show()
 #%%
 plt.loglog(np.exp(np.log(flf)), np.exp(maxlog), color = "aqua", label = "LogNs")
 plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), color = "orangered", label = "PLS")
@@ -869,13 +869,13 @@ def nomtog(f):
         if res > 1e-5:
             return
         return res
-    if f > 1.6:
+    if f > 1:
         res = sigETapp(f)
         if res > 1e-5:
             return
         return res
  
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),500)
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
@@ -887,8 +887,8 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel('f (Hz)')
 plt.ylabel(r"$\Omega_{gw}$")
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png')
+plt.show()
 #%%
 #combine pls curves
 fstar = 1.1
@@ -970,8 +970,8 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png')
+plt.show()
 #%%
 #bpls
 def combbpl(f, fstar, n1, n2):
@@ -1122,8 +1122,8 @@ plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png')
+plt.show()
 #%%
 
 plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo")
@@ -1168,8 +1168,9 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-plt.show()
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png')
+plt.show()
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png')
 # np.save("Ftab4.npy", Ftab4)
 # np.save("Atab4.npy", Atab4)
 # np.save("Amin4.npy", Amin4)
