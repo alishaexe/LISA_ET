@@ -54,6 +54,8 @@ L = 25/3
 fLisa = 1/(2*pi*L)
 
 #%%
+alphaA = -10
+alphaB = -9
 
 def f00(f0, nt, astar):
     integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/SigmaLisaApprox(f)
@@ -76,7 +78,7 @@ def fisher(f0, nt, astar):
                         (f01(f0, nt, astar), f11(f0, nt, astar))))
     return res
 
-lisa = np.array(((0.1, 2/3, -8), (0.1, 0.01, -8)))
+lisa = np.array(((0.1, 2/3, alphaA), (0.1, 0.01, alphaB)))
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 
 FMLA = LISAfm[0]
@@ -88,8 +90,8 @@ covmB = np.linalg.inv((FMLB))
 param_limitsA = {'r\alpha_*': (-60, 60), 'nt': (-60, 60)}
 param_limitsB = {'r\alpha_*': (-60, 60)}#, 'nt': (0, 0.1)}
 
-meansA = np.array((-8,2/3))
-meansB = np.array((-8,0.01))
+meansA = np.array((alphaA,2/3))
+meansB = np.array((alphaB,0.01))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
@@ -106,7 +108,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
-plt.savefig('FISHERLISA_A.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
@@ -116,7 +118,7 @@ g.triangle_plot([samples2], contour_colors = ['green'],
                 #param_limits=param_limitsB,
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA Scenario B', fontsize = 18)
-plt.savefig('FISHERLISA_B.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_B.png')
 #%%
 def sigp(f):
     res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
@@ -128,17 +130,17 @@ def sigp(f):
 
 def f00et(f0, nt, astar):
     integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/sigp(f)
-    res = quad(integrand, 1.6, 445, args=(f0, nt, astar))[0]
+    res = quad(integrand, 1, 445, args=(f0, nt, astar))[0]
     return T*res
 
 def f01et(f0, nt, astar):
     integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/sigp(f)
-    res = quad(integrand, 1.6, 445, args=( f0, nt, astar))[0]
+    res = quad(integrand, 1, 445, args=( f0, nt, astar))[0]
     return T*res
 
 def f11et(f0, nt, astar):
     integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)
-    res = quad(integrand, 1.6, 445, args=( f0, nt, astar))[0]
+    res = quad(integrand, 1, 445, args=( f0, nt, astar))[0]
     return T*res
 
 
@@ -147,7 +149,7 @@ def fisheret(f0, nt, astar):
                         (f01et(f0, nt, astar), f11et(f0, nt, astar))))
     return res
 
-ET = np.array(((0.1, 2/3, -8), (0.1, 0.01, -8)))
+ET = np.array(((0.1, 2/3, alphaA), (0.1, 0.01, alphaB)))
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
@@ -157,8 +159,8 @@ covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((-8,2/3))
-meansB = np.array((-8,0.01))
+meansA = np.array((alphaA,2/3))
+meansB = np.array((alphaB,0.01))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
@@ -177,7 +179,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'], #param_limits=param_limitsA,
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
-plt.savefig('FISHERET_A.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
@@ -186,7 +188,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of ET Scenario B', fontsize = 18)
-plt.savefig('FISHERET_B.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_B.png')
 #%%
 # g = plots.get_subplot_plotter(subplot_size=5)
 # g.settings.axes_fontsize=14
@@ -204,8 +206,8 @@ covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
 
 
-meansA = np.array((-8,2/3))
-meansB = np.array((-8,0.01))
+meansA = np.array((alphaA,2/3))
+meansB = np.array((alphaB,0.01))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
@@ -222,7 +224,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['teal'],
                 filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
-plt.savefig('FISHERcomb_A.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
@@ -231,7 +233,7 @@ g.settings.axes_labelsize = 16
 g.triangle_plot([samples2], contour_colors = ['green'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario B', fontsize = 18)
-plt.savefig('FISHERcomb_B.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_B.png')
 
 
 
