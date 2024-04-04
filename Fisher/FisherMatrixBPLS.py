@@ -53,8 +53,10 @@ def SigmaLisaApprox(f):#Sigma_Ohm approx
 L = 25/3
 fLisa = 1/(2*pi*L)
 a1 = -6
-a2 = -4
+a2 = -6
 size = 20
+nom1 = 1
+nom2 = -1
 #%%
 
 def f00(f0, n1, n2, astar):
@@ -93,7 +95,7 @@ def fisher(f0, n1, n2, astar):
                     (f02(f0, n1, n2, astar), f12(f0, n1, n2, astar), f22(f0, n1, n2, astar))))
     return res
 
-lisa = [(0.45, 0.01, -2, a1), (0.45, 0.01, -2, a2)]
+lisa = [(0.45, nom1, nom2, a1), (0.45, nom1, nom2, a2)]
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 #LISAfm = np.array(list(lambda args: fisher(*args)))
 
@@ -104,15 +106,17 @@ covmA = np.linalg.inv((FMLA))
 covmB = np.linalg.inv((FMLB))
 
 
-meansA = np.array((a1,0.01, -2))
-meansB = np.array((a2,0.01, -2))
+
+meansA = np.array((a1, nom1, nom2))
+meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
-samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+
 
 #%%
 # g = plots.get_subplot_plotter(subplot_size=5)
@@ -184,7 +188,7 @@ def fisheret(f0, n1, n2, astar):
                     (f02et(f0, n1, n2, astar), f12et(f0, n1, n2, astar), f22et(f0, n1, n2, astar))))
     return res
 
-ET = [(0.45, 0.01, -2, a1), (0.45, 0.01, -2, a2)]#, (0.45, 0.01, -2, -8)]
+ET = [(0.45, nom1, nom2, a1), (0.45, nom1, nom2, a2)]
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
@@ -194,11 +198,11 @@ covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((a1,0.01, -2))
-meansB = np.array((a2,0.01, -2))
+meansA = np.array((a1, nom1, nom2))
+meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
-samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
@@ -222,6 +226,7 @@ g.triangle_plot([samples2], contour_colors = ['blue'],
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET BPL Scenario: 0.01, -2',fontsize=size)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET.png')
+
 #%%
 #all together now
 FMA = FMLA + FMEA
@@ -231,11 +236,11 @@ covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
 
 
-meansA = np.array((a1,0.01, -2))
-meansB = np.array((a2,0.01, -2))
+meansA = np.array((a1, nom1, nom2))
+meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
-samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
+samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
@@ -264,7 +269,19 @@ plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB.png')
 
 
 
+#%%
 
+
+# arr = covmA #you will need to run the cell with the covariance matrix you want
+#               #you want to check first since they all have the same name
+
+# #Check if the matrix is symmetric
+# is_symmetric = np.allclose(arr, arr.T)
+# print("Is symmetric:", is_symmetric)
+
+# #Check if all principal minors are positive
+# minors_positive = all(np.linalg.det(arr[:i, :i]) > 0 for i in range(1, arr.shape[0] + 1))
+# print("All principal minors are positive:", minors_positive)
 
 
 
