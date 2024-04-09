@@ -35,14 +35,13 @@ def Sa(f):
 SII = 3.6*10**(-41)
 Ss = SII
 
-f2 = 25*10**(-3)
 
 ####LOW FREQUENCY APPROXIMATION
 #Now make the low frequency approximation
 #this is equation 63 in the paper
 
 def sigI(f):#Sigma_I
-    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/f2)**2)
+    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/(4*fLisa/3))**2)
     return sig
 
 def SigmaLisaApprox(f):#Sigma_Ohm approx

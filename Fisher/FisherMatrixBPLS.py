@@ -35,14 +35,13 @@ def Sa(f):
 SII = 3.6*10**(-41)
 Ss = SII
 
-f2 = 25*10**(-3)
 
 ####LOW FREQUENCY APPROXIMATION
 #Now make the low frequency approximation
 #this is equation 63 in the paper
 
 def sigI(f):#Sigma_I
-    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/f2)**2)
+    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/(4*fLisa/3))**2)
     return sig
 
 def SigmaLisaApprox(f):#Sigma_Ohm approx
@@ -50,13 +49,22 @@ def SigmaLisaApprox(f):#Sigma_Ohm approx
     res = const * f**3 *sigI(f)
     return res
 
+
+
 L = 25/3
 fLisa = 1/(2*pi*L)
-a1 = -6
-a2 = -6
 size = 20
-nom1 = 1
-nom2 = -1
+#case 1
+a1 = -6
+n1 = 1
+n2 = -1
+fstar = 0.45
+
+#case 2
+a2 = -6.5
+nom1 = 0.8
+nom2 = -0.8
+fbreak = 0.05
 #%%
 
 def f00(f0, n1, n2, astar):
@@ -95,7 +103,7 @@ def fisher(f0, n1, n2, astar):
                     (f02(f0, n1, n2, astar), f12(f0, n1, n2, astar), f22(f0, n1, n2, astar))))
     return res
 
-lisa = [(0.45, nom1, nom2, a1), (0.45, nom1, nom2, a2)]
+lisa = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 #LISAfm = np.array(list(lambda args: fisher(*args)))
 
@@ -107,26 +115,26 @@ covmB = np.linalg.inv((FMLB))
 
 
 
-meansA = np.array((a1, nom1, nom2))
+meansA = np.array((a1, n1, n2))
 meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
-samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 
 #%%
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['teal'],
-#                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA Scenario A : 0.01, -2', fontsize = size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA_A.png')
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples2], contour_colors = ['red'], 
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA1.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
@@ -134,8 +142,8 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['red'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA BPL Scenario: 0.01, -2', fontsize = size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA.png')
+plt.suptitle(r'Fisher Analysis for SNR of LISA BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA2.png')
 
 #%%
 def sigp(f):
@@ -188,7 +196,7 @@ def fisheret(f0, n1, n2, astar):
                     (f02et(f0, n1, n2, astar), f12et(f0, n1, n2, astar), f22et(f0, n1, n2, astar))))
     return res
 
-ET = [(0.45, nom1, nom2, a1), (0.45, nom1, nom2, a2)]
+ET = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
@@ -198,25 +206,25 @@ covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((a1, nom1, nom2))
+meansA = np.array((a1, n1, n2))
 meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
-samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 #%%
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['teal'],
-#                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of ET Scenario A: 0.01, -2', fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET_A.png')
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples2], contour_colors = ['blue'], 
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of ET BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET1.png')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
@@ -224,8 +232,8 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of ET BPL Scenario: 0.01, -2',fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET.png')
+plt.suptitle(r'Fisher Analysis for SNR of ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET2.png')
 
 #%%
 #all together now
@@ -243,19 +251,18 @@ samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\alpha_*',r'n1', r'n2']
 labels =  [r'\alpha_*',r'n1', r'n2']
-samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['teal'],
-#                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2': meansA[2]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA + ET Scenario A: 0.01, -2', fontsize = size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB_A.png')
-
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples2], contour_colors = ['indigo'], 
+                filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB1.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=20
@@ -263,8 +270,8 @@ g.settings.legend_fontsize = 20
 g.settings.axes_labelsize = 20
 g.triangle_plot([samples2], contour_colors = ['indigo'], 
                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL Scenario: 0.01, -2', fontsize = 20)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB.png')
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB2.png')
 
 
 

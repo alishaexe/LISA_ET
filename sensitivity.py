@@ -67,23 +67,7 @@ tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less
                                 #and indexes the ET table so that it only containes these 
                                 #rows where the 2nd column
 
-#%%
-plt.figure(figsize=(6, 9)) 
-plt.loglog(tabET2[:,0], tabET2[:,1], ',', label = "Numerical", color = "darkviolet", linewidth=2.5)
-plt.title('Einstein telescope sensitivity curve data')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-plt.xlim(1, ffmax)
-plt.yscale('log')
-plt.xscale('log')
-plt.grid(True)
-plt.show()
-#%%
-# def sigp(f):
-#     res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
-#                *(1/2-1/2*np.tanh(0.1*(f-42)))+(1/2*np.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
-#                                                                          +10**(-13)*f**3))
-#     return res
+
 
 def sigp(f):
     res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
@@ -109,33 +93,23 @@ fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 
 
-plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth=2.5)
-plt.title("Nominal sensitivity curve ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-#plt.ylim(10**(-9), 10**(-5))
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10**0, 400)
-plt.grid(True)
-plt.show()
-#%%
+
 #Plots both curves overlayed each other
 
 plt.figure(figsize=(6, 9)) 
-plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
-plt.title("ET sensitivity curves")
-plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2.5,color = "indigo" )
+plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkviolet")
+plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
+plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2,color = "indigo" )
 plt.legend(fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.xlabel("f (Hz)", fontsize = 16)
 #plt.ylim(10**(-9), 10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.xlim(10**0, 400)
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png')
-plt.show()
+plt.savefig('ETnoms.png')
+ 
 
 #%%
 #Now we find the PLS for ET
@@ -181,43 +155,21 @@ maxposet = range(len(Ftabetpls))
 maxvals = np.array(list(map(maxETpls, maxposet)))
 maxplsvals = maxvals
 flogomET = np.vstack((np.log(10**elET), maxplsvals)).T
-#%%
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", linewidth=2.5)
-plt.title("PLS curve for Einstein Telescope")
-#plt.axhline(AETmin(0)[0], color='r', linestyle='--')
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.show()
 
 
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), linewidth = 2.5,color = "orangered", label = "PLS")
-plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth = 2.5,label = "Nominal")
-plt.legend()
-plt.title("Nominal and PLS curve for ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-plt.yscale('log')
-plt.xscale('log')
-plt.grid(True)
-plt.show()
-#%%
+
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
 plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", label = "PLS", linewidth = 2.5)
 plt.legend(fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.title("Nominal and PLS curve for ET", fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png')
-plt.show()
+plt.savefig('ETnomandPLS.png')
+ 
 #%%
 #Now the BPLS for ET
 #Now for BPL
@@ -270,31 +222,20 @@ maxbplET = maxbplvals
 
 #%%
 fbploET = np.vstack((np.log(fs), maxbplET)).T
-#plots the bpl curve
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), '-',color = "lime", linewidth=2.5)
-plt.title("BPLS Curve ET")
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
 
 
-#%%
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
 plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
 plt.title('ET Nominal and BPL Curves')
 plt.ylabel(r"$\Omega_{gw}$")
-plt.legend(fontsize="10", loc = 'upper center')
+plt.legend(fontsize="16", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png')
-plt.show()
+plt.savefig('ETBPLScurves.png')
+ 
 #%%
 ###########################
 #LISA
@@ -351,12 +292,7 @@ def sigtab(f, r1, r2):
 
 og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
 
-plt.loglog(f, og, color = "indigo", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xlabel("f (Hz)")
-plt.title("Nominal Sensitivity curve of LISA")
-plt.show()
+
 #%%    
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(SigmaLisaApproxnom, freqvals)))
@@ -364,13 +300,13 @@ sigvals = np.array(list(map(SigmaLisaApproxnom, freqvals)))
 plt.figure(figsize=(6, 9)) 
 plt.loglog(f, og,'--' ,color = "darkviolet", label = "Numerical", linewidth=2.5)
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Approximate", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.grid(True)
 plt.legend(fontsize = 16)
-plt.xlabel("f (Hz)")
-plt.title("Nominal Sensitivity curve of LISA")
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png')
-plt.show()
+plt.xlabel("f (Hz)", fontsize = 16)
+plt.title("Nominal Sensitivity curve of LISA", fontsize = 16)
+plt.savefig('LISAnoms.png')
+ 
 #%%
 #Now finding the PLS for LISA
 def Almin(nt):
@@ -421,29 +357,17 @@ maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
 maxpls = maxplvals
 flogom = np.vstack((np.log(10**elLISA), maxpls)).T
 
-#%%
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", linewidth=2.5)
-# plt.axhline(Almin(0)[1], color='r', linestyle='--')
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title('PLS curve LISA')
-plt.grid(True)
-plt.xscale('log')
-plt.show()
 
-#%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.legend(fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.legend()
 plt.grid(True)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal and PLS curve LISA", fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLSet.png')
-plt.show()
+plt.savefig('LISAnomPLSet.png')
+ 
 #%%
 #Now for BPL
 
@@ -504,42 +428,19 @@ maxbpl = np.array(list(map(maxbplvals, maxpos)))
 #%%
 fbplo = np.vstack((np.log(fs), maxbpl)).T
 
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), color = "lime", linewidth=2.5)
-plt.title("LISA BPLS sensitivity curve")
-plt.ylim(1e-14, 1e-5)
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.show()
 
-
-plt.figure(figsize=(6, 9))
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA sensitivity curves")
-plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xscale('log')
-plt.ylim(1e-14, 1e-4)
-plt.show()
-#%%
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
 plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
 plt.grid(True)
-plt.title("LISA BPLS Curves")
+plt.title("LISA BPLS Curves", fontsize = 16)
 plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.xscale('log')
 plt.ylim(1e-14, 1e-4)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLSet.png')
-plt.show()
+plt.savefig('LISAnomBPLSet.png')
+ 
 #%%
 ######################
 #LogNS curves
@@ -592,32 +493,20 @@ maxposlog = range(len(Ftabetlog))
 maxlog = np.array(list(map(maxlogvals, maxposlog)))
 flogplot = np.vstack((np.log(flf), maxlog)).T
 
-#%%
-plt.figure(figsize=(6, 9))
-plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), color = "aqua", linewidth=2.5)
-plt.title("LogNS curve ET")
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
-
-
 
 plt.figure(figsize=(6, 9))
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
 plt.legend()
-plt.title("Nominal and LogNs curve for ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
+plt.title("Nominal and LogNs curve for ET", fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.xlabel("f (Hz)", fontsize = 16)
 plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png')
-plt.show()
+plt.savefig('ETnomlognslisa.png')
+ 
 #%%
 #LISA logns plots
 
@@ -670,59 +559,22 @@ maxlogL = maxlogvals
 flogplotL = np.vstack((np.log(fls), maxlogL)).T
 
 
-#%%
-plt.figure(figsize=(6, 9))
-plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", linewidth=2.5)
-plt.title("LogNS curve LISA")
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
 
 
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.title("Nominal and LogNs curve for LISA")
+plt.title("Nominal and LogNs curve for LISA", fontsize = 16)
 plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 12)
 plt.legend()
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png')
-plt.show()
-#%%
-plt.loglog(np.exp(np.log(flf)), np.exp(maxlog), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
-plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "lime", label = "BPLS", linewidth=2.5)
-plt.legend()
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel('f (Hz)')
-plt.title("ET Sensitivity Curves")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
+plt.savefig('LISAnomlognset.png')
+ 
 
-
-
-plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA sensitivity curves")
-plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xscale('log')
-plt.show()
 #%%
 #######################
 #Combining LISA and ET curves
@@ -751,15 +603,7 @@ combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
 
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2.5)
-plt.title("Nominal curves for ET and LISA")
-plt.grid(True) 
-plt.xlim(ffmin, ffmax) 
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png')
-plt.show()
+
 #%%
 #combine pls curves
 fstar = 1.1
@@ -809,25 +653,7 @@ maxcompls = np.array(list(map(maxtabcomb, maxposco)))
 flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
 
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", linewidth=2.5)
-plt.xscale('log')
-plt.xlim(ffmin, ffmax) 
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title('Combined PLS curve for LISA and ET')
-plt.grid(True)
-plt.show()
-#%%
 
-plt.loglog(otog[:,0], nom, color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
-plt.title("Nominal and PLS curves ")
-plt.legend(loc = (0.1,0.7))
-plt.grid(True) 
-plt.xlim(ffmin, ffmax) 
-plt.xlabel('f (Hz)')
-plt.ylabel(r'$\Omega_{gw}$')
-plt.show()
 #%%
 
 plt.figure(figsize=(6, 9))
@@ -841,8 +667,8 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png')
-plt.show()
+plt.savefig('CombineNomPLSwold.png')
+ 
 #%%
 #bpls
 def combbpl(f, fstar, n1, n2):
@@ -912,15 +738,6 @@ combfbplo = np.vstack((np.log(fsc), maxbplcomb)).T
 
 
 
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), color = "lime", linewidth=2.5)
-plt.title("BPLS Curve for LISA and ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
 
 #%%
 #combine log curves
@@ -970,60 +787,25 @@ maxposlog = range(len(Ftablogcomb))
 maxlogcom = np.array(list(map(maxlogvalsc, maxposlog)))
 flogplotc = np.vstack((np.log(flsc), maxlogcom)).T
 #%%
-plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.title(" Combined LogNS curve for LISA and ET")
-plt.xlim(ffmin, ffmax)
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
+
 
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom, label = "Nominal", color = "indigo", linewidth=2.5)
 plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = " Combined LogNs", linewidth=2.5)
 plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), ':',color = "black", label = "ET LogNs", linewidth=2.5)
 plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL),':', color = "teal", label = "LISA LogNs", linewidth=2.5)
-plt.title(" Combined LogNS curve for LISA and ET",fontsize = 14)
-plt.legend(loc = (0.085,0.75),fontsize = 14)
+plt.title(" Combined LogNS curve for LISA and ET",fontsize = 16)
+plt.legend(loc = (0.085,0.75),fontsize = 16)
 plt.xlim(ffmin, ffmax)
-plt.xlabel('f (Hz)',fontsize = 14)
+plt.xlabel('f (Hz)',fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png')
-plt.show()
-#%%
-
-plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title("Nominal and BPLS Curve for LISA and ET")
-plt.xlabel("f (Hz)")
-plt.legend(loc = (0.1,0.7))
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
+plt.savefig('CombineNomlogNswold.png')
+ 
 
 
-#%%
-plt.loglog(otog[:,0], nom, label = "Nominal", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), label = "PLS", color = "orangered", linewidth=2.5)
-plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title("Curves for LISA and ET")
-plt.legend(loc = (0.1,0.7))
-plt.xlabel("f (Hz)")
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
 
 #%%
 plt.figure(figsize=(6, 9))
@@ -1034,19 +816,14 @@ plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), ':',color = "black", labe
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.title("Nominal and BPLS Curve for LISA and ET", fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
-plt.legend(loc = (0.1,0.75), fontsize = 14)
+plt.legend(loc = (0.1,0.75), fontsize = 16)
 plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png')
-plt.show()
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png')
-# np.save("Ftab4.npy", Ftab4)
-# np.save("Atab4.npy", Atab4)
-# np.save("Amin4.npy", Amin4)
+plt.savefig('CombineNomBPLSwold.png')
+ 
 
-#%%
 
 
 
