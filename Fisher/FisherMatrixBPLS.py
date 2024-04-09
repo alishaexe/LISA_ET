@@ -131,7 +131,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples2], contour_colors = ['red'], 
+g.triangle_plot([samples], contour_colors = ['red'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA1.png')
@@ -221,7 +221,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples2], contour_colors = ['blue'], 
+g.triangle_plot([samples], contour_colors = ['blue'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET1.png')
@@ -244,7 +244,7 @@ covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
 
 
-meansA = np.array((a1, nom1, nom2))
+meansA = np.array((a1, n1, n2))
 meansB = np.array((a2, nom1, nom2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
@@ -259,7 +259,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples2], contour_colors = ['indigo'], 
+g.triangle_plot([samples], contour_colors = ['indigo'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB1.png')
