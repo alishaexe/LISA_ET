@@ -766,15 +766,18 @@ plt.show()
 fstar = 1.1
 ntmin = -9/2
 ntmax = 9/2
-    
+
 def Amincomb(nt):
     integrand = lambda f, nt:((f/fstar)**(nt)/SigmaLisaApprox(f))**2
-    I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
-    I2 = quad(integrand, 10**(-3), 10**(-1), args=(nt))[0]
+    I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
+    I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
+    I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
+    I4 = quad(integrand, 10, ffmax, args = (nt))[0]
     integrand2 = lambda f, nt:((f/fstar)**(nt)/sigETapp(f))**2
-    I3 = quad(integrand2, 1.6, 10**(1), args=(nt))[0]
-    I4 = quad(integrand2, 10**(1), 445, args=(nt))[0]
-    res = snr5/np.sqrt(T*sum((I1,I2,I3,I4)))
+    I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
+    I6 = quad(integrand2, 10**(0), 100, args=(nt))[0]
+    I7 = quad(integrand2, 100, ffmax, args=(nt))[0]
+    res = snr5/np.sqrt(T*sum((I1,I2,I3,I4,I5,I6,I7)))
     return res    
 
 Amin3 = []
