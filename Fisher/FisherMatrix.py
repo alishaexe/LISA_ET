@@ -197,9 +197,69 @@ plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_B.png')
 #                 filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis of ET Scenario B')
 #%%
+########################
+#Combining
+########################
+def f00(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, ffmin, ffmax, args=(f0, nt, astar))[0]
+    return T*res
+
+def f01(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/SigmaLisaApprox(f)
+    res1 = quad(integrand, ffmin, 1e-4, args=( f0, nt, astar))[0]
+    res2 = quad(integrand, 1e-4, 1e-0, args=( f0, nt, astar))[0]
+    res3 = quad(integrand, 1e-0, ffmax, args=( f0, nt, astar))[0]
+    return T*sum((res1, res2, res3))
+
+def f11(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+    return T*res
+
+
+def fisher(f0, nt, astar):
+    res = np.array(((f00(f0, nt, astar), f01(f0, nt, astar)), 
+                        (f01(f0, nt, astar), f11(f0, nt, astar))))
+    return res
+
+lisac = np.array(((0.1, 2/3, alphaA), (0.1, 0.01, alphaB)))
+LISAfmC = np.array(list(map(lambda args: fisher(*args), lisa)))
+
+FMLAC = LISAfmC[0]
+FMLBC = LISAfmC[1]
+
+def f00et(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/sigp(f)
+    res = quad(integrand, ffmin, ffmax, args=(f0, nt, astar))[0]
+    return T*res
+
+def f01et(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/sigp(f)
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+    return T*res
+
+def f11et(f0, nt, astar):
+    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+    return T*res
+
+
+def fisheret(f0, nt, astar):
+    res = np.array(((f00et(f0, nt, astar), f01et(f0, nt, astar)), 
+                        (f01et(f0, nt, astar), f11et(f0, nt, astar))))
+    return res
+
+ETC = np.array(((0.1, 2/3, alphaA), (0.1, 0.01, alphaB)))
+ETfmC = np.array(list(map(lambda args: fisheret(*args), ET)))
+
+FMEAC = ETfm[0]
+FMEBC = ETfm[0]
+
+
 #all together now
-FMA = FMLA + FMEA
-FMB = FMLB + FMEB
+FMA = FMLAC + FMEAC
+FMB = FMLBC + FMEBC
 
 covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
