@@ -137,7 +137,7 @@ def fbpltabET(i, j, k, m, n):
 FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(fs),len(fs),len(n1r),len(n2r),len(sigma))
 #%%
 def maxETbplvals(i, j):
-    maximsET = np.log(np.max(FtabET[i]))
+    maximsET = np.log(np.max(FtabET[i,j]))
     #fh = np.log(fs[j])
     return maximsET
 
@@ -235,7 +235,8 @@ elLISA = np.arange(elminL, elmaxL+elstep, elstep)
 
 def bpl(f, fstar, n1, n2):
     s = 10
-    res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+    a = -6
+    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
 

@@ -193,17 +193,6 @@ plt.xscale('log')
 plt.show()
 
 
-# plt.figure(figsize=(6, 9)) 
-# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), linewidth = 2.5,color = "orangered", label = "PLS")
-# plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth = 2.5,label = "Nominal")
-# plt.legend()
-# plt.title("Nominal and PLS curve for ET")
-# plt.ylabel(r"$\Omega_{gw}$")
-# plt.xlabel("f (Hz)")
-# plt.yscale('log')
-# plt.xscale('log')
-# plt.grid(True)
-# plt.show()
 #%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
