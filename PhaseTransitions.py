@@ -200,12 +200,11 @@ otog = np.vstack((fvalscomb, combine)).T
 
 
 #%%
-# plt.figure(figsize=(6, 9))
+plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2, label = "Nominal Curves")
 # plt.loglog(freqvals, sigvals, color = "indigo", label = "LISA", linewidth=2)
 # plt.loglog(fvalsET, sigETvals, '-.',color = "indigo",label = "ET", linewidth=2)
 plt.loglog(freqs, phase, color = "darkviolet", label = "Phase Transition")
-# plt.legend(title = r"Values: n1 = {nom1}, n2 = {nom2}, $f_\star$ = {fbreak}, $\sigma$= {sig}, $\alpha^\star$ = {astar}".format(nom1=n1, nom2=n2, fbreak=fstar, sig = s, astar = a))
 plt.legend()
 plt.suptitle("Phase Transition")
 plt.title(r"Values: n1 = {nom1}, n2 = {nom2}, $f_\star$ = {fbreak}, $\sigma$= {sig}, $\alpha\star$ = {astar}".format(nom1=n1, nom2=n2, fbreak=fstar, sig = s, astar = a), fontsize = 10)
