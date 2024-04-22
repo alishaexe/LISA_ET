@@ -99,7 +99,8 @@ elET = np.arange(elminet, elmaxet, elstep)
 sigma = np.arange(8,11,1)
 def bplET(f, fstar, n1, n2, s):
     #s = 10
-    res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+    a = -6
+    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
 def AbplminET(fs, n1, n2, s):
@@ -334,7 +335,8 @@ otog = np.vstack((fvalscomb, combine)).T
 #bpls
 def combbpl(f, fstar, n1, n2):
     s = 10
-    res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+    a = -6
+    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
     return res 
 
 

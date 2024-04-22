@@ -35,7 +35,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 150
+itera = 750
 
 ##########
 elminL = (np.log10(ffmin))
@@ -156,17 +156,15 @@ plt.title("Nominal Sensitivity curve of LISA", fontsize = 16)
 plt.show()
 
 #%%
-def bplET(f):
-    s = 1.2
-    n1 = 2.4
-    n2 = -2.4
-    fstar = 1e-1
-    res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+s = 1.2
+n1 = 2.4
+n2 = -2.4
+fstar = 1e-1
+a = -6
+
+def bpl(f):
+    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
     return res
-
-
-
-
 
 
 
@@ -187,20 +185,35 @@ def nomtog(f):
         if res > 1e-5:
             return
         return res
- 
+
+
+step = (ffmax-ffmin)/itera
+freqs = np.arange(ffmin, ffmax, step)
 fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
+
+
+
+phase = np.array(list(map(bpl, freqs)))
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
 
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2.5)
-plt.title("Nominal curves for ET and LISA")
+
+#%%
+# plt.figure(figsize=(6, 9))
+plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2, label = "Nominal Curves")
+# plt.loglog(freqvals, sigvals, color = "indigo", label = "LISA", linewidth=2)
+# plt.loglog(fvalsET, sigETvals, '-.',color = "indigo",label = "ET", linewidth=2)
+plt.loglog(freqs, phase, color = "darkviolet", label = "Phase Transition")
+# plt.legend(title = r"Values: n1 = {nom1}, n2 = {nom2}, $f_\star$ = {fbreak}, $\sigma$= {sig}, $\alpha^\star$ = {astar}".format(nom1=n1, nom2=n2, fbreak=fstar, sig = s, astar = a))
+plt.legend()
+plt.suptitle("Phase Transition")
+plt.title(r"Values: n1 = {nom1}, n2 = {nom2}, $f_\star$ = {fbreak}, $\sigma$= {sig}, $\alpha\star$ = {astar}".format(nom1=n1, nom2=n2, fbreak=fstar, sig = s, astar = a), fontsize = 10)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
 plt.xlabel('f (Hz)')
 plt.ylabel(r"$\Omega_{gw}$")
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/phase.png', bbox_inches='tight')
 plt.show()
 
 
