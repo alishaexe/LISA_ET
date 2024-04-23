@@ -96,7 +96,7 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the
 #Now for BPL
 elstep = (elmaxet-elminet)/itera
 elET = np.arange(elminet, elmaxet, elstep)
-sigma = np.linspace(1,12,12)
+sigma = np.arange(8,11,1)
 def bplET(f, fstar, n1, n2, s):
     #s = 10
     res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
@@ -131,15 +131,15 @@ coords = np.array(np.meshgrid(i, j, k, m, n)).T.reshape(-1,5)
 #%%
 def fbpltabET(i, j, k, m, n):
     bplres = bplET(fs[m], AtabET[i,j,k,n,0], AtabET[i,j,k,n,1], AtabET[i,j,k,n,2], AtabET[i,j,k,n,3])
-    return AtabET[i,j,k,4]*bplres
+    return AtabET[i,j,k,n,4]*bplres
 
    
-FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(fs),len(fs),len(n1r),len(n2r),len(sigma),5)
+FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(fs),len(fs),len(n1r),len(n2r),len(sigma))
 #%%
 def maxETbplvals(i, j):
-    maximsET = np.log(np.max(FtabET[i,j]))
-    fh = np.log(fs[j])
-    return fh, maximsET
+    maximsET = np.log(np.max(FtabET[i]))
+    #fh = np.log(fs[j])
+    return maximsET
 
 #maximsET = []
 maxposETi = range(len(FtabET))
@@ -149,7 +149,7 @@ maxbplvals = np.array(list(map(lambda args: maxETbplvals(*args), maxposET)))
 maxbplET = maxbplvals
 
 #%%
-fbploET = maxbplET#np.vstack((np.log(fs), maxbplET)).T
+fbploET = np.vstack((np.log(fs), maxbplET)).T
 
 # np.save("FtabET.npy", fbploET)
 
