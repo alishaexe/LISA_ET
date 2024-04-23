@@ -46,7 +46,10 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
-
+sig1 = 1
+sig2 = 12
+sigstep = (sig2-sig1)/itera
+sigma = np.arange(sig1, sig2, sigstep)
 
 #%%
 #function for creating the table of the ET data
@@ -96,11 +99,10 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the
 #Now for BPL
 elstep = (elmaxet-elminet)/itera
 elET = np.arange(elminet, elmaxet, elstep)
-#sigma = np.arange(8,11,1)
+
+
 def bplET(f, fstar, n1, n2, s):
-    #s = 10
-    a = -6
-    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+    res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
 def AbplminET(fs, n1, n2, s):
@@ -125,29 +127,28 @@ AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), le
 i = range(len(fs))
 j = range(len(n1r))
 k = range(len(n2r))
-m = range(len(fs))
-n = range(len(sigma))
-coords = np.array(np.meshgrid(n, m, k, j, i)).T.reshape(-1,5)
+m = range(len(sigma))
+fvals = (10**elET)
+coords = np.array(np.meshgrid(m, k, j, i, fvals)).T.reshape(-1,5)
 coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]
 #%%
-def fbpltabET(i, j, k, m, n):
-    bplres = bplET(fs[m], AtabET[i,j,k,n,0], AtabET[i,j,k,n,1], AtabET[i,j,k,n,2], AtabET[i,j,k,n,3])
-    return AtabET[i,j,k,n,4]*bplres
+def fbpltabET(f, i, j, k, m):
+    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+    bplres = bplET(f, AtabET[i,j,k,m,0], AtabET[i,j,k,m,1], AtabET[i,j,k,m,2], AtabET[i,j,k,m,3])
+    return AtabET[i,j,k,m,4]*bplres
 
    
-FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(fs),len(fs),len(n1r),len(n2r),len(sigma))
+FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(AtabET),len(fs),len(n1r),len(n2r),len(sigma))
 #%%
-def maxETbplvals(i, j):
-    maximsET = np.log(np.max(FtabET[i,j]))
-    fh = np.log(fs[j])
+def maxETbplvals(i):
+    maximsET = np.log(np.max(FtabET[i]))
+    fh = np.log(fvals[i])
     return fh, maximsET
 
-#maximsET = []
-maxposETi = range(len(FtabET))
-maxposETj = range(len(FtabET))
-maxposET = np.array(np.meshgrid(maxposETi,maxposETj)).T.reshape(-1,2)
-maxbplvals = np.array(list(map(lambda args: maxETbplvals(*args), maxposET)))
-#maxbplET = maxbplvals
+
+maxposET = range(len(FtabET))
+maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
+
 
 #%%
 #fbploET = np.vstack((np.log(fs), maxbplET)).T
@@ -234,14 +235,7 @@ elLISA = np.arange(elminL, elmaxL, elstep)
 
 #%%
 #Now for BPL
-sig1 = 1
-sig2 = 12
-sigstep = (sig2-sig1)/itera
-sigma = np.arange(sig1, sig2, sigstep)
-
-
 def bpl(f, fstar, n1, n2, s):
-
     res =  (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
@@ -260,7 +254,7 @@ fs = 10**elbpl
 inputs = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
 #This makes it so n1r is in the second column
 # so inputs(fs, n1r, n2r)
-inputs[:,[0,1,2, 3]] = inputs[:,[3,2,1, 0]]
+inputs[:,[0,1,2,3]] = inputs[:,[3,2,1,0]]
 
 #%%
 
@@ -272,8 +266,8 @@ i = np.array(range(len(fs)))#defining them as arrays here means that in
 j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
 k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
 m = np.array(range(len(sigma)))
-fstarvals = 10**elbpl
-coords = np.array(np.meshgrid(m,k,j,i, fstarvals)).T.reshape(-1,5)
+fLvals = 10**elbpl
+coords = np.array(np.meshgrid(m,k,j,i, fLvals)).T.reshape(-1,5)
 coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,0,1]]  
 #here in meshgrid have done ikj purely because this may it will sort j
 #like it sorts i and lets k change; we then switch round the columns so that
@@ -290,13 +284,12 @@ Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(Ata
 maxims = []
 def maxbplvals(i):
     maxims = np.log(np.max(Ftab2[i]))
-    fh = np.log(fstarvals[i])
+    fh = np.log(fLvals[i])
     return fh, maxims
 
-maxposi = range(len(Ftab2))
-maxposj = range(len(Ftab2))
-maxpos = np.array(np.meshgrid(maxposi,maxposj)).T.reshape(-1,2)
-maxbpl = np.array(list(map(lambda args: maxbplvals(*args), maxpos)))
+
+maxpos = range(len(Ftab2))
+maxbpl = np.array(list(map( maxbplvals, maxpos)))
 #%%
 fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
@@ -344,23 +337,22 @@ otog = np.vstack((fvalscomb, combine)).T
 
 #%%
 #bpls
-def combbpl(f, fstar, n1, n2):
-    s = 10
-    a = -6
-    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+def combbpl(f, fstar, n1, n2,s):
+
+    res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res 
 
 
-def Abplmincomb(fs, n1, n2):
-    integrand = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/SigmaLisaApprox(f))**2
-    I1 = quad(integrand, ffmin, 10**(-4), args=(fs, n1, n2))[0]
-    I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2))[0]
-    I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2))[0]
-    I4 = quad(integrand, 10, ffmax, args = (fs, n1, n2))[0]
-    integrand2 = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/sigETapp(f))**2
-    I5 = quad(integrand2, ffmin, 10**(0), args=(fs, n1, n2))[0]
-    I6 = quad(integrand2, 10**(0), 100, args=(fs, n1, n2))[0]
-    I7 = quad(integrand2, 100, ffmax, args=(fs, n1, n2))[0]
+def Abplmincomb(fs, n1, n2, s):
+    integrand = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/SigmaLisaApprox(f))**2
+    I1 = quad(integrand, ffmin, 10**(-4), args=(fs, n1, n2, s))[0]
+    I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2, s))[0]
+    I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2, s))[0]
+    I4 = quad(integrand, 10, ffmax, args = (fs, n1, n2, s))[0]
+    integrand2 = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/sigETapp(f))**2
+    I5 = quad(integrand2, ffmin, 10**(0), args=(fs, n1, n2, s))[0]
+    I6 = quad(integrand2, 10**(0), 100, args=(fs, n1, n2, s))[0]
+    I7 = quad(integrand2, 100, ffmax, args=(fs, n1, n2, s))[0]
     res = snr5/np.sqrt(T*sum((I1,I2,I3,I4, I5, I6, I7)))
     return res   
 
@@ -377,44 +369,59 @@ fsc = 10**elc
 
 
 
-inputsc = np.array(np.meshgrid(fsc, n2c, n1c)).T.reshape(-1,3)
+inputsc = np.array(np.meshgrid(sigma, n2c, n1c, fsc)).T.reshape(-1,4)
 #This makes it so n1r is in the second column
 # so inputs(fs, n1r, n2r)
-inputsc[:,[0,1,2]] = inputsc[:,[0,2,1]]
+inputsc[:,[0,1,2,3]] = inputsc[:,[3,2,1,0]]
 
+#%%
 
 Amin4 = np.array(list(map(lambda args: Abplmincomb(*args), inputsc)))
+Atab4 = np.vstack((inputsc.T, Amin4)).T.reshape(len(fsc),len(n1c),len(n2c), len(sigma),5)
+
 #%%
-Atab4 = np.vstack((inputsc.T, Amin4)).T
-Atab4 = Atab4.reshape(len(fsc),len(n1c),len(n1c),4)
 ic = range(len(fsc))
 jc = range(len(n1c))
 kc = range(len(n2c))
 mc = range(len(fsc))
-coordsc = np.array(np.meshgrid(ic,jc,kc, mc)).T.reshape(-1,4)
-
+fcvals = 10**elc
+coordsc = np.array(np.meshgrid(mc,kc,jc,ic, fcvals)).T.reshape(-1,5)
+coordsc[:,[0,1,2,3,4]] = coordsc[:,[4,3,2,0,1]]  
 #%%
-def fbpltabcomb(i, j, k, m):
-    res = []
-    bplres = combbpl(fsc[m], Atab4[i,j,k,0], Atab4[i,j,k,1], Atab4[i,j,k,2])
-    res.append([Atab4[i,j,k,3]*bplres])
-    return res
+def fbpltabcomb(f, i, j, k, m):
+    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+    bplres = combbpl(f, Atab4[i,j,k,m,0], Atab4[i,j,k,m,1], Atab4[i,j,k,m,2],Atab4[i,j,k,m,3])
+    return Atab4[i,j,k,m,4]*bplres
 
 
 
-Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(fsc),len(fsc),len(fsc),len(fsc))
+Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(Atab4),len(fsc),len(n1c),len(n2c), len(sigma))
    
 
 #%%
 maximsc = []
 def combmaxbplvals(i):
     maximsc = np.log(np.max(Ftab4[i]))
-    return maximsc
+    fh = np.log(fcvals[i])
+    return fh, maximsc
 
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
-combfbplo = np.vstack((np.log(fsc), maxbplcomb)).T
+combfbplo = maxbplcomb
 # np.save("Ftabcomb.npy", combfbplo)
+
+#%%
+plt.figure(figsize=(6, 9))
+plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.grid(True)
+plt.title("Combined BPLS Curves", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xscale('log')
+# plt.ylim(1e-14, 1e-4)
+# plt.savefig('LISAnomBPLS.png', bbox_inches='tight')
 
 #%%
 # plt.figure(figsize=(6, 9))
