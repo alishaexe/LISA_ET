@@ -35,7 +35,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 100
+itera = 150
 
 ##########
 elminL = (np.log10(ffmin))
@@ -154,7 +154,7 @@ maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
 #fbploET = np.vstack((np.log(fs), maxbplET)).T
 fbploET = maxbplvals
 
-# np.save("FtabET.npy", fbploET)
+np.save("FtabsigET.npy", fbploET)
 
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
@@ -293,7 +293,7 @@ maxbpl = np.array(list(map( maxbplvals, maxpos)))
 #%%
 fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
-# np.save("FtabLISA.npy", fbplo)
+np.save("FtabsigLISA.npy", fbplo)
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
@@ -407,7 +407,7 @@ def combmaxbplvals(i):
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
 combfbplo = maxbplcomb
-# np.save("Ftabcomb.npy", combfbplo)
+np.save("Ftabsigcomb.npy", combfbplo)
 
 #%%
 plt.figure(figsize=(6, 9))
