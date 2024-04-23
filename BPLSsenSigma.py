@@ -96,7 +96,7 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the
 #Now for BPL
 elstep = (elmaxet-elminet)/itera
 elET = np.arange(elminet, elmaxet, elstep)
-sigma = np.arange(8,11,1)
+#sigma = np.arange(8,11,1)
 def bplET(f, fstar, n1, n2, s):
     #s = 10
     a = -6
@@ -114,10 +114,10 @@ n1r = np.linspace(ntmin, ntmax, itera)
 n2r = np.linspace(ntmin, ntmax, itera)
 fs = 10**elET
 
-inputsET = np.array(np.meshgrid(fs, n2r, n1r, sigma)).T.reshape(-1,4)
+inputsET = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
 #This makes it so n1r is in the second column
 # so inputs(fs, n1r, n2r)
-inputsET[:,[0,1,2,3]] = inputsET[:,[0,2,1,3]]
+inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
 
 AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
 AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
@@ -127,8 +127,8 @@ j = range(len(n1r))
 k = range(len(n2r))
 m = range(len(fs))
 n = range(len(sigma))
-coords = np.array(np.meshgrid(i, j, k, m, n)).T.reshape(-1,5)
-
+coords = np.array(np.meshgrid(n, m, k, j, i)).T.reshape(-1,5)
+coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]
 #%%
 def fbpltabET(i, j, k, m, n):
     bplres = bplET(fs[m], AtabET[i,j,k,n,0], AtabET[i,j,k,n,1], AtabET[i,j,k,n,2], AtabET[i,j,k,n,3])
@@ -139,18 +139,19 @@ FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(
 #%%
 def maxETbplvals(i, j):
     maximsET = np.log(np.max(FtabET[i,j]))
-    #fh = np.log(fs[j])
-    return maximsET
+    fh = np.log(fs[j])
+    return fh, maximsET
 
 #maximsET = []
 maxposETi = range(len(FtabET))
 maxposETj = range(len(FtabET))
 maxposET = np.array(np.meshgrid(maxposETi,maxposETj)).T.reshape(-1,2)
 maxbplvals = np.array(list(map(lambda args: maxETbplvals(*args), maxposET)))
-maxbplET = maxbplvals
+#maxbplET = maxbplvals
 
 #%%
-fbploET = np.vstack((np.log(fs), maxbplET)).T
+#fbploET = np.vstack((np.log(fs), maxbplET)).T
+fbploET = maxbplvals
 
 # np.save("FtabET.npy", fbploET)
 
@@ -229,22 +230,26 @@ og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(SigmaLisaApproxnom, freqvals)))
 elstep = (elmaxL-elminL)/itera
-elLISA = np.arange(elminL, elmaxL+elstep, elstep)
+elLISA = np.arange(elminL, elmaxL, elstep)
 
 #%%
 #Now for BPL
+sig1 = 1
+sig2 = 12
+sigstep = (sig2-sig1)/itera
+sigma = np.arange(sig1, sig2, sigstep)
 
-def bpl(f, fstar, n1, n2):
-    s = 10
-    a = -6
-    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+
+def bpl(f, fstar, n1, n2, s):
+
+    res =  (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
 
-def Abplmin(fs, n1, n2):
-    integrand = lambda f, n1, n2, fs:(bpl(f, fs, n1, n2)/SigmaLisaApprox(f))**2
-    I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs))[0]
-    I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs))[0]
+def Abplmin(fs, n1, n2, s):
+    integrand = lambda f, n1, n2, fs, s:(bpl(f, fs, n1, n2, s)/SigmaLisaApprox(f))**2
+    I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs, s))[0]
+    I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs, s))[0]
     res = snr5/np.sqrt(T*sum((I1,I2)))
     return res
 
@@ -252,42 +257,48 @@ elbpl = np.arange(elminL, elmaxL, elstep)
 n1r = np.linspace(ntmin, ntmax, itera)
 n2r = np.linspace(ntmin, ntmax, itera)
 fs = 10**elbpl
-inputs = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
+inputs = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
 #This makes it so n1r is in the second column
 # so inputs(fs, n1r, n2r)
-inputs[:,[0,1,2]] = inputs[:,[0,2,1]]
+inputs[:,[0,1,2, 3]] = inputs[:,[3,2,1, 0]]
 
 #%%
 
 Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
-Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(n1r),len(n1r),len(n1r),4)
+Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
 
 #%%
 i = np.array(range(len(fs)))#defining them as arrays here means that in
 j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
 k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
-m = np.array(range(len(fs)))
-coords = np.array(np.meshgrid(i,j,k,m)).T.reshape(-1,4)
+m = np.array(range(len(sigma)))
+fstarvals = 10**elbpl
+coords = np.array(np.meshgrid(m,k,j,i, fstarvals)).T.reshape(-1,5)
+coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,0,1]]  
 #here in meshgrid have done ikj purely because this may it will sort j
 #like it sorts i and lets k change; we then switch round the columns so that
 #it is i,j,k
-def fbpltab(i, j, k, m):
-    bplres = bpl(fs[m], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
-    return Atab2[i,j,k,3]*bplres
+def fbpltab(f, i, j, k, m):
+    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+    bplres = bpl(f, Atab2[i,j,k,m,0], Atab2[i,j,k,m,1], Atab2[i,j,k,m,2],Atab2[i,j,k,m,3])
+    return Atab2[i,j,k,m,4]*bplres
 
-Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+
+Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(Atab2),len(fs),len(n1r),len(n2r),len(sigma))
 
 #%%
 maxims = []
 def maxbplvals(i):
     maxims = np.log(np.max(Ftab2[i]))
-    return maxims
+    fh = np.log(fstarvals[i])
+    return fh, maxims
 
-maxpos = range(len(Ftab2))
-
-maxbpl = np.array(list(map(maxbplvals, maxpos)))
+maxposi = range(len(Ftab2))
+maxposj = range(len(Ftab2))
+maxpos = np.array(np.meshgrid(maxposi,maxposj)).T.reshape(-1,2)
+maxbpl = np.array(list(map(lambda args: maxbplvals(*args), maxpos)))
 #%%
-fbplo = np.vstack((np.log(fs), maxbpl)).T
+fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
 # np.save("FtabLISA.npy", fbplo)
 

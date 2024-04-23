@@ -92,6 +92,7 @@ def sigETapp(f):#Sigma_Ohm approx
 fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 <<<<<<< HEAD
+<<<<<<< HEAD
 #%%
 #Now the BPLS for ET
 #Now for BPL
@@ -103,6 +104,8 @@ def bplET(f, fstar, n1, n2, s):
     res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
     return res
 =======
+=======
+>>>>>>> parent of e022625 (New σ iterations)
 # #%%
 # #Now the BPLS for ET
 # #Now for BPL
@@ -112,6 +115,9 @@ def bplET(f, fstar, n1, n2, s):
 #     s = 10
 #     res = (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
 #     return res
+<<<<<<< HEAD
+>>>>>>> parent of e022625 (New σ iterations)
+=======
 >>>>>>> parent of e022625 (New σ iterations)
 
 # def AbplminET(fs, n1, n2):
@@ -140,6 +146,7 @@ def bplET(f, fstar, n1, n2, s):
 # coords = np.array(np.meshgrid(i, j, k, m)).T.reshape(-1,4)
 
 #%%
+<<<<<<< HEAD
 <<<<<<< HEAD
 def fbpltabET(i, j, k, m, n):
     bplres = bplET(fs[m], AtabET[i,j,k,n,0], AtabET[i,j,k,n,1], AtabET[i,j,k,n,2], AtabET[i,j,k,n,3])
@@ -174,6 +181,26 @@ def maxETbplvals(i, j):
 #%%
 fbploET = np.vstack((np.log(fs), maxbplET)).T
 =======
+# #%%
+# fbploET = np.vstack((np.log(fs), maxbplET)).T
+>>>>>>> parent of e022625 (New σ iterations)
+=======
+# def fbpltabET(i, j, k, m):
+#     bplres = bplET(fs[m], AtabET[i,j,k,0], AtabET[i,j,k,1], AtabET[i,j,k,2])
+#     return AtabET[i,j,k,3]*bplres
+
+   
+# FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+# #%%
+# def maxETbplvals(i):
+#     maximsET = np.log(np.max(FtabET[i]))
+#     return maximsET
+
+# maximsET = []
+# maxposET = range(len(FtabET))
+# maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
+# maxbplET = maxbplvals
+
 # #%%
 # fbploET = np.vstack((np.log(fs), maxbplET)).T
 >>>>>>> parent of e022625 (New σ iterations)
