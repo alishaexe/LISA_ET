@@ -56,54 +56,56 @@ fLisa = 1/(2*pi*L)
 size = 20
 #case 1
 a1 = -6
-n1 = 1
-n2 = -1
-fstar = 0.45
+n1 = 2.4
+n2 = -2.4
+fstar = 2e-1
+s1 = 1.2
 
 #case 2
 a2 = -6.5
 nom1 = 0.8
 nom2 = -0.8
 fbreak = 0.05
+s2 = 1.2
 #%%
 
-def f00(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)**2)/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f00(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f01(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(10))/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f01(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(10))/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f02(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)*np.log(f**10/f0**10 + 1)/10)/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f02(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)*np.log(0.5*(f/f0)**s + 0.5)/s)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f11(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: ((10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)**2)/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f11(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: ((10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f12(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(f**10/f0**10 + 1)/10)/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f12(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f22(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar:  (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(f**10/f0**10 + 1)**2/100)/SigmaLisaApprox(f)
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar))[0]
+def f22(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s:  (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def fisher(f0, n1, n2, astar):
-    res = np.array(((f00(f0, n1, n2, astar), f01(f0, n1, n2, astar), f02(f0, n1, n2, astar)), 
-                    (f01(f0, n1, n2, astar), f11(f0, n1, n2, astar), f12(f0, n1, n2, astar)),
-                    (f02(f0, n1, n2, astar), f12(f0, n1, n2, astar), f22(f0, n1, n2, astar))))
+def fisher(f0, n1, n2, astar, s):
+    res = np.array(((f00(f0, n1, n2, astar, s), f01(f0, n1, n2, astar, s), f02(f0, n1, n2, astar, s)), 
+                    (f01(f0, n1, n2, astar, s), f11(f0, n1, n2, astar, s), f12(f0, n1, n2, astar, s)),
+                    (f02(f0, n1, n2, astar, s), f12(f0, n1, n2, astar, s), f22(f0, n1, n2, astar, s))))
     return res
 
-lisa = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
+lisa = [(fstar, n1, n2, a1, s1), (fbreak, nom1, nom2, a2, s2)]
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 #LISAfm = np.array(list(lambda args: fisher(*args)))
 
@@ -131,19 +133,19 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['red'], 
+g.triangle_plot([samples], contour_colors = ['Green'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA1.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase1.png')
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
-g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
-g.triangle_plot([samples2], contour_colors = ['red'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA2.png')
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=size
+# g.settings.legend_fontsize = size
+# g.settings.axes_labelsize = size
+# g.triangle_plot([samples2], contour_colors = ['red'], 
+#                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+# plt.suptitle(r'Fisher Analysis for SNR of LISA BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_LISA2.png')
 
 #%%
 def sigp(f):
@@ -154,49 +156,45 @@ def sigp(f):
             0.38 * np.exp(-(f - 25)**2/50))
     return res
 
-def f00et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)**2)/sigp(f)
-    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar))[0]
+def f00et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f01et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*
-                                                    (f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*
-                                                    np.log(f**10/f0**10 + 1)/10)*np.log(10))/sigp(f)
-    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar))[0]
+def f01et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(10))/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f02et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)*np.log(f**10/f0**10 + 1)/10)/sigp(f)
-    res1 = quad(integrand, 1, 100, args=(f0, n1, n2, astar))[0]
-    res2 = quad(integrand, 100, 250, args=(f0, n1, n2, astar))[0]
-    res3 = quad(integrand, 250, 445, args=(f0, n1, n2, astar))[0]
+def f02et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)
+    res1 = quad(integrand, 1, 100, args=(f0, n1, n2, astar, s))[0]
+    res2 = quad(integrand, 100, 250, args=(f0, n1, n2, astar, s))[0]
+    res3 = quad(integrand, 250, 445, args=(f0, n1, n2, astar, s))[0]
     return T*sum((res1,res2,res3))
 
-def f11et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: ((10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*
-                                               (f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)**2)/sigp(f)
-    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar))[0]
+def f11et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: ((10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f12et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*
-                                                np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(f**10/f0**10 + 1)/10)/sigp(f)
-    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar))[0]
+def f12et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f22et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar:  (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(f**10/f0**10 + 1)**2/100)/sigp(f)
-    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar))[0]
+def f22et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s:  (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def fisheret(f0, n1, n2, astar):
-    res = np.array(((f00et(f0, n1, n2, astar), f01et(f0, n1, n2, astar), f02et(f0, n1, n2, astar)), 
-                    (f01et(f0, n1, n2, astar), f11et(f0, n1, n2, astar), f12et(f0, n1, n2, astar)),
-                    (f02et(f0, n1, n2, astar), f12et(f0, n1, n2, astar), f22et(f0, n1, n2, astar))))
+def fisheret(f0, n1, n2, astar, s):
+    res = np.array(((f00et(f0, n1, n2, astar, s), f01et(f0, n1, n2, astar, s), f02et(f0, n1, n2, astar, s)), 
+                    (f01et(f0, n1, n2, astar, s), f11et(f0, n1, n2, astar, s), f12et(f0, n1, n2, astar, s)),
+                    (f02et(f0, n1, n2, astar, s), f12et(f0, n1, n2, astar, s), f22et(f0, n1, n2, astar, s))))
     return res
 
-ET = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
+ET = [(fstar, n1, n2, a1, s1), (fbreak, nom1, nom2, a2, s2)]
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
@@ -221,110 +219,106 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['blue'], 
+g.triangle_plot([samples], contour_colors = ['forestgreen'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of ET BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET1.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase1.png')
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
-g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
-g.triangle_plot([samples2], contour_colors = ['blue'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET2.png')
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=size
+# g.settings.legend_fontsize = size
+# g.settings.axes_labelsize = size
+# g.triangle_plot([samples2], contour_colors = ['blue'], 
+#                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
+# plt.suptitle(r'Fisher Analysis for SNR of ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_ET2.png')
 
 #%%
 #all together now
 
-def f00(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)**2)/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f00(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f01(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(10))/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f01(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(10))/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f02(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)*np.log(f**10/f0**10 + 1)/10)/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f02(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)*np.log(0.5*(f/f0)**s + 0.5)/s)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f11(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: ((10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)**2)/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f11(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: ((10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f12(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(f**10/f0**10 + 1)/10)/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f12(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f22(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar:  (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(f**10/f0**10 + 1)**2/100)/SigmaLisaApprox(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f22(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s:  (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/SigmaLisaApprox(f)
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def fisher(f0, n1, n2, astar):
-    res = np.array(((f00(f0, n1, n2, astar), f01(f0, n1, n2, astar), f02(f0, n1, n2, astar)), 
-                    (f01(f0, n1, n2, astar), f11(f0, n1, n2, astar), f12(f0, n1, n2, astar)),
-                    (f02(f0, n1, n2, astar), f12(f0, n1, n2, astar), f22(f0, n1, n2, astar))))
+def fisher(f0, n1, n2, astar, s):
+    res = np.array(((f00(f0, n1, n2, astar, s), f01(f0, n1, n2, astar, s), f02(f0, n1, n2, astar, s)), 
+                    (f01(f0, n1, n2, astar, s), f11(f0, n1, n2, astar, s), f12(f0, n1, n2, astar, s)),
+                    (f02(f0, n1, n2, astar, s), f12(f0, n1, n2, astar, s), f22(f0, n1, n2, astar, s))))
     return res
 
-lisaC = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
+lisaC = [(fstar, n1, n2, a1, s1), (fbreak, nom1, nom2, a2, s2)]
 LISAfmC = np.array(list(map(lambda args: fisher(*args), lisaC)))
-#LISAfm = np.array(list(lambda args: fisher(*args)))
+
 
 FMLAC = LISAfmC[0]
 FMLBC = LISAfmC[1]
 
 
-def f00et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)**2)/sigp(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f00et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f01et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*
-                                                    (f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*
-                                                    np.log(f**10/f0**10 + 1)/10)*np.log(10))/sigp(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f01et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(10))/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f02et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(10)*np.log(f**10/f0**10 + 1)/10)/sigp(f)
-    res1 = quad(integrand, ffmin, 1e-3, args=(f0, n1, n2, astar))[0]
-    res2 = quad(integrand, 1e-3, 1e0, args=(f0, n1, n2, astar))[0]
-    res3 = quad(integrand, 1e0, ffmax, args=(f0, n1, n2, astar))[0]
+def f02et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(10)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)
+    res1 = quad(integrand, 1, 100, args=(f0, n1, n2, astar, s))[0]
+    res2 = quad(integrand, 100, 250, args=(f0, n1, n2, astar, s))[0]
+    res3 = quad(integrand, 250, 445, args=(f0, n1, n2, astar, s))[0]
     return T*sum((res1,res2,res3))
 
-def f11et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: ((10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f/f0) - 10**astar*(f/f0)**n1*
-                                               (f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)**2)/sigp(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f11et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: ((10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f12et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar: (10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*(10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*
-                                                np.log(f/f0) - 10**astar*(f/f0)**n1*(f**10/f0**10 + 1)**(-n1/10 + n2/10)*np.log(f**10/f0**10 + 1)/10)*np.log(f**10/f0**10 + 1)/10)/sigp(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f12et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s: (10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - 10**astar*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def f22et(f0, n1, n2, astar):
-    integrand = lambda f, f0, n1, n2, astar:  (10**(2*astar)*(f/f0)**(2*n1)*(f**10/f0**10 + 1)**(-n1/5 + n2/5)*np.log(f**10/f0**10 + 1)**2/100)/sigp(f)
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, astar))[0]
+def f22et(f0, n1, n2, astar, s):
+    integrand = lambda f, f0, n1, n2, astar, s:  (10**(2*astar)*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/sigp(f)
+    res = quad(integrand, 1, 445, args=(f0, n1, n2, astar, s))[0]
     return T*res
 
-def fisheret(f0, n1, n2, astar):
-    res = np.array(((f00et(f0, n1, n2, astar), f01et(f0, n1, n2, astar), f02et(f0, n1, n2, astar)), 
-                    (f01et(f0, n1, n2, astar), f11et(f0, n1, n2, astar), f12et(f0, n1, n2, astar)),
-                    (f02et(f0, n1, n2, astar), f12et(f0, n1, n2, astar), f22et(f0, n1, n2, astar))))
+def fisheret(f0, n1, n2, astar, s):
+    res = np.array(((f00et(f0, n1, n2, astar, s), f01et(f0, n1, n2, astar, s), f02et(f0, n1, n2, astar, s)), 
+                    (f01et(f0, n1, n2, astar, s), f11et(f0, n1, n2, astar, s), f12et(f0, n1, n2, astar, s)),
+                    (f02et(f0, n1, n2, astar, s), f12et(f0, n1, n2, astar, s), f22et(f0, n1, n2, astar, s))))
     return res
 
-ETC = [(fstar, n1, n2, a1), (fbreak, nom1, nom2, a2)]
+ETC = [(fstar, n1, n2, a1, s1), (fbreak, nom1, nom2, a2, s2)]
 ETfmC = np.array(list(map(lambda args: fisheret(*args), ETC)))
 
 FMEAC = ETfmC[0]
@@ -353,19 +347,19 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['indigo'], 
+g.triangle_plot([samples], contour_colors = ['limegreen'], 
                 filled=True, markers={r'\alpha_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB1.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase1.png')
 
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=20
-g.settings.legend_fontsize = 20
-g.settings.axes_labelsize = 20
-g.triangle_plot([samples2], contour_colors = ['indigo'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB2.png')
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=20
+# g.settings.legend_fontsize = 20
+# g.settings.axes_labelsize = 20
+# g.triangle_plot([samples2], contour_colors = ['limegreen'], 
+#                 filled=True, markers={r'\alpha_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+# plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERBPL_COMB2.png')
 
 
 

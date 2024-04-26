@@ -48,7 +48,7 @@ step = (ntmax-ntmin)/itera
 
 sig1 = 1
 sig2 = 12
-sigstep = (sig2-sig1)/itera
+sigstep = (sig2-sig1)/6
 sigma = np.arange(sig1, sig2, sigstep)
 
 #%%

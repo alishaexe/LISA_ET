@@ -35,7 +35,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 750
+itera = 10000
 
 ##########
 elminL = (np.log10(ffmin))
@@ -163,7 +163,7 @@ fstar = 1e-1
 a = -6
 
 def bpl(f):
-    res = 10**a * (f/fstar)**n1 * (1+(f/fstar)**s)**(-(n1-n2)/s)
+    res = 10**a * (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
 
@@ -189,7 +189,7 @@ def nomtog(f):
 
 step = (ffmax-ffmin)/itera
 freqs = np.arange(ffmin, ffmax, step)
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
 
 
 
@@ -199,7 +199,6 @@ nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
 
 
-#%%
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2, label = "Nominal Curves")
 # plt.loglog(freqvals, sigvals, color = "indigo", label = "LISA", linewidth=2)
@@ -212,7 +211,7 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel('f (Hz)')
 plt.ylabel(r"$\Omega_{gw}$")
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/phase.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/phase.png', bbox_inches='tight')
 plt.show()
 
 

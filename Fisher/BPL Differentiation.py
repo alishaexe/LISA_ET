@@ -11,8 +11,9 @@ f = Symbol('f')
 n1 = Symbol('n1')
 n2 = Symbol('n2')
 astar = Symbol('astar')
+s = Symbol('s')
 
-ogw = (10**astar) * ((f/f0)**n1 * (1+(f/f0)**10)**(-(n1-n2)/10))
+ogw = (10**astar) * ((f/f0)**n1 * (1/2 + (1/2)*(f/f0)**s)**(-(n1-n2)/s))
 #ogw = omegstar * ((f/f0)**n1 * (1+(f/f0)**10)**(-(n1-n2)/10))
 
 def diff(param1, param2):
