@@ -35,7 +35,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 150
+itera = 100
 
 ##########
 elminL = (np.log10(ffmin))
@@ -92,83 +92,83 @@ def sigETapp(f):#Sigma_Ohm approx
     res = sigp(f)
     return res
 #%%
-# fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
-# sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
-# #%%
-# #Now the BPLS for ET
-# #Now for BPL
-# elstep = (elmaxet-elminet)/itera
-# elET = np.arange(elminet, elmaxet, elstep)
+fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
+sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
+#%%
+#Now the BPLS for ET
+#Now for BPL
+elstep = (elmaxet-elminet)/itera
+elET = np.arange(elminet, elmaxet, elstep)
 
 
-# def bplET(f, fstar, n1, n2, s):
-#     res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-#     return res
+def bplET(f, fstar, n1, n2, s):
+    res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+    return res
 
-# def AbplminET(fs, n1, n2, s):
-#     integrand = lambda f, fs, n1, n2, s:(bplET(f, fs, n1, n2,s)/sigETapp(f))**2
-#     I1 = quad(integrand, 1.6, 100, args=(fs, n1, n2, s))[0]
-#     I2 = quad(integrand, 100, 445, args=(fs, n1, n2, s))[0]
-#     res = snr5/np.sqrt(T*sum((I1, I2)))
-#     return res
+def AbplminET(fs, n1, n2, s):
+    integrand = lambda f, fs, n1, n2, s:(bplET(f, fs, n1, n2,s)/sigETapp(f))**2
+    I1 = quad(integrand, 1.6, 100, args=(fs, n1, n2, s))[0]
+    I2 = quad(integrand, 100, 445, args=(fs, n1, n2, s))[0]
+    res = snr5/np.sqrt(T*sum((I1, I2)))
+    return res
 
-# n1r = np.linspace(ntmin, ntmax, itera)
-# n2r = np.linspace(ntmin, ntmax, itera)
-# fs = 10**elET
+n1r = np.linspace(ntmin, ntmax, itera)
+n2r = np.linspace(ntmin, ntmax, itera)
+fs = 10**elET
 
-# inputsET = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
-# #This makes it so n1r is in the second column
-# # so inputs(fs, n1r, n2r)
-# inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
+inputsET = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
+#This makes it so n1r is in the second column
+# so inputs(fs, n1r, n2r)
+inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
 
-# AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
-# AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
-# #%%
-# i = range(len(fs))
-# j = range(len(n1r))
-# k = range(len(n2r))
-# m = range(len(sigma))
-# fvals = (10**elET)
-# coords = np.array(np.meshgrid(m, k, j, i, fvals)).T.reshape(-1,5)
-# coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]
-# #%%
-# def fbpltabET(f, i, j, k, m):
-#     i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
-#     bplres = bplET(f, AtabET[i,j,k,m,0], AtabET[i,j,k,m,1], AtabET[i,j,k,m,2], AtabET[i,j,k,m,3])
-#     return AtabET[i,j,k,m,4]*bplres
+AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
+AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
+#%%
+i = range(len(fs))
+j = range(len(n1r))
+k = range(len(n2r))
+m = range(len(sigma))
+fvals = (10**elET)
+coords = np.array(np.meshgrid(m, k, j, i, fvals)).T.reshape(-1,5)
+coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]
+#%%
+def fbpltabET(f, i, j, k, m):
+    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+    bplres = bplET(f, AtabET[i,j,k,m,0], AtabET[i,j,k,m,1], AtabET[i,j,k,m,2], AtabET[i,j,k,m,3])
+    return AtabET[i,j,k,m,4]*bplres
 
    
-# FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(AtabET),len(fs),len(n1r),len(n2r),len(sigma))
-# #%%
-# def maxETbplvals(i):
-#     maximsET = np.log(np.max(FtabET[i]))
-#     fh = np.log(fvals[i])
-#     return fh, maximsET
+FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(AtabET),len(fs),len(n1r),len(n2r),len(sigma))
+#%%
+def maxETbplvals(i):
+    maximsET = np.log(np.max(FtabET[i]))
+    fh = np.log(fvals[i])
+    return fh, maximsET
 
 
-# maxposET = range(len(FtabET))
-# maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
+maxposET = range(len(FtabET))
+maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
 
 
 #%%
 
-# fbploET = maxbplvals
+fbploET = maxbplvals
 
-# np.save("FtabsigET.npy", fbploET)
+np.save("FtabsigET.npy", fbploET)
 fbploET = np.load('FtabsigET.npy')
-# #plots all 3 graphs on same plot
-# plt.figure(figsize=(6, 9)) 
-# plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
-# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
-# plt.title('ET Nominal and BPL Curves', fontsize = 16)
-# plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-# plt.xlabel('f (Hz)', fontsize = 16)
-# plt.tick_params(axis='both', which='major', labelsize=14) 
-# plt.legend(fontsize="16", loc = 'upper center')
-# plt.grid(True)
-# plt.xscale('log')
-# plt.yscale('log')
-# plt.savefig('ETBPLSsigma.png', bbox_inches='tight')
+#plots all 3 graphs on same plot
+plt.figure(figsize=(6, 9)) 
+plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
+plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
+plt.title('ET Nominal and BPL Curves', fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.legend(fontsize="16", loc = 'upper center')
+plt.grid(True)
+plt.xscale('log')
+plt.yscale('log')
+plt.savefig('ETBPLSsigma.png', bbox_inches='tight')
 
 #%%
 ###########################
@@ -419,9 +419,9 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('LISABPLSsigma.png', bbox_inches='tight')
+plt.savefig('CombBPLSsigma.png', bbox_inches='tight')
 
-#%%
+# #%%
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
 plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "Combined BPLS", color = "lime", linewidth=2.5)
