@@ -35,7 +35,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 100
+itera = 50
 
 ##########
 elminL = (np.log10(ffmin))
@@ -48,7 +48,7 @@ step = (ntmax-ntmin)/itera
 
 sig1 = 1
 sig2 = 12
-sigstep = (sig2-sig1)/6
+sigstep = (sig2-sig1)/60
 sigma = np.arange(sig1, sig2, sigstep)
 
 #%%
@@ -120,7 +120,7 @@ inputsET = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
 #This makes it so n1r is in the second column
 # so inputs(fs, n1r, n2r)
 inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
-
+#%%
 AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
 AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
 #%%
@@ -154,7 +154,7 @@ maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
 
 fbploET = maxbplvals
 
-np.save("FtabsigET.npy", fbploET)
+np.save("FtabbigsigET.npy", fbploET)
 fbploET = np.load('FtabsigET.npy')
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
@@ -168,7 +168,7 @@ plt.legend(fontsize="16", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('ETBPLSsigma.png', bbox_inches='tight')
+plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
 
 #%%
 ###########################
@@ -293,7 +293,7 @@ maxbpl = np.array(list(map( maxbplvals, maxpos)))
 #%%
 fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
-np.save("FtabsigLISA.npy", fbplo)
+np.save("FtabbigsigLISA.npy", fbplo)
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
@@ -305,7 +305,7 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('LISABPLSsigma.png', bbox_inches='tight')
+plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 #%%
 #######################
 #Combining LISA and ET curves
@@ -407,7 +407,7 @@ def combmaxbplvals(i):
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
 combfbplo = maxbplcomb
-np.save("Ftabsigcomb.npy", combfbplo)
+np.save("Ftabbigsigcomb.npy", combfbplo)
 
 #%%
 plt.figure(figsize=(6, 9))
@@ -419,7 +419,7 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('CombBPLSsigma.png', bbox_inches='tight')
+plt.savefig('CombBPLSbigsigma.png', bbox_inches='tight')
 
 # #%%
 plt.figure(figsize=(6, 9))
@@ -435,5 +435,5 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-plt.savefig('CombineNomBPLSsigma.png', bbox_inches='tight')
+plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
  
