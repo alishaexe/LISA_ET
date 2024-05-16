@@ -22,7 +22,7 @@ Rae = r1-r2
 yr = 365*24*60*60 #in seconds
 H0 = 100*0.67*10**(3)/(3.086*10**(22)) #1/seconds
 pi = np.pi
-
+c = 3e8
 fetstar = 10**(-2)
 fi = 0.4*10**(-3)
 #For the LISA mission they have designed the
@@ -79,12 +79,6 @@ tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less
 # plt.grid(True)
 # plt.show()
 #%%
-# def sigp(f):
-#     res = 1.3*((3*30*10**(-1)*f**(-30)+5*10**(-6)*f**(-4.5)+0.6*10**(-11)*f**(2.8))
-#                *(1/2-1/2*np.tanh(0.1*(f-42)))+(1/2*np.tanh(0.1*(f-42)))*(2*10**(-11)*f**2.25 
-#                                                                          +10**(-13)*f**3))
-#     return res
-
 def sigp(f):
     res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
             0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
@@ -142,7 +136,7 @@ plt.show()
 #This is the function for calculating the A_min values
 #I separate the integration into 4 to help with the accuracy and avoid warnings
 def AETmin(nt):
-    integrand = lambda f, nt:((f/fetstar)**(nt)/sigETapp(f))**2
+    integrand = lambda f, nt:(((f/fetstar)**(nt))/sigETapp(f))**2
     I1 = quad(integrand, 1.6, 100, args=(nt))[0]
     I2 = quad(integrand, 100, 445, args = (nt))[0]
     res = snr5/np.sqrt(T*sum((I1, I2)))
