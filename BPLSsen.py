@@ -127,7 +127,8 @@ j = range(len(n1r))
 k = range(len(n2r))
 m = range(len(fs))
 coords = np.array(np.meshgrid(i, j, k, m)).T.reshape(-1,4)
-
+# coords = np.array(np.meshgrid(m, k, j, i)).T.reshape(-1,4)
+# coords[:,[0,1,2,3]] = coords[:,[3,2,1,0]]
 #%%
 
 

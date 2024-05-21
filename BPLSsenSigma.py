@@ -229,7 +229,7 @@ og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
 
 #%%    
 freqvals = np.logspace(elminL, elmaxL, itera)   
-sigvals = np.array(list(map(SigmaLisaApproxnom, freqvals)))
+sigvals = np.array(list(map(SigmaLisaApprox, freqvals)))
 elstep = (elmaxL-elminL)/itera
 elLISA = np.arange(elminL, elmaxL, elstep)
 
