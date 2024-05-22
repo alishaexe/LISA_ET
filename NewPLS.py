@@ -36,22 +36,22 @@ step = (ntmax-ntmin)/itera
 P = 12
 A = 3
 alpha = -11.352
-#Speed of light c = 1
-# *(1e-15)**2 after A
+
 def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
     return res
 
-def P_oms(f):#* (1e-12)**2 after P
+def P_ims(f):#* (1e-12)**2 after P
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
 def N_aa(f):
-    res = 16*(np.sin(2*pi*f*L))**2 * (P_oms(f)+(3+np.cos(4*pi*f*L))*P_acc(f))
+    con = 2*pi*f*L
+    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
     return res
 
 def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2) * (2*pi*f*L)**2
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
@@ -116,11 +116,13 @@ plt.show()
 
 #%%
 def sigp(f):
-    res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
-            0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
-            1/2 * np.tanh(0.04 * (f - 42))) + (1/2 * np.tanh(0.04 * (f - 42))) * 
-            (0.4 * 10**(-11) * f**(1.4) + 7.9 * 10**(-13) * f**(2.98))) * (1 - 
-            0.38 * np.exp(-(f - 25)**2/50))
+    f0 = 1
+    t1 = (1-0.475*np.exp(-(f/f0-25)**2/50))
+    t2 = (1-5e-4*np.exp(-(f/f0-20)**2/100))
+    t3 = (1-0.2*np.exp(-((f/f0-47)**2)**0.85/100))
+    t4 = (1-0.1*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
+    res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
+                +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
     return res
 fetstar = 10**(-2)
 fi = 0.4*10**(-3)
