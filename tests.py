@@ -92,6 +92,54 @@ def pls(f):
     f0 = 1e-7
     res = 10**a * (f/f0)**(nt)
     return res
+#Now finding the PLS for LISA
+def Almin(nt):
+    integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
+    I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
+    I2 = quad(integrand, 10**(-3), 10**(0), args=(nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1,I2)))
+    return nt, res
+
+
+#determining the envelop of the functions that bound Omega_gw for all the values of nt
+
+ntvals = np.arange(ntmin, ntmax, step)
+#we can now formulate these into a table by mapping these values together
+#We now want to map our values of nt and Amin we can do this using the list() and map() operations in python
+#map computes the function Amin with the iterable values of ntvals list turns the mapped values into a list, and array turns these
+#into an array - have to do it this way can't just do map -> array
+
+
+Aminvals = np.array(list(map(Almin, ntvals)))
+
+#We vertically stack the two arrays together and transpose them to get (41,2) dim array
+#which is the table in mathematica.
+Atab = Aminvals[:,(0,1)]
+#Our Ftab is slightly different from the mathematica script as they have the table
+def Ftab(i, j):
+    res = Atab[j,1]*(10**elLISA[i]/fLisa)**Atab[j,0]
+    return res
+
+
+
+
+elstep = (elmaxL-elminL)/itera
+elLISA = np.arange(elminL, elmaxL+elstep, elstep)
+i = range(len(elLISA))
+j = range(len(Atab))
+coordsl1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
+
+FtabLISA = np.array(list(map(lambda args: Ftab(*args), coordsl1))).reshape(len(elLISA), len(Atab))
+maxed = []
+
+def maxtablisa(i):
+    maxed = np.log(np.max(FtabLISA[i]))
+    return maxed
+   
+maxposlisa = range(len(FtabLISA))
+maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
+maxpls = maxplvals
+flogom = np.vstack((np.log(10**elLISA), maxpls)).T
 
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
@@ -119,17 +167,57 @@ def sigp(f):
     t4 = (1-0.1*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
     res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
                 +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
-    if res > 1.2e-6:
-        return
+
     return res
 
 
 def pls(f):
-    nt = -0.1
+    n = -0.1
     a = -12
     f0 = 1e-7
-    res = 10**a * (f/f0)**(nt)
+    res = 10**a * (f/f0)**(n)
     return res
+
+def AETmin(nt):
+    integrand = lambda f, nt:(((f/fetstar)**(nt))/sigp(f))**2
+    I1 = quad(integrand, 1.6, 100, args=(nt))[0]
+    I2 = quad(integrand, 100, 445, args = (nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1, I2)))
+    return res
+
+ntmin = -9/2
+ntmax = 9/2
+step = (ntmax-ntmin)/itera
+ntetvals = np.arange(ntmin, ntmax+step, step)
+
+#this array/list/map function does the same as earlier by mapping the nt values across
+#without having to iterate
+aetvals = np.array(list(map(AETmin, ntetvals)))
+AETtab = np.vstack((ntetvals, aetvals)).T
+
+def FETtab(i, j):
+    res = AETtab[j,1]*(10**elET[i]/fetstar)**AETtab[j,0]
+    return res
+
+
+#%%
+
+elstep = (elmaxet-elminet)/itera
+elET = np.arange(elminet, elmaxet, elstep)
+i = range(len(elET))
+j = range(len(AETtab))
+coordset = np.array(np.meshgrid(i,j)).T.reshape(-1,2)
+Ftabetpls = np.array(list(map(lambda args: FETtab(*args), coordset))).reshape(len(elET), len(AETtab))
+maxedET = []
+
+def maxETpls(i):
+    maxedET = np.log(np.max(Ftabetpls[i]))
+    return maxedET
+
+maxposet = range(len(Ftabetpls))
+maxvals = np.array(list(map(maxETpls, maxposet)))
+maxplsvals = maxvals
+flogomET = np.vstack((np.log(10**elET), maxplsvals)).T
 
 fvalsET = np.logspace(np.log10(1), np.log10(445),itera)#frequency values
 sigETvals = np.array(list(map(sigp, fvalsET)))
@@ -152,7 +240,77 @@ plt.grid(True)
 plt.show()
 
 #%%
+def omegatog(f):
+    if f <= 10**(-1):
+        return Ohms(f)
+    if f > 1.6:
+        return sigp(f)
+    
+def nomtog(f):
+    if f <= 10**(-1):
+        res = Ohms(f)
+        if res > 1e-5:
+            return
+        return res
+    if f > 1:
+        res = sigp(f)
+        if res > 1e-5:
+            return
+        return res
+ 
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
+combine = np.array(list(map(omegatog, fvalscomb)))
+nom = np.array(list(map(nomtog, fvalscomb)))
+otog = np.vstack((fvalscomb, combine)).T
+#combine pls curves
+fstar = 1.1
+ntmin = -9/2
+ntmax = 9/2
 
+def Amincomb(nt):
+    integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
+    I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
+    I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
+    I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
+    I4 = quad(integrand, 10, ffmax, args = (nt))[0]
+    integrand2 = lambda f, nt:((f/fstar)**(nt)/sigp(f))**2
+    I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
+    I6 = quad(integrand2, 10**(0), 100, args=(nt))[0]
+    I7 = quad(integrand2, 100, ffmax, args=(nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4,I5,I6,I7)))
+    return res    
+
+Amin3 = []
+ntcombvals = np.linspace(ntmin, ntmax, itera)
+Amin3 = np.array(list(map(Amincomb, ntcombvals)))
+
+
+Atab3 = np.vstack((ntcombvals, Amin3)).T
+
+
+def ftab3(i, j):
+    res = Atab3[j,1]*(10**combel[i]/fstar)**Atab3[j,0]
+    return res
+
+elmin = np.log10(ffmin)
+elmax = np.log10(ffmax)
+
+combel = np.linspace(elmin, elmax, itera)
+i = range(len(combel))
+j = range(len(Atab3))
+coordsc1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
+
+Ftabcomb = np.array(list(map(lambda args: ftab3(*args), coordsc1))).reshape(len(combel), len(Atab3))
+
+
+combmaxed = []
+def maxtabcomb(i):
+    combmaxed = np.log(np.max(Ftabcomb[i]))
+    return combmaxed
+
+maxposco = range(len(Ftabcomb))
+maxcompls = np.array(list(map(maxtabcomb, maxposco)))
+flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)

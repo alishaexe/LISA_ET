@@ -52,7 +52,7 @@ itera = 200
 ##########
 
 elminL = (np.log10(ffmin))
-elmaxL = (np.log10(10**(-1)))
+elmaxL = (np.log10(10**(-0.9)))
 elminet = np.log10(1.6)
 elmaxet = (np.log10(ffmax))
 ntmin = -9/2
@@ -92,17 +92,24 @@ tabET = np.vstack((col1, col2)).T # this combines the two columns in a 2d array 
 # plt.grid(True)
 # plt.show()
 #%%
-def sigp(f):
-    f0 = 1
-    t1 = (1-0.475*np.exp(-(f/f0-25)**2/50))
-    t2 = (1-5e-4*np.exp(-(f/f0-20)**2/100))
-    t3 = (1-0.2*np.exp(-((f/f0-47)**2)**0.85/100))
-    t4 = (1-0.12*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
+# def sigp(f):
+#     f0 = 1
+#     t1 = (1-0.475*np.exp(-(f/f0-25)**2/50))
+#     t2 = (1-5e-4*np.exp(-(f/f0-20)**2/100))
+#     t3 = (1-0.2*np.exp(-((f/f0-47)**2)**0.85/100))
+#     t4 = (1-0.12*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
     
-    res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
-                +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
-    return res
-                                                                           
+#     res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
+#                 +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
+#     return 2*res
+def sigp(f):
+    res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
+            0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
+            1/2 * np.tanh(0.04 * (f - 42))) + (1/2 * np.tanh(0.04 * (f - 42))) * 
+            (0.4 * 10**(-11) * f**(1.4) + 7.9 * 10**(-13) * f**(2.98))) * (1 - 
+            0.38 * np.exp(-(f - 25)**2/50))
+    return res                                                                       
+                                                
                                                                            
 
 def etnomonly(f):
@@ -362,11 +369,11 @@ def S_n(f):
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
     res = const *f**3*S_n(f)
-    return res
+    return 2.5*res
 
 
 
-#%%    
+#%%
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
 
