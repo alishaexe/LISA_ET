@@ -21,6 +21,7 @@ Rae = r1-r2
 #Now going to define constants
 yr = 365*24*60*60 #in seconds
 H0 = 100*0.67*10**(3)/(3.086*10**(22)) #1/seconds
+# H0 = 3.24e-18 #Debikas value
 #setting h = 0.67
 pi = np.pi
 c = 3e8
@@ -41,12 +42,15 @@ fi = 0.4*10**(-3)
 fLisa = 1/(2*pi*L)
 ffmin = 10**(-5)
 ffmax = 445
+elmin = np.log10(ffmin)
+elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
 itera = 200
 
 ##########
+
 elminL = (np.log10(ffmin))
 elmaxL = (np.log10(10**(-1)))
 elminet = np.log10(1.6)
@@ -61,7 +65,7 @@ step = (ntmax-ntmin)/itera
 #function for creating the table of the ET data
 #we use i to iterate through each row of the data
 def tabETapp(i):
-    res = (4*pi**2 / (3*H0**2))*Etab[i,0]**3 * Etab[i,3]**2
+    res = (4*pi**2 *Etab[i,0]**3 * Etab[i,3]**2/ (3*H0**2))
     return res
 
 col1 = Etab[:,0] # assigning the first column of the data to the name col1
@@ -72,7 +76,7 @@ col2 = np.array(list(map(tabETapp, vals)))
 #as a list, and np.array() then turns them into an array. This is all assigned to col2
 tabET = np.vstack((col1, col2)).T # this combines the two columns in a 2d array with 2 rows 
                                 #and the .T transposes the array so that it instead has 2 columns
-tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less than 10**-5
+# tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less than 10**-5
                                 #and indexes the ET table so that it only containes these 
                                 #rows where the 2nd column
 
@@ -93,7 +97,8 @@ def sigp(f):
     t1 = (1-0.475*np.exp(-(f/f0-25)**2/50))
     t2 = (1-5e-4*np.exp(-(f/f0-20)**2/100))
     t3 = (1-0.2*np.exp(-((f/f0-47)**2)**0.85/100))
-    t4 = (1-0.1*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
+    t4 = (1-0.12*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
+    
     res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
                 +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
     return res
@@ -107,25 +112,25 @@ def etnomonly(f):
     return res
 
 #%%
-fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
+fvalsET = np.logspace(0, 3,2000)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 
-
-# plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth=2.5)
-# plt.title("Nominal sensitivity curve ET")
-# plt.ylabel(r"$\Omega_{gw}$")
-# plt.xlabel("f (Hz)")
-# #plt.ylim(10**(-9), 10**(-5))
-# plt.yscale('log')
-# plt.xscale('log')
-# plt.xlim(10**0, 400)
-# plt.grid(True)
-# plt.show()
+plt.figure(figsize=(6, 9)) 
+plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth=2.5)
+plt.title("Nominal sensitivity curve ET")
+plt.ylabel(r"$\Omega_{gw}$")
+plt.xlabel("f (Hz)")
+#plt.ylim(10**(-9), 10**(-5))
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(10**0, 400)
+plt.grid(True)
+plt.show()
 #%%
 #Plots both curves overlayed each other
 
 plt.figure(figsize=(6, 9)) 
-plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
+plt.loglog(tabET[:,0], tabET[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
 plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
 plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2.5,color = "indigo" )
 plt.legend(fontsize = 16)
@@ -134,9 +139,9 @@ plt.xlabel("f (Hz)", fontsize = 16)
 #plt.ylim(10**(-9), 10**(-5))
 plt.yscale('log')
 plt.xscale('log')
-# plt.xlim(10**0, 400)
+plt.xlim(10**0, 400)
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -207,60 +212,60 @@ plt.xlabel("f (Hz)", fontsize = 16)
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png', bbox_inches='tight')
 plt.show()
-# #%%
+#%%
 #Now the BPLS for ET
 #Now for BPL
-def bplET(f, fstar, n1, n2):
-    s = 10
-    res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-    return res
+# def bplET(f, fstar, n1, n2):
+#     s = 10
+#     res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res
 
-def AbplminET(fs, n1, n2):
-    integrand = lambda f, fs, n1, n2:(bplET(f, fs, n1, n2)/sigp(f))**2
-    I1 = quad(integrand, 1.6, 100, args=(fs, n1, n2))[0]
-    I2 = quad(integrand, 100, 445, args=(fs, n1, n2))[0]
-    res = snr5/np.sqrt(2*T*sum((I1, I2)))
-    return res
+# def AbplminET(fs, n1, n2):
+#     integrand = lambda f, fs, n1, n2:(bplET(f, fs, n1, n2)/sigp(f))**2
+#     I1 = quad(integrand, 1.6, 100, args=(fs, n1, n2))[0]
+#     I2 = quad(integrand, 100, 445, args=(fs, n1, n2))[0]
+#     res = snr5/np.sqrt(2*T*sum((I1, I2)))
+#     return res
 
-n1r = np.linspace(ntmin, ntmax, itera)
-n2r = np.linspace(ntmin, ntmax, itera)
-fs = 10**elET
+# n1r = np.linspace(ntmin, ntmax, itera)
+# n2r = np.linspace(ntmin, ntmax, itera)
+# fs = 10**elET
 
-inputsET = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
-#This makes it so n1r is in the second column
-# so inputs(fs, n1r, n2r)
-inputsET[:,[0,1,2]] = inputsET[:,[0,2,1]]
+# inputsET = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
+# #This makes it so n1r is in the second column
+# # so inputs(fs, n1r, n2r)
+# inputsET[:,[0,1,2]] = inputsET[:,[0,2,1]]
 
-AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
-AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(n1r),len(n1r),len(n1r),4)
-#%%
-i = range(len(fs))
-j = range(len(n1r))
-k = range(len(n2r))
-m = range(len(fs))
-coords = np.array(np.meshgrid(i, j, k, m)).T.reshape(-1,4)
+# AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
+# AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(n1r),len(n1r),len(n1r),4)
+# #%%
+# i = range(len(fs))
+# j = range(len(n1r))
+# k = range(len(n2r))
+# m = range(len(fs))
+# coords = np.array(np.meshgrid(i, j, k, m)).T.reshape(-1,4)
 
-#%%
-def fbpltabET(i, j, k, m):
-    bplres = bplET(fs[m], AtabET[i,j,k,0], AtabET[i,j,k,1], AtabET[i,j,k,2])
-    return AtabET[i,j,k,3]*bplres
+# #%%
+# def fbpltabET(i, j, k, m):
+#     bplres = bplET(fs[m], AtabET[i,j,k,0], AtabET[i,j,k,1], AtabET[i,j,k,2])
+#     return AtabET[i,j,k,3]*bplres
 
    
-FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
-#%%
-def maxETbplvals(i):
-    maximsET = np.log(np.max(FtabET[i]))
-    return maximsET
+# FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+# #%%
+# def maxETbplvals(i):
+#     maximsET = np.log(np.max(FtabET[i]))
+#     return maximsET
 
-maximsET = []
-maxposET = range(len(FtabET))
-maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
-maxbplET = maxbplvals
+# maximsET = []
+# maxposET = range(len(FtabET))
+# maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
+# maxbplET = maxbplvals
 
-#%%
-fbploET = np.vstack((np.log(fs), maxbplET)).T
+# #%%
+# fbploET = np.vstack((np.log(fs), maxbplET)).T
 # #plots the bpl curve
 # plt.figure(figsize=(6, 9)) 
 # plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), '-',color = "lime", linewidth=2.5)
@@ -331,7 +336,7 @@ og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
 #%%
 P = 12
 A = 3
-alpha = -11.352
+
 
 def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
@@ -373,7 +378,7 @@ plt.grid(True)
 plt.legend(fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal Sensitivity curve of LISA", fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
 plt.show()
 #%%
 #Now finding the PLS for LISA
@@ -446,104 +451,104 @@ plt.tick_params(axis='both', which='major', labelsize=14)
 plt.grid(True)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal and PLS curve LISA", fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLS.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLS.png', bbox_inches='tight')
 plt.show()
 #%%
 #Now for BPL
 
-def bpl(f, fstar, n1, n2):
-    s = 10
-    res = (f/fstar)**n1 * (1/2+1/2*(f/fstar)**s)**(-(n1-n2)/s)
-    return res
+# def bpl(f, fstar, n1, n2):
+#     s = 10
+#     res = (f/fstar)**n1 * (1/2+1/2*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res
 
 
-def Abplmin(fs, n1, n2):
-    integrand = lambda f, n1, n2, fs:(bpl(f, fs, n1, n2)/Ohms(f))**2
-    I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs))[0]
-    I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2)))
-    return res
+# def Abplmin(fs, n1, n2):
+#     integrand = lambda f, n1, n2, fs:(bpl(f, fs, n1, n2)/Ohms(f))**2
+#     I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs))[0]
+#     I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs))[0]
+#     res = snr5/np.sqrt(2*T*sum((I1,I2)))
+#     return res
 
 
 
-elbpl = np.arange(elminL, elmaxL, elstep)
-n1r = np.linspace(ntmin, ntmax, itera)
-n2r = np.linspace(ntmin, ntmax, itera)
-fs = 10**elbpl
+# elbpl = np.arange(elminL, elmaxL, elstep)
+# n1r = np.linspace(ntmin, ntmax, itera)
+# n2r = np.linspace(ntmin, ntmax, itera)
+# fs = 10**elbpl
 
-inputs = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
-#This makes it so n1r is in the second column
-# so inputs(fs, n1r, n2r)
-inputs[:,[0,1,2]] = inputs[:,[0,2,1]]
+# inputs = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
+# #This makes it so n1r is in the second column
+# # so inputs(fs, n1r, n2r)
+# inputs[:,[0,1,2]] = inputs[:,[0,2,1]]
 
-#%%
+# #%%
 
-Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
-Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(n1r),len(n1r),len(n1r),4)
+# Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
+# Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(n1r),len(n1r),len(n1r),4)
 
-#%%
-i = np.array(range(len(fs)))#defining them as arrays here means that in
-j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
-k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
-m = np.array(range(len(fs)))
-coords = np.array(np.meshgrid(i,j,k,m)).T.reshape(-1,4)
-#here in meshgrid have done ikj purely because this may it will sort j
-#like it sorts i and lets k change; we then switch round the columns so that
-#it is i,j,k
-def fbpltab(i, j, k, m):
-    bplres = bpl(fs[m], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
-    return Atab2[i,j,k,3]*bplres
+# #%%
+# i = np.array(range(len(fs)))#defining them as arrays here means that in
+# j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
+# k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
+# m = np.array(range(len(fs)))
+# coords = np.array(np.meshgrid(i,j,k,m)).T.reshape(-1,4)
+# #here in meshgrid have done ikj purely because this may it will sort j
+# #like it sorts i and lets k change; we then switch round the columns so that
+# #it is i,j,k
+# def fbpltab(i, j, k, m):
+#     bplres = bpl(fs[m], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
+#     return Atab2[i,j,k,3]*bplres
 
-Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+# Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
 
-#%%
-maxims = []
-def maxbplvals(i):
-    maxims = np.log(np.max(Ftab2[i]))
-    return maxims
+# #%%
+# maxims = []
+# def maxbplvals(i):
+#     maxims = np.log(np.max(Ftab2[i]))
+#     return maxims
 
-maxpos = range(len(Ftab2))
+# maxpos = range(len(Ftab2))
 
-maxbpl = np.array(list(map(maxbplvals, maxpos)))
-#%%
-fbplo = np.vstack((np.log(fs), maxbpl)).T
+# maxbpl = np.array(list(map(maxbplvals, maxpos)))
+# #%%
+# fbplo = np.vstack((np.log(fs), maxbpl)).T
 
-plt.figure(figsize=(6, 9)) 
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), color = "lime", linewidth=2.5)
-plt.title("LISA BPLS sensitivity curve")
-plt.ylim(1e-14, 1e-5)
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.show()
+# plt.figure(figsize=(6, 9)) 
+# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), color = "lime", linewidth=2.5)
+# plt.title("LISA BPLS sensitivity curve")
+# plt.ylim(1e-14, 1e-5)
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.grid(True)
+# plt.xscale('log')
+# plt.show()
 
 
-plt.figure(figsize=(6, 9))
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA sensitivity curves")
-plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xscale('log')
-plt.ylim(1e-14, 1e-4)
-plt.show()
-#%%
-plt.figure(figsize=(6, 9))
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA BPLS Curves")
-plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
-plt.xscale('log')
-plt.ylim(1e-14, 1e-4)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
-plt.show()
+# plt.figure(figsize=(6, 9))
+# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
+# plt.grid(True)
+# plt.title("LISA sensitivity curves")
+# plt.legend()
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.xscale('log')
+# plt.ylim(1e-14, 1e-4)
+# plt.show()
+# #%%
+# plt.figure(figsize=(6, 9))
+# plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.grid(True)
+# plt.title("LISA BPLS Curves")
+# plt.legend()
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
+# plt.xscale('log')
+# plt.ylim(1e-14, 1e-4)
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
+# plt.show()
 #%%
 ######################
 #LogNS curves
@@ -551,7 +556,7 @@ plt.show()
 #ET Logns
 
 def logn(f, fstar, sig):
-    res = np.exp(-1/(2*10**sig)*np.log(f/fstar)**2)
+    res = np.exp(-1/(2*10**sig)*(np.log(f/fstar))**2)
     return res
 
 
@@ -620,14 +625,14 @@ plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
 plt.show()
 #%%
 #LISA logns plots
 
     
 def lognL(f, fstar, sig):
-    res = np.exp(-1/(2*10**sig)*np.log(f/fstar)**2)
+    res = np.exp(-1/(2*10**sig)*(np.log(f/fstar))**2)
     return res
 
 def aminlogL(fstar, sig):
@@ -698,35 +703,35 @@ plt.legend()
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
 plt.show()
 #%%
-plt.loglog(np.exp(np.log(flf)), np.exp(maxlog), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
-plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "lime", label = "BPLS", linewidth=2.5)
-plt.legend()
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel('f (Hz)')
-plt.title("ET Sensitivity Curves")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
+# plt.loglog(np.exp(np.log(flf)), np.exp(maxlog), color = "aqua", label = "LogNs", linewidth=2.5)
+# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
+# plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth=2.5)
+# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "lime", label = "BPLS", linewidth=2.5)
+# plt.legend()
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.xlabel('f (Hz)')
+# plt.title("ET Sensitivity Curves")
+# plt.grid(True)
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.show()
 
 
 
-plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA sensitivity curves")
-plt.legend()
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xscale('log')
-plt.show()
+# plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", label = "LogNs", linewidth=2.5)
+# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), label = "PLS Curve", color = "orangered", linewidth=2.5)
+# plt.grid(True)
+# plt.title("LISA sensitivity curves")
+# plt.legend()
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.xscale('log')
+# plt.show()
 #%%
 #######################
 #Combining LISA and ET curves
@@ -762,7 +767,7 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel('f (Hz)')
 plt.ylabel(r"$\Omega_{gw}$")
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png', bbox_inches='tight')
 plt.show()
 #%%
 #combine pls curves
@@ -848,103 +853,106 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
 plt.show()
 #%%
 #bpls
-def combbpl(f, fstar, n1, n2):
-    s = 10
-    res = (f/fstar)**n1 * (1/2+1/2*(f/fstar)**s)**(-(n1-n2)/s)
-    return res 
+# def combbpl(f, fstar, n1, n2):
+#     s = 10
+#     res = (f/fstar)**n1 * (1/2+1/2*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res 
 
 
-def Abplmincomb(fs, n1, n2):
-    integrand = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/Ohms(f))**2
-    I1 = quad(integrand, ffmin, 10**(-3), args=(fs, n1, n2))[0]
-    I2 = quad(integrand, 10**(-3), 10**(-1), args=(fs, n1, n2))[0]
-    integrand2 = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/sigp(f))**2
-    I3 = quad(integrand2, 1.6, 10**(1), args=(fs, n1, n2))[0]
-    I4 = quad(integrand2, 10**(1), 445, args=(fs, n1, n2))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4)))
-    return res   
+# def Abplmincomb(fs, n1, n2):
+#     integrand = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/Ohms(f))**2
+#     I1 = quad(integrand, ffmin, 10**(-3), args=(fs, n1, n2))[0]
+#     I2 = quad(integrand, 10**(-3), 10**(-1), args=(fs, n1, n2))[0]
+#     integrand2 = lambda f, fs, n1, n2:(combbpl(f, fs, n1, n2)/sigp(f))**2
+#     I3 = quad(integrand2, 1.6, 10**(1), args=(fs, n1, n2))[0]
+#     I4 = quad(integrand2, 10**(1), 445, args=(fs, n1, n2))[0]
+#     res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4)))
+#     return res   
 
-step = (ntmax-ntmin)/itera
+# step = (ntmax-ntmin)/itera
 
-elc = np.linspace(elmin, elmax, itera)
+# elc = np.linspace(elmin, elmax, itera)
 
-n1c = np.arange(ntmin, ntmax, step)
-n2c = np.arange(ntmin, ntmax, step)
+# n1c = np.arange(ntmin, ntmax, step)
+# n2c = np.arange(ntmin, ntmax, step)
 
-fsc = 10**elc
-
-
-
-inputsc = np.array(np.meshgrid(fsc, n2c, n1c)).T.reshape(-1,3)
-#This makes it so n1r is in the second column
-# so inputs(fs, n1r, n2r)
-inputsc[:,[0,1,2]] = inputsc[:,[0,2,1]]
-
-
-Amin4 = np.array(list(map(lambda args: Abplmincomb(*args), inputsc)))
-#%%
-Atab4 = np.vstack((inputsc.T, Amin4)).T
-Atab4 = Atab4.reshape(len(fsc),len(n1c),len(n1c),4)
-ic = range(len(fsc))
-jc = range(len(n1c))
-kc = range(len(n2c))
-mc = range(len(fsc))
-coordsc = np.array(np.meshgrid(ic,jc,kc, mc)).T.reshape(-1,4)
-
-#%%
-def fbpltabcomb(i, j, k, m):
-    res = []
-    bplres = combbpl(fsc[m], Atab4[i,j,k,0], Atab4[i,j,k,1], Atab4[i,j,k,2])
-    res.append([Atab4[i,j,k,3]*bplres])
-    return res
+# fsc = 10**elc
 
 
 
-Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(fsc),len(fsc),len(fsc),len(fsc))
+# inputsc = np.array(np.meshgrid(fsc, n2c, n1c)).T.reshape(-1,3)
+# #This makes it so n1r is in the second column
+# # so inputs(fs, n1r, n2r)
+# inputsc[:,[0,1,2]] = inputsc[:,[0,2,1]]
+
+
+# Amin4 = np.array(list(map(lambda args: Abplmincomb(*args), inputsc)))
+# #%%
+# Atab4 = np.vstack((inputsc.T, Amin4)).T
+# Atab4 = Atab4.reshape(len(fsc),len(n1c),len(n1c),4)
+# ic = range(len(fsc))
+# jc = range(len(n1c))
+# kc = range(len(n2c))
+# mc = range(len(fsc))
+# coordsc = np.array(np.meshgrid(ic,jc,kc, mc)).T.reshape(-1,4)
+
+# #%%
+# def fbpltabcomb(i, j, k, m):
+#     res = []
+#     bplres = combbpl(fsc[m], Atab4[i,j,k,0], Atab4[i,j,k,1], Atab4[i,j,k,2])
+#     res.append([Atab4[i,j,k,3]*bplres])
+#     return res
+
+
+
+# Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(fsc),len(fsc),len(fsc),len(fsc))
    
 
-#%%
-maximsc = []
-def combmaxbplvals(i):
-    maximsc = np.log(np.max(Ftab4[i]))
-    return maximsc
+# #%%
+# maximsc = []
+# def combmaxbplvals(i):
+#     maximsc = np.log(np.max(Ftab4[i]))
+#     return maximsc
 
-combmaxpos = range(len(Ftab4))
-maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
-combfbplo = np.vstack((np.log(fsc), maxbplcomb)).T
+# combmaxpos = range(len(Ftab4))
+# maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
+# combfbplo = np.vstack((np.log(fsc), maxbplcomb)).T
 
 
 
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), color = "lime", linewidth=2.5)
-plt.title("BPLS Curve for LISA and ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), color = "lime", linewidth=2.5)
+# plt.title("BPLS Curve for LISA and ET")
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.xlabel("f (Hz)")
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.xlim(ffmin, ffmax)
+# plt.grid(True)
+# plt.show()
 
 #%%
 #combine log curves
 def logncomb(f, fstar, sig):
-    res = np.exp(-1/(2*10**sig)*np.log(f/fstar)**2)
+    res = np.exp(-1/(2*10**sig)*(np.log(f/fstar))**2)
     return res
 
 def aminlogcomb(fstar, sig):
     integrand = lambda f, fstar, sig: (logncomb(f, fstar, sig)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-3), args=(fstar, sig))[0]
     I2 = quad(integrand, 10**(-3), 10**(-1), args=(fstar, sig))[0]
+    I3 = quad(integrand, 10**(-1), 1e0, args=(fstar, sig))[0]
+    I4 = quad(integrand, 1e0, 0.5e1, args=(fstar, sig))[0]
+    I5 = quad(integrand, 0.5e1, ffmax, args=(fstar, sig))[0]
     integrand2 = lambda f, fstar, sig: (logncomb(f, fstar, sig)/sigp(f))**2
-    I3 = quad(integrand2, 1.6, 10**1, args=(fstar, sig))[0]
-    I4 = quad(integrand2, 10**1, ffmax, args=(fstar, sig))[0]
-    res = snr5/np.sqrt(2*T*sum((I1, I2, I3, I4)))
+    I6 = quad(integrand2, ffmin, 1e-1, args=(fstar, sig))[0]
+    I7 = quad(integrand2, 1e-1, ffmax, args=(fstar, sig))[0]
+    res = snr5/np.sqrt(2*T*sum((I1, I2, I3, I4, I5, I6, I7)))
     return res 
-   
+itera = 200
 
 lsc = np.linspace(elmin, elmax,itera)
 flsc = 10**lsc
@@ -977,15 +985,15 @@ maxposlog = range(len(Ftablogcomb))
 maxlogcom = np.array(list(map(maxlogvalsc, maxposlog)))
 flogplotc = np.vstack((np.log(flsc), maxlogcom)).T
 #%%
-plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.title(" Combined LogNS curve for LISA and ET")
-plt.xlim(ffmin, ffmax)
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-plt.grid(True)
-plt.xscale('log')
-plt.yscale('log')
-plt.show()
+# plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
+# plt.title(" Combined LogNS curve for LISA and ET")
+# plt.xlim(ffmin, ffmax)
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.grid(True)
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.show()
 
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom, label = "Nominal", color = "indigo", linewidth=2.5)
@@ -993,44 +1001,44 @@ plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label
 plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), ':',color = "black", label = "ET LogNs", linewidth=2.5)
 plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL),':', color = "teal", label = "LISA LogNs", linewidth=2.5)
 plt.title(" Combined LogNS curve for LISA and ET",fontsize = 14)
-plt.legend(loc = (0.085,0.75),fontsize = 14)
+plt.legend(loc = (0.02,0.8),fontsize = 14)
 plt.xlim(ffmin, ffmax)
 plt.xlabel('f (Hz)',fontsize = 14)
 plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
 plt.show()
 #%%
 
-plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title("Nominal and BPLS Curve for LISA and ET")
-plt.xlabel("f (Hz)")
-plt.legend(loc = (0.1,0.7))
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
+# plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.title("Nominal and BPLS Curve for LISA and ET")
+# plt.xlabel("f (Hz)")
+# plt.legend(loc = (0.1,0.7))
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.xlim(ffmin, ffmax)
+# plt.grid(True)
+# plt.show()
 
 
 #%%
-plt.loglog(otog[:,0], nom, label = "Nominal", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), label = "PLS", color = "orangered", linewidth=2.5)
-plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$")
-plt.title("Curves for LISA and ET")
-plt.legend(loc = (0.1,0.7))
-plt.xlabel("f (Hz)")
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.show()
+# plt.loglog(otog[:,0], nom, label = "Nominal", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS", color = "lime", linewidth=2.5)
+# plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), label = "PLS", color = "orangered", linewidth=2.5)
+# plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.title("Curves for LISA and ET")
+# plt.legend(loc = (0.1,0.7))
+# plt.xlabel("f (Hz)")
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.xlim(ffmin, ffmax)
+# plt.grid(True)
+# plt.show()
 
 #%%
 # combfbplo = np.load("Ftabcomb.npy")
@@ -1038,21 +1046,21 @@ plt.show()
 # fbplo = np.load("FtabLISA.npy")
 
 #%%
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "Combined BPLS", color = "lime", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]),':', color = "teal", label = 'LISA BPLS', linewidth=2.5)
-plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), ':',color = "black", label = " ET BPLS", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.title("Nominal and BPLS Curve for LISA and ET", fontsize = 16)
-plt.xlabel("f (Hz)", fontsize = 16)
-plt.legend(loc = (1.05,0.5), fontsize = 14)
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(ffmin, ffmax)
-plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png', bbox_inches='tight')
-plt.show()
+# plt.figure(figsize=(6, 9))
+# plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "Combined BPLS", color = "lime", linewidth=2.5)
+# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]),':', color = "teal", label = 'LISA BPLS', linewidth=2.5)
+# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), ':',color = "black", label = " ET BPLS", linewidth=2.5)
+# plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+# plt.title("Nominal and BPLS Curve for LISA and ET", fontsize = 16)
+# plt.xlabel("f (Hz)", fontsize = 16)
+# plt.legend(loc = (1.05,0.5), fontsize = 14)
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.xlim(ffmin, ffmax)
+# plt.grid(True)
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png', bbox_inches='tight')
+# plt.show()
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png')
 # np.save("Ftab4.npy", Ftab4)
 # np.save("Atab4.npy", Atab4)

@@ -44,7 +44,7 @@ ffmax = 445
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 200
+itera = 75
 
 ##########
 elminL = (np.log10(ffmin))

@@ -68,7 +68,7 @@ def Almin(nt):
     integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
     I2 = quad(integrand, 10**(-3), 10**(0), args=(nt))[0]
-    res = snr5/np.sqrt(T*sum((I1,I2)))
+    res = snr5/np.sqrt(2*T*sum((I1,I2)))
     return nt, res
     
 #determining the envelop of the functions that bound Omega_gw for all the values of nt
@@ -130,10 +130,10 @@ fi = 0.4*10**(-3)
 #This is the function for calculating the A_min values
 #I separate the integration into 4 to help with the accuracy and avoid warnings
 def AETmin(nt):
-    integrand = lambda f, nt:(((f/fetstar)**(nt))/sigp(f))**2
+    integrand = lambda f, nt:((f/fetstar)**(2*nt))/sigp(f)**2
     I1 = quad(integrand, 1.6, 100, args=(nt))[0]
     I2 = quad(integrand, 100, 445, args = (nt))[0]
-    res = snr5/np.sqrt(T*sum((I1, I2)))
+    res = snr5/np.sqrt(2*T*sum((I1, I2)))
     return nt, res
 
 ntmin = -9/2
@@ -180,14 +180,14 @@ plt.xscale('log')
 plt.show()
 #%%
 def omegatog(f):
-    if f <= 10**(-1):
+    if f <= 1:
         return Ohms(f)
-    if f > 1.6:
+    if f > 1:
         return sigp(f)
     
 
 def nomtog(f):
-    if f <= 10**(0):
+    if f <= 1:
         res = Ohms(f)
         if res > 1e-5:
             return
@@ -210,17 +210,18 @@ ntmin = -9/2
 ntmax = 9/2
 
 def Amincomb(nt):
-    integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
+    integrand = lambda f, nt:(f/fstar)**(2*nt)/omegatog(f)**2
     I1 = quad(integrand, ffmin, 1e-3, args=(nt), limit = 100)[0]
     I2 = quad(integrand, 1e-3, 1e-1, args=(nt), limit = 100)[0]
     I3 = quad(integrand, 1e-1, 10, args=(nt), limit = 10000)[0]
     I4 = quad(integrand, 10, 1e2, args=(nt), limit = 10000)[0]
     I5 = quad(integrand, 1e2, ffmax, args=(nt), limit = 10000)[0]
-    integrand2 = lambda f, nt:(((f/fstar)**(nt))/sigp(f))**2
-    I6 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
-    I7 = quad(integrand2, 10**(0), 100, args=(nt))[0]
-    I8 = quad(integrand2, 100, ffmax, args=(nt))[0]
-    res = snr5/np.sqrt(T*sum((I1,I2,I3,I4,I5,I6,I7,I8)))
+    # integrand2 = lambda f, nt:(((f/fstar)**(nt))/sigp(f))**2
+    # I6 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
+    # I7 = quad(integrand2, 10**(0), 100, args=(nt))[0]
+    # I8 = quad(integrand2, 100, ffmax, args=(nt))[0]
+    # res = snr5/np.sqrt(2*T)*(sum((I1,I2,I3,I4,I5,I6,I7,I8)))**(-1/2)
+    res = snr5/np.sqrt(2*T)*(sum((I1,I2,I3,I4,I5)))**(-1/2)
     return nt, res    
 
 
@@ -263,7 +264,7 @@ plt.title('Combined PLS curve for LISA and ET')
 plt.grid(True)
 plt.show()
 
-plt.figure(figsize=(6, 9))
+# plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
