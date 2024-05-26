@@ -156,7 +156,7 @@ plt.show()
 #This is the function for calculating the A_min values
 #I separate the integration into 4 to help with the accuracy and avoid warnings
 def AETmin(nt):
-    integrand = lambda f, nt:(((f/fetstar)**(nt))/sigp(f))**2
+    integrand = lambda f, nt:((f/fetstar)**(nt)/sigp(f))**2
     I1 = quad(integrand, 1.6, 100, args=(nt))[0]
     I2 = quad(integrand, 100, 445, args = (nt))[0]
     res = snr5/np.sqrt(2*T*sum((I1, I2)))
