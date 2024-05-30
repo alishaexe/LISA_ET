@@ -210,7 +210,7 @@ ntmin = -9/2
 ntmax = 9/2
 
 def Amincomb(nt):
-    integrand = lambda f, nt:(f/fstar)**(2*nt)/omegatog(f)**2
+    integrand = lambda f, nt:(f/fstar)**(nt)/omegatog(f)**2
     I1 = quad(integrand, ffmin, 1e-3, args=(nt), limit = 100)[0]
     I2 = quad(integrand, 1e-3, 1e-1, args=(nt), limit = 100)[0]
     I3 = quad(integrand, 1e-1, 10, args=(nt), limit = 10000)[0]

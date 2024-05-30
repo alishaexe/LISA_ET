@@ -115,17 +115,17 @@ def Ohms(f):
 def f00(f0, nt, om):
     integrand = lambda f, f0, nt, om: ((f/f0)**(2*nt))/Ohms(f)**2
     res = quad(integrand, 1e-5, 1e-1, args=(f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f01(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
     res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f11(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
     res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 
 def fisher(f0, nt, om):
@@ -185,17 +185,17 @@ def sigp(f):
 def f00et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/sigp(f)**2
     res = quad(integrand, 1, 445, args=(f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f01et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/sigp(f)**2
     res = quad(integrand, 1, 445, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f11et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
     res = quad(integrand, 1, 445, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 
 def fisheret(f0, nt, om):
@@ -246,19 +246,19 @@ g.triangle_plot([samples2], contour_colors = ['blue'],
 def f00(f0, nt, om):
     integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/Ohms(f)**2
     res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f01(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
     res1 = quad(integrand, ffmin, 1e-4, args=( f0, nt, om))[0]
     res2 = quad(integrand, 1e-4, 1e-0, args=( f0, nt, om))[0]
     res3 = quad(integrand, 1e-0, ffmax, args=( f0, nt, om))[0]
-    return T*sum((res1, res2, res3))
+    return 2*T*sum((res1, res2, res3))
 
 def f11(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
     res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 
 def fisher(f0, nt, om):
@@ -275,17 +275,17 @@ FMLBC = LISAfmC[1]
 def f00et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/sigp(f)**2
     res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f01et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/sigp(f)**2
     res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 def f11et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
     res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
-    return T*res
+    return 2*T*res
 
 
 def fisheret(f0, nt, om):

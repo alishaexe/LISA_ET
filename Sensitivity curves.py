@@ -786,7 +786,7 @@ def Amincomb(nt):
     integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
     I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
-    I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
+    I3 = quad(integrand, 10**(0), 10, args=(nt), limit = 1000)[0]
     I4 = quad(integrand, 10, ffmax, args = (nt))[0]
     integrand2 = lambda f, nt:((f/fstar)**(nt)/sigp(f))**2
     I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
