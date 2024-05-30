@@ -65,7 +65,7 @@ def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
     return res
 
-def P_ims(f):#* (1e-12)**2 after P
+def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
@@ -87,10 +87,10 @@ def Ohms(f):
     res = const *f**3*S_n(f)
     return res
 def pls(f):
-    nt = -0.1
-    a = -12.4
-    f0 = 1e-7
-    res = 10**a * (f/f0)**(nt)
+    n = -0.1
+    om = 1e-13
+    fst = 1e-7
+    res = om * (f/fst)**(n)
     return res
 #Now finding the PLS for LISA
 def Almin(nt):
@@ -170,12 +170,21 @@ def sigp(f):
 
     return res
 
+def etnomonly(f):
+    res = sigp(f)
+    if res > 10**(-5):
+        return
+    return res
+
+#%%
+fvalsET = np.logspace(0, 3,200)#frequency values
+sigETvals = np.array(list(map(etnomonly, fvalsET)))
 
 def pls(f):
     n = -0.1
-    a = -12
-    f0 = 1e-7
-    res = 10**a * (f/f0)**(n)
+    om = 1e-12
+    fst = 1e-7
+    res = om * (f/fst)**(n)
     return res
 
 def AETmin(nt):
@@ -219,8 +228,7 @@ maxvals = np.array(list(map(maxETpls, maxposet)))
 maxplsvals = maxvals
 flogomET = np.vstack((np.log(10**elET), maxplsvals)).T
 
-fvalsET = np.logspace(np.log10(1), np.log10(445),itera)#frequency values
-sigETvals = np.array(list(map(sigp, fvalsET)))
+
 plet = np.array(list(map(pls, fvalsET)))
 
 plt.figure(figsize=(6, 9)) 
@@ -312,18 +320,18 @@ maxposco = range(len(Ftabcomb))
 maxcompls = np.array(list(map(maxtabcomb, maxposco)))
 flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
-plt.title("Nominal and PLS curves ", fontsize = 16)
-plt.legend(loc = (1.05,0.5), fontsize = 14)
-plt.grid(True) 
-plt.xlim(ffmin, ffmax) 
-plt.xlabel(r'$f$ (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.show()
+# plt.figure(figsize=(6, 9))
+# plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+# plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
+# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
+# plt.title("Nominal and PLS curves ", fontsize = 16)
+# plt.legend(loc = (1.05,0.5), fontsize = 14)
+# plt.grid(True) 
+# plt.xlim(ffmin, ffmax) 
+# plt.xlabel(r'$f$ (Hz)', fontsize = 16)
+# plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+# plt.show()
 
 
 

@@ -46,33 +46,33 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 
-#LISA case 1
-a1 = -12.4
+#benchmarks LISA case 1
+om1 = 1e-12
 nt1 = -0.1
 fs1 = 1e-3
 
 #LISA case 2
-a2 = -20
+om2 = 1e-12
 nt2 = -0.1
 fs2 = 1e-3
 
 #ET case 3 
-a3 = -12
+om3 = 1e-6
 nt3 = -0.1
 fs3 = 1e-3
 
 #ET case 4
-a4 = -20
+om4 = 1e-6
 nt4 = -0.1
 fs4 = 1e-3
 
 #Combined case 5
-a5 = -6
+om5 = 1e-6
 nt5 = -0.1
 fs5 = 1e-3
 
 #Combined case 6
-a6 = -6
+om6 = 1e-6
 nt6 = -0.1
 fs6 = 1e-3
 
@@ -80,7 +80,6 @@ fs6 = 1e-3
 # #%%
 P = 12
 A = 3
-# alpha = -11.352
 
 def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
@@ -110,31 +109,31 @@ def Ohms(f):
 
 
 
-# #%%
+#%%
 
 
-def f00(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/Ohms(f)**2
-    res = quad(integrand, 1e-5, 1e-1, args=(f0, nt, astar))[0]
+def f00(f0, nt, om):
+    integrand = lambda f, f0, nt, om: ((f/f0)**(2*nt))/Ohms(f)**2
+    res = quad(integrand, 1e-5, 1e-1, args=(f0, nt, om))[0]
     return T*res
 
-def f01(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/Ohms(f)**2
-    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, astar))[0]
+def f01(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
+    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, om))[0]
     return T*res
 
-def f11(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
-    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, astar))[0]
+def f11(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
+    res = quad(integrand, 1e-5, 1e-1, args=( f0, nt, om))[0]
     return T*res
 
 
-def fisher(f0, nt, astar):
-    res = np.array(((f00(f0, nt, astar), f01(f0, nt, astar)), 
-                        (f01(f0, nt, astar), f11(f0, nt, astar))))
+def fisher(f0, nt, om):
+    res = np.array(((f00(f0, nt, om), f01(f0, nt, om)), 
+                        (f01(f0, nt, om), f11(f0, nt, om))))
     return res
 
-lisa = np.array(((fs1, nt1, a1), (fs2, nt2, a2)))
+lisa = np.array(((fs1, nt1, om1), (fs2, nt2, om2)))
 LISAfm = np.array(list(map(lambda args: fisher(*args), lisa)))
 
 FMLA = LISAfm[0]
@@ -144,13 +143,13 @@ covmA = np.linalg.inv((FMLA))
 covmB = np.linalg.inv((FMLB))
 
 
-meansA = np.array((a1,nt1))
-meansB = np.array((a2,nt2))
+meansA = np.array((om1,nt1))
+meansB = np.array((om2,nt2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\alpha_*',r'nt']
-labels =  [r'\alpha_*',r'nt']
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -160,7 +159,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['red'],
-                filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
 
@@ -169,7 +168,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['orangered'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis of LISA Scenario B', fontsize = 18)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_B.png')
 #%%
@@ -183,44 +182,44 @@ def sigp(f):
                 +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
     return res
 
-def f00et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/sigp(f)**2
-    res = quad(integrand, 1, 445, args=(f0, nt, astar))[0]
+def f00et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/sigp(f)**2
+    res = quad(integrand, 1, 445, args=(f0, nt, om))[0]
     return T*res
 
-def f01et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/sigp(f)**2
-    res = quad(integrand, 1, 445, args=( f0, nt, astar))[0]
+def f01et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/sigp(f)**2
+    res = quad(integrand, 1, 445, args=( f0, nt, om))[0]
     return T*res
 
-def f11et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
-    res = quad(integrand, 1, 445, args=( f0, nt, astar))[0]
+def f11et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
+    res = quad(integrand, 1, 445, args=( f0, nt, om))[0]
     return T*res
 
 
-def fisheret(f0, nt, astar):
-    res = np.array(((f00et(f0, nt, astar), f01et(f0, nt, astar)), 
-                        (f01et(f0, nt, astar), f11et(f0, nt, astar))))
+def fisheret(f0, nt, om):
+    res = np.array(((f00et(f0, nt, om), f01et(f0, nt, om)), 
+                        (f01et(f0, nt, om), f11et(f0, nt, om))))
     return res
 
-ET = np.array(((fs3, nt3, a3), (fs4, nt4, a4)))
+ET = np.array(((fs3, nt3, om3), (fs4, nt4, om4)))
 ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
-FMEB = ETfm[0]
+FMEB = ETfm[1]
 #%%
 covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((a3,nt3))
-meansB = np.array((a4,nt4))
+meansA = np.array((om3,nt3))
+meansB = np.array((om4,nt4))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\alpha_*',r'nt']
-labels =  [r'\alpha_*',r'nt']
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -230,7 +229,7 @@ g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['darkblue'], #param_limits=param_limitsA,
-                filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -238,84 +237,84 @@ g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples2], contour_colors = ['blue'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_B.png')
 #%%
 ########################
 #Combining
 ########################
-def f00(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/Ohms(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, nt, astar))[0]
+def f00(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
     return T*res
 
-def f01(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/Ohms(f)**2
-    res1 = quad(integrand, ffmin, 1e-4, args=( f0, nt, astar))[0]
-    res2 = quad(integrand, 1e-4, 1e-0, args=( f0, nt, astar))[0]
-    res3 = quad(integrand, 1e-0, ffmax, args=( f0, nt, astar))[0]
+def f01(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
+    res1 = quad(integrand, ffmin, 1e-4, args=( f0, nt, om))[0]
+    res2 = quad(integrand, 1e-4, 1e-0, args=( f0, nt, om))[0]
+    res3 = quad(integrand, 1e-0, ffmax, args=( f0, nt, om))[0]
     return T*sum((res1, res2, res3))
 
-def f11(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
-    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+def f11(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
     return T*res
 
 
-def fisher(f0, nt, astar):
-    res = np.array(((f00(f0, nt, astar), f01(f0, nt, astar)), 
-                        (f01(f0, nt, astar), f11(f0, nt, astar))))
+def fisher(f0, nt, om):
+    res = np.array(((f00(f0, nt, om), f01(f0, nt, om)), 
+                        (f01(f0, nt, om), f11(f0, nt, om))))
     return res
 
-lisac = np.array(((fs5, nt5, a5), (fs6, nt6, a6)))
-LISAfmC = np.array(list(map(lambda args: fisher(*args), lisa)))
+comb = np.array(((fs5, nt5, om5), (fs6, nt6, om6)))
+LISAfmC = np.array(list(map(lambda args: fisher(*args), comb)))
 
 FMLAC = LISAfmC[0]
 FMLBC = LISAfmC[1]
 
-def f00et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(10)**2)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, nt, astar))[0]
+def f00et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
     return T*res
 
-def f01et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: ((10**(astar))*(f/f0)**(2*nt)*np.log(10)*np.log(f/f0))/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+def f01et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
     return T*res
 
-def f11et(f0, nt, astar):
-    integrand = lambda f, f0, nt, astar: (10**(2*astar)*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=( f0, nt, astar))[0]
+def f11et(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
     return T*res
 
 
-def fisheret(f0, nt, astar):
-    res = np.array(((f00et(f0, nt, astar), f01et(f0, nt, astar)), 
-                        (f01et(f0, nt, astar), f11et(f0, nt, astar))))
+def fisheret(f0, nt, om):
+    res = np.array(((f00et(f0, nt, om), f01et(f0, nt, om)), 
+                        (f01et(f0, nt, om), f11et(f0, nt, om))))
     return res
 
-ETC = np.array(((fs5, nt5, a5), (fs6, nt6, a6)))
-ETfmC = np.array(list(map(lambda args: fisheret(*args), ET)))
+ETC = np.array(((fs5, nt5, om5), (fs6, nt6, om6)))
+ETfmC = np.array(list(map(lambda args: fisheret(*args), comb)))
 
-FMEAC = ETfm[0]
-FMEBC = ETfm[0]
+FMEAC = ETfmC[0]
+FMEBC = ETfmC[1]
 
 
 #all together now
-FMA = FMLA+FMEA#FMLAC + FMEAC
-FMB = FMLB + FMEB#FMLBC + FMEBC
+FMA = FMLAC + FMEAC
+FMB = FMLBC + FMEBC
 
 covmA = np.linalg.inv((FMA))
 covmB = np.linalg.inv((FMB))
 
 
-meansA = np.array((a5,nt5))
-meansB = np.array((a6,nt6))
+meansA = np.array((om5,nt5))
+meansB = np.array((om6,nt6))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp)
-names = [r'\alpha_*',r'nt']
-labels =  [r'\alpha_*',r'nt']
+names = [r'\Omega_*',r'nt']
+labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
@@ -325,7 +324,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['indigo'],
-                filled=True, markers={r'\alpha_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
 
@@ -334,7 +333,7 @@ g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples2], contour_colors = ['darkviolet'], 
-                filled=True, markers={r'\alpha_*': meansB[0],'nt': meansB[1]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'nt': meansB[1]}, title_limit=1)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario B', fontsize = 18)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_B.png')
 
