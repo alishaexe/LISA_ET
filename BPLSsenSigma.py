@@ -3,43 +3,41 @@ import numpy as np
 from scipy.integrate import quad
 import time
 #%%
-#Now we want to start looking at what we get for broken power laws.
-#Let's start by defining our analytical values again
-
-#Getting the data file
-Rtab = np.array(np.loadtxt('Rtab.dat'))
-Etab = np.array(np.loadtxt('ciao4.dat'))
-#These separate the three columns of the given
-#data array. The first column is frequency,
-#followed by r1, and then r2.
-
-f = Rtab[:,0]#Measured in Hz
-r1 = Rtab[:,1]#auto correlation response
-r2 = Rtab[:,2]#cross-correlation response.
-
-Rae = r1-r2
 #Now going to define constants
 yr = 365*24*60*60 #in seconds
 H0 = 100*0.67*10**(3)/(3.086*10**(22)) #1/seconds
+# H0 = 3.24e-18 #Debikas value
+#setting h = 0.67
 pi = np.pi
-
+c = 3e8
 fetstar = 10**(-2)
 fi = 0.4*10**(-3)
+
 #For the LISA mission they have designed the
 #arms to be length L = 2.5*10^(6)
 T = 3*yr
 snr5 = 5
+#L = 2.5e9
+L = 25/3
 
+c = 3e8
+fetstar = 10**(-2)
+fi = 0.4*10**(-3)
+
+fLisa = 1/(2*pi*L)
 ffmin = 10**(-5)
 ffmax = 445
+elmin = np.log10(ffmin)
+elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 50
+itera = 5
 
 ##########
+
 elminL = (np.log10(ffmin))
-elmaxL = (np.log10(10**(-1)))
+elmaxL = (np.log10(10**(-0.95)))
 elminet = np.log10(1.6)
 elmaxet = (np.log10(ffmax))
 ntmin = -9/2
@@ -48,36 +46,117 @@ step = (ntmax-ntmin)/itera
 
 sig1 = 1
 sig2 = 12
-sigstep = (sig2-sig1)/60
+sigstep = (sig2-sig1)/5
 sigma = np.arange(sig1, sig2, sigstep)
-
 #%%
-#function for creating the table of the ET data
-#we use i to iterate through each row of the data
-def tabETapp(i):
-    res = (4*pi**2 / (3*H0**2))*Etab[i,0]**3 * Etab[i,3]**2
+P = 12
+A = 3
+
+
+def P_acc(f):
+    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
     return res
 
-col1 = Etab[:,0] # assigning the first column of the data to the name col1
-vals = range(len(Etab))#this makes the list of numbers to iterate through for i
-col2 = np.array(list(map(tabETapp, vals)))
-#map takes the values from vals and inputs them into the tabETapp function, the list() 
-#formats the output from the function for each of these values
-#as a list, and np.array() then turns them into an array. This is all assigned to col2
-tabET = np.vstack((col1, col2)).T # this combines the two columns in a 2d array with 2 rows 
-                                #and the .T transposes the array so that it instead has 2 columns
-tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less than 10**-5
-                                #and indexes the ET table so that it only containes these 
-                                #rows where the 2nd column
+def P_ims(f):#* (1e-12)**2 after P
+    res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
+    return res
+
+def N_aa(f):
+    con = 2*pi*f*L
+    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    return res
+
+def R(f):
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+    return res
+
+def S_n(f):
+    res = N_aa(f)/R(f)
+    return res
+
+def Ohms(f):
+    const = 4*pi**2/(3*H0**2)
+    res = const *f**3*S_n(f)
+    return res
+
+freqvals = np.logspace(elminL, elmaxL, itera)   
+sigvals = np.array(list(map(Ohms, freqvals)))
+
+#%%
+freqvals = np.logspace(elminL, elmaxL, itera)   
+sigvals = np.array(list(map(Ohms, freqvals)))
+elstep = (elmaxL-elminL)/itera
+elLISA = np.arange(elminL, elmaxL, elstep)
+
+#%%
+#Now for BPL
+def bpl(f, fstar, n1, n2, s):
+    res =  (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+    return res
+
+
+def Abplmin(fs, n1, n2, s):
+    integrand = lambda f, n1, n2, fs, s:(bpl(f, fs, n1, n2, s)/Ohms(f))**2
+    I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs, s))[0]
+    I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs, s))[0]
+    res = snr5/np.sqrt(T*sum((I1,I2)))
+    return res
+
+elbpl = np.arange(elminL, elmaxL, elstep)
+n1r = np.linspace(ntmin, ntmax, itera)
+n2r = np.linspace(ntmin, ntmax, itera)
+fs = 10**elbpl
+inputs = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
+#This makes it so n1r is in the second column
+# so inputs(fs, n1r, n2r)
+inputs[:,[0,1,2,3]] = inputs[:,[3,2,1,0]]
+
+
+
+Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
+Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
+
+#%%
+i = np.array(range(len(fs)))#defining them as arrays here means that in
+j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
+k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
+m = np.array(range(len(sigma)))
+fLvals = 10**elbpl
+coords = np.array(np.meshgrid(m,k,j,i, fLvals)).T.reshape(-1,5)
+coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]  
+#here in meshgrid have done ikj purely because this may it will sort j
+#like it sorts i and lets k change; we then switch round the columns so that
+#it is i,j,k
+def fbpltab(f, i, j, k, m):
+    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+    bplres = bpl(f, Atab2[i,j,k,m,0], Atab2[i,j,k,m,1], Atab2[i,j,k,m,2],Atab2[i,j,k,m,3])
+    return Atab2[i,j,k,m,4]*bplres
+
+
+Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(Atab2),len(fs),len(n1r),len(n2r),len(sigma))
+
+#%%
+maxims = []
+def maxbplvals(i):
+    maxims = np.log(np.max(Ftab2[i]))
+    fh = np.log(fLvals[i])
+    return fh, maxims
+
+
+maxpos = range(len(Ftab2))
+maxbpl = np.array(list(map( maxbplvals, maxpos)))
 
 
 
 def sigp(f):
-    res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
-            0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
-            1/2 * np.tanh(0.04 * (f - 42))) + (1/2 * np.tanh(0.04 * (f - 42))) * 
-            (0.4 * 10**(-11) * f**(1.4) + 7.9 * 10**(-13) * f**(2.98))) * (1 - 
-            0.38 * np.exp(-(f - 25)**2/50))
+    f0 = 1
+    t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
+    t2 = ((0.01e-11*((f/f0)**(1.9))) + (20.0e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42.0)))
+    t3 = 1.0-(0.475*np.exp(-(((f/f0)-25.0)**2.0)/50.0))
+    t4 = 1.0-(5.0e-4*np.exp(-(((f/f0)-20.0)**2.0)/100.0))
+    t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
+    t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
+    res = 0.88*(t1+t2)*t3*t4*t5*t6
     return res
                                                                            
                                                                            
@@ -124,6 +203,22 @@ inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
 AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
 AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
 #%%
+fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
+
+# np.save("FtabbigsigLISA.npy", fbplo)
+
+plt.figure(figsize=(6, 9))
+plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.grid(True)
+plt.title("LISA BPLS Curves", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xscale('log')
+# plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
+#%%
 i = range(len(fs))
 j = range(len(n1r))
 k = range(len(n2r))
@@ -154,8 +249,8 @@ maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
 
 fbploET = maxbplvals
 
-np.save("FtabbigsigET.npy", fbploET)
-fbploET = np.load('FtabsigET.npy')
+# np.save("FtabbigsigET.npy", fbploET)
+# fbploET = np.load('FtabsigET.npy')
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
@@ -168,144 +263,9 @@ plt.legend(fontsize="16", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
-
-#%%
-###########################
-#LISA
-###########################
-#Now can create the noise model using functions
-#Sa is the acceleration noise and ss is the
-#optical metrology noise.
-def SI(f):
-    si = 5.76*10**(-48)*(1+(fi/f)**2)
-    return si
-def Sa(f):
-    sa = 1/4 *SI(f)/((2*pi*f)**4)
-    return sa
-
-SII = 3.6*10**(-41)
-Ss = SII
-
-f2 = 25*10**(-3)
-
-####LOW FREQUENCY APPROXIMATION
-#Now make the low frequency approximation
-#this is equation 63 in the paper
-
-def sigI(f):#Sigma_I
-    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/(4*fLisa/3))**2)
-    return sig
-
-def SigmaLisaApprox(f):#Sigma_Ohm approx
-    const = ((4*pi**2/(3*H0**2)))
-    res = const * f**3 *sigI(f)
-    return res
-def SigmaLisaApproxnom(f):#Sigma_Ohm approx
-    const = ((4*pi**2/(3*H0**2)))
-    res = const * f**3 *sigI(f)
-    if res >10**(-5):
-        return
-    return res
-L = 25/3
-fLisa = 1/(2*pi*L)
-#%%
-def n1(f):
-    res = 4*Ss +8*Sa(f)*(1+np.cos(f/fLisa)**2)
-    return res
-
-def n2(f):
-    res = -((2*Ss+8*Sa(f))*np.cos(f/fLisa))
-    return res
-
-def sigtab(f, r1, r2):
-    res = 1/np.sqrt((3*H0**2/(4*pi**2*f**3))**2 * (2*((r1-r2)/(n1(f)-n2(f)))**2))
-    if res > 1e-5:
-        return
-    return res
-
-og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
+# plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
 
 
-#%%    
-freqvals = np.logspace(elminL, elmaxL, itera)   
-sigvals = np.array(list(map(SigmaLisaApprox, freqvals)))
-elstep = (elmaxL-elminL)/itera
-elLISA = np.arange(elminL, elmaxL, elstep)
-
-#%%
-#Now for BPL
-def bpl(f, fstar, n1, n2, s):
-    res =  (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-    return res
-
-
-def Abplmin(fs, n1, n2, s):
-    integrand = lambda f, n1, n2, fs, s:(bpl(f, fs, n1, n2, s)/SigmaLisaApprox(f))**2
-    I1 = quad(integrand, ffmin, 10**(-3), args=(n1, n2, fs, s))[0]
-    I2 = quad(integrand, 10**(-3), 10**(-1), args=(n1, n2, fs, s))[0]
-    res = snr5/np.sqrt(T*sum((I1,I2)))
-    return res
-
-elbpl = np.arange(elminL, elmaxL, elstep)
-n1r = np.linspace(ntmin, ntmax, itera)
-n2r = np.linspace(ntmin, ntmax, itera)
-fs = 10**elbpl
-inputs = np.array(np.meshgrid(sigma, n2r, n1r, fs)).T.reshape(-1,4)
-#This makes it so n1r is in the second column
-# so inputs(fs, n1r, n2r)
-inputs[:,[0,1,2,3]] = inputs[:,[3,2,1,0]]
-
-#%%
-
-Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
-Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
-
-#%%
-i = np.array(range(len(fs)))#defining them as arrays here means that in
-j = np.array(range(len(n1r)))#the meshgrid they'll stay in order
-k = np.array(range(len(n2r)))#i.e 000, 001,002 etc
-m = np.array(range(len(sigma)))
-fLvals = 10**elbpl
-coords = np.array(np.meshgrid(m,k,j,i, fLvals)).T.reshape(-1,5)
-coords[:,[0,1,2,3,4]] = coords[:,[4,3,2,1,0]]  
-#here in meshgrid have done ikj purely because this may it will sort j
-#like it sorts i and lets k change; we then switch round the columns so that
-#it is i,j,k
-def fbpltab(f, i, j, k, m):
-    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
-    bplres = bpl(f, Atab2[i,j,k,m,0], Atab2[i,j,k,m,1], Atab2[i,j,k,m,2],Atab2[i,j,k,m,3])
-    return Atab2[i,j,k,m,4]*bplres
-
-
-Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(Atab2),len(fs),len(n1r),len(n2r),len(sigma))
-
-#%%
-maxims = []
-def maxbplvals(i):
-    maxims = np.log(np.max(Ftab2[i]))
-    fh = np.log(fLvals[i])
-    return fh, maxims
-
-
-maxpos = range(len(Ftab2))
-maxbpl = np.array(list(map( maxbplvals, maxpos)))
-#%%
-fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
-
-np.save("FtabbigsigLISA.npy", fbplo)
-
-plt.figure(figsize=(6, 9))
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA BPLS Curves", fontsize = 16)
-plt.legend(fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.xscale('log')
-plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 #%%
 #######################
 #Combining LISA and ET curves
@@ -313,13 +273,13 @@ plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 
 def omegatog(f):
     if f <= 10**(-1):
-        return SigmaLisaApprox(f)
+        return Ohms(f)
     if f > 1.6:
         return sigETapp(f)
     
 def nomtog(f):
     if f <= 10**(-1):
-        res = SigmaLisaApprox(f)
+        res = Ohms(f)
         if res > 1e-5:
             return
         return res
@@ -343,7 +303,7 @@ def combbpl(f, fstar, n1, n2,s):
 
 
 def Abplmincomb(fs, n1, n2, s):
-    integrand = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/SigmaLisaApprox(f))**2
+    integrand = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-4), args=(fs, n1, n2, s))[0]
     I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2, s))[0]
     I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2, s))[0]
@@ -407,7 +367,7 @@ def combmaxbplvals(i):
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
 combfbplo = maxbplcomb
-np.save("Ftabbigsigcomb.npy", combfbplo)
+# np.save("Ftabbigsigcomb.npy", combfbplo)
 
 #%%
 plt.figure(figsize=(6, 9))
@@ -419,7 +379,7 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('CombBPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('CombBPLSbigsigma.png', bbox_inches='tight')
 
 # #%%
 plt.figure(figsize=(6, 9))
@@ -435,5 +395,5 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
  
