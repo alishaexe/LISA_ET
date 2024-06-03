@@ -92,25 +92,18 @@ tabET = np.vstack((col1, col2)).T # this combines the two columns in a 2d array 
 # plt.grid(True)
 # plt.show()
 #%%
-# def sigp(f):
-#     f0 = 1
-#     t1 = (1-0.475*np.exp(-(f/f0-25)**2/50))
-#     t2 = (1-5e-4*np.exp(-(f/f0-20)**2/100))
-#     t3 = (1-0.2*np.exp(-((f/f0-47)**2)**0.85/100))
-#     t4 = (1-0.12*np.exp(-((f/f0-50)**2)**0.7/100)-0.2*np.exp(-(f/f0-45)**2/250)+0.15*np.exp(-(f/f0-85)**2/400))
-    
-#     res = 0.88*((9*(f/f0)**(-30)+5.5e-6 *(f/f0)**(-4.5)+0.28e-11 * (f/f0)**3.2)*(1/2 - 1/2*np.tanh(0.06*(f/f0-42)))
-#                 +(1/2*np.tanh(0.06*(f/f0-42)))*(0.01e-11*(f/f0)**1.9 + 20e-13 *(f/f0)**2.8))*t1*t2*t3*t4*(0.67)**2
-#     return 2*res
 def sigp(f):
-    res = 0.9 * ((3 * 30 * 10**(-1) * f**(-30) + 5.5 * 10**(-6) * f**(-4.5) + 
-            0.7 * 10**(-11) * f**(2.8)) * (1/2 - 
-            1/2 * np.tanh(0.04 * (f - 42))) + (1/2 * np.tanh(0.04 * (f - 42))) * 
-            (0.4 * 10**(-11) * f**(1.4) + 7.9 * 10**(-13) * f**(2.98))) * (1 - 
-            0.38 * np.exp(-(f - 25)**2/50))
-    return res                                                                       
-                                                
-                                                                           
+    f0 = 1
+    t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
+    t2 = ((0.01e-11*((f/f0)**(1.9))) + (20.0e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42.0)))
+    t3 = 1.0-(0.475*np.exp(-(((f/f0)-25.0)**2.0)/50.0))
+    t4 = 1.0-(5.0e-4*np.exp(-(((f/f0)-20.0)**2.0)/100.0))
+    t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
+    t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
+    res = 0.88*(t1+t2)*t3*t4*t5*t6
+    return res
+
+
 
 def etnomonly(f):
     res = sigp(f)
@@ -179,13 +172,13 @@ def FETtab(i, j):
 
 #%%
 
-elstep = (elmaxet-elminet)/itera
+elstep = (elmaxet-elminet)/2000
 elET = np.arange(elminet, elmaxet, elstep)
 i = range(len(elET))
 j = range(len(AETtab))
 coordset = np.array(np.meshgrid(i,j)).T.reshape(-1,2)
-Ftabetpls = np.array(list(map(lambda args: FETtab(*args), coordset))).reshape(len(elET), len(AETtab))
-maxedET = []
+Ftabetpls = np.array(list(map(lambda args: FETtab(*args), coordset))).reshape(len(elET), 1,len(AETtab))
+
 
 def maxETpls(i):
     maxedET = np.log(np.max(Ftabetpls[i]))
@@ -369,7 +362,7 @@ def S_n(f):
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
     res = const *f**3*S_n(f)
-    return 2.5*res
+    return res
 
 
 

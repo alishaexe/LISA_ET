@@ -47,37 +47,37 @@ step = (ntmax-ntmin)/itera
 
 
 #benchmarks LISA case 1
-om1 = 1e-12
+om1 = 7e-12
 nt1 = -0.1
-fs1 = 1e-3
+fs1 = 1e-7
 
 #LISA case 2
-om2 = 1e-12
+om2 = 1e-11
 nt2 = -0.1
-fs2 = 1e-3
+fs2 = 1e-7
 
 #ET case 3 
-om3 = 1e-6
+om3 = 1e-11
 nt3 = -0.1
-fs3 = 1e-3
+fs3 = 1e-6
 
 #ET case 4
-om4 = 1e-6
+om4 = 1e-11
 nt4 = -0.1
-fs4 = 1e-3
+fs4 = 1e-7
 
 #Combined case 5
-om5 = 1e-6
+om5 = 1e-11
 nt5 = -0.1
-fs5 = 1e-3
+fs5 = 1e-6
 
 #Combined case 6
-om6 = 1e-6
+om6 = 1e-11
 nt6 = -0.1
-fs6 = 1e-3
+fs6 = 1e-7
 
-#%%
 # #%%
+#%%
 P = 12
 A = 3
 
@@ -85,7 +85,7 @@ def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
     return res
 
-def P_ims(f):#* (1e-12)**2 after P
+def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
@@ -109,7 +109,7 @@ def Ohms(f):
 
 
 
-#%%
+# #%%
 
 
 def f00(f0, nt, om):
@@ -153,13 +153,16 @@ labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-# #%%
+
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['red'],
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
+plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1, fs = fs1), ha='center', size='x-large')
+plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
 # plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
 
@@ -208,7 +211,7 @@ ETfm = np.array(list(map(lambda args: fisheret(*args), ET)))
 
 FMEA = ETfm[0]
 FMEB = ETfm[1]
-#%%
+# #%%
 covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
@@ -223,7 +226,7 @@ labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Scenario B')
 
-#%%
+# #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
