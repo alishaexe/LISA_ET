@@ -47,9 +47,9 @@ step = (ntmax-ntmin)/itera
 
 
 #benchmarks LISA case 1
-om1 = 7e-12
+om1 = 4e-12
 nt1 = -0.1
-fs1 = 1e-7
+fs1 = 1e-9
 
 
 #%%
@@ -107,7 +107,7 @@ def fisher(f0, nt, om):
                         (f01(f0, nt, om), f11(f0, nt, om))))
     return res
 
-lisa = np.array((fs1, nt1, om1))
+# lisa = np.array((fs1, nt1, om1))
 LISAfm = fisher(fs1, nt1, om1)#np.array(list(map(lambda args: fisher(*args), lisa)))
 
 FMLA = LISAfm

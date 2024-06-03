@@ -88,7 +88,7 @@ def Ohms(f):
     return res
 def pls(f):
     n = -0.1
-    om = 7e-12
+    om = 1e-12
     fst = 1e-10
     res = om * (f/fst)**(n)
     return res
