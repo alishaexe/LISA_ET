@@ -32,7 +32,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 20
+itera = 200
 
 ##########
 
@@ -136,6 +136,8 @@ maxpos = range(len(Ftab2))
 maxbpl = np.array(list(map(maxbplvals, maxpos)))
 #%%
 fbplo = np.vstack((np.log(fs), maxbpl)).T
+np.save("ftablisa.npy", fbplo)
+
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
@@ -147,7 +149,7 @@ plt.xlabel('f (Hz)')
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
 plt.xscale('log')
 plt.ylim(1e-14, 1e-4)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -225,6 +227,8 @@ maxbplET = maxbplvals
 
 #%%
 fbploET = np.vstack((np.log(fs), maxbplET)).T
+
+np.save("ftabET.npy", fbploET)
 #plots the bpl curve
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), '-',color = "lime", linewidth=2.5)
@@ -248,7 +252,7 @@ plt.legend(fontsize="10", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -382,10 +386,12 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomBPLSwold.png', bbox_inches='tight')
 plt.show()
 
-
+np.save("Ftab4.npy", Ftab4)
+np.save("Atab4.npy", Atab4)
+np.save("Amin4.npy", Amin4)
 
 
 

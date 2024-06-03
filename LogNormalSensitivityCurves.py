@@ -32,7 +32,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 200
+itera = 2000
 
 ##########
 
@@ -157,7 +157,7 @@ plt.legend()
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
 plt.show()
 
 
@@ -258,7 +258,7 @@ plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -283,7 +283,7 @@ def nomtog(f):
             return
         return res
  
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),2000)
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
@@ -365,5 +365,5 @@ plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
 plt.show()
