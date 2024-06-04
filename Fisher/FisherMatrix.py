@@ -84,8 +84,6 @@ def Ohms(f):
 
 
 #%%
-
-
 def f00(f0, nt, om):
     integrand = lambda f, f0, nt, om: ((f/f0)**(2*nt))/Ohms(f)**2
     res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]

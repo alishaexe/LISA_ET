@@ -1,9 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import sympy as sp
-from sympy import *
-from sympy import Array, Symbol
 from scipy.integrate import quad
+import matplotlib.pyplot as plt
 import getdist
 from getdist import plots, MCSamples
 from scipy.interpolate import UnivariateSpline
@@ -49,22 +46,13 @@ elmaxet = (np.log10(ffmax))
 ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
-#%%
-#Differentiation of LogNs
-f0 = Symbol('f0')
-om = Symbol('om')
-f = Symbol('f')
-s = Symbol('s')
-def diff(param1, param2):
-    res = ogw.diff(param1)*ogw.diff(param2)
-    return res
-ogw = sp.exp(-1/(2*10**s)*(sp.log(f/f0))**2)
-A = Matrix([[s], [f0]])
-params = np.array(np.meshgrid(A, A)).T.reshape(-1,2)
-rows_to_remove = [2]
-params = np.delete(params, rows_to_remove, axis=0)
 
-diffs = np.array(list(map(lambda args: diff(*args), params)))
+
+
+fs = 1e-2
+rho = 1
+om = 1e-6
+
 #%%
 P = 12
 A = 3
@@ -95,13 +83,131 @@ def Ohms(f):
     res = const *f**3*S_n(f)
     return res
 
+#%%
+def f00(f0, rho, om):
+    integrand = lambda f, f0, rho: (np.exp(-np.log10(f/f0)**2/(rho**2)))/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=(f0, rho))[0]
+    return 2*T*res
+
+def f01(f0, rho, om):
+    integrand = lambda f, f0, rho, om: (om*np.exp(-np.log10(f/f0)**2/(rho**2))*np.log10(f/f0)**2/(rho**3))/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, rho, om))[0]
+    return 2*T*res
+
+def f11(f0, rho, om):
+    integrand = lambda f, f0, rho, om: (om**2*np.exp(-np.log10(f/f0)**2/(rho**2))*np.log10(f/f0)**4/(rho**6))/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, rho, om))[0]
+    return 2*T*res
 
 
+def fisher(f0, rho, om):
+    res = np.array(((f00(f0, rho, om), f01(f0, rho, om)), 
+                        (f01(f0, rho, om), f11(f0, rho, om))))
+    return res
+
+LISAfm = fisher(fs, rho, om)
+
+FMLA = LISAfm
+covmA = np.linalg.inv((FMLA))
 
 
+meansA = np.array((om,rho))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+names = [r'\Omega_*',r'\rho']
+labels =  [r'\Omega_*',r'\rho']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+
+#%%
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=18
+g.settings.legend_fontsize = 18
+g.settings.axes_labelsize = 18
+g.triangle_plot([samples], contour_colors = ['red'],
+                filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
+# plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om), ha='center', size='x-large')
+# plt.text(-0.1,1.9, r'$\rho = {rho}$'.format(rho = rho), ha='center', size='x-large')
+# plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs), ha='center', size='x-large')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLogLISA_A.png')
+
+#%%
+
+def sigp(f):
+    f0 = 1
+    t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
+    t2 = ((0.01e-11*((f/f0)**(1.9))) + (20.0e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42.0)))
+    t3 = 1.0-(0.475*np.exp(-(((f/f0)-25.0)**2.0)/50.0))
+    t4 = 1.0-(5.0e-4*np.exp(-(((f/f0)-20.0)**2.0)/100.0))
+    t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
+    t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
+    res = 0.88*(t1+t2)*t3*t4*t5*t6
+    return res
+
+def f00et(f0, rho, om):
+    integrand = lambda f, f0, rho: (np.exp(-np.log10(f/f0)**2/(rho**2)))/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=(f0, rho))[0]
+    return 2*T*res
+
+def f01et(f0, rho, om):
+    integrand = lambda f, f0, rho, om: (om*np.exp(-np.log10(f/f0)**2/(rho**2))*np.log10(f/f0)**2/(rho**3))/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, rho, om))[0]
+    return 2*T*res
+
+def f11et(f0, rho, om):
+    integrand = lambda f, f0, rho, om: (om**2*np.exp(-np.log10(f/f0)**2/(rho**2))*np.log10(f/f0)**4/(rho**6))/sigp(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, rho, om))[0]
+    return 2*T*res
 
 
+def fisheret(f0, rho, om):
+    res = np.array(((f00et(f0, rho, om), f01et(f0, rho, om)), 
+                        (f01et(f0, rho, om), f11et(f0, rho, om))))
+    return res
 
+ETfm = fisheret(fs, rho, om)
+
+FMEA = ETfm
+covmA = np.linalg.inv((FMEA))
+
+
+meansA = np.array((om,rho))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+names = [r'\Omega_*',r'\rho']
+labels =  [r'\Omega_*',r'\rho']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+#%%
+
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=14
+g.settings.legend_fontsize = 16
+g.settings.axes_labelsize = 16
+g.triangle_plot([samples], contour_colors = ['darkblue'], 
+                filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET_A.png')
+#%%
+#all together now
+FMA = FMLA + FMEA
+
+covmA = np.linalg.inv((FMA))
+
+
+meansA = np.array((om, rho))
+nsamp = int(1E6)
+samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
+names = [r'\Omega_*',r'\rho']
+labels =  [r'\Omega_*',r'\rho']
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+
+#%%
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=18
+g.settings.legend_fontsize = 18
+g.settings.axes_labelsize = 18
+g.triangle_plot([samples], contour_colors = ['indigo'],
+                filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
+# plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISAcomb_A.png')
 
 
 
