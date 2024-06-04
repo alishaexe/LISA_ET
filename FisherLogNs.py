@@ -4,6 +4,9 @@ import sympy as sp
 from sympy import *
 from sympy import Array, Symbol
 from scipy.integrate import quad
+import getdist
+from getdist import plots, MCSamples
+from scipy.interpolate import UnivariateSpline
 #%%
 
 #Now going to define constants
