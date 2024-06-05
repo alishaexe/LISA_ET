@@ -333,24 +333,29 @@ flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 # plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 # plt.show()
 
-
-
-
 #%%
 
+def bpls(f):
+    om = 5e-10
+    n1 = 2.4
+    n2 = -2.4
+    fstar = 2e-1
+    s = 1.2
+    res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+    return res
 
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", linewidth=2.5)
-plt.grid()
+bplet = np.array(list(map(pls, fvalscomb)))
+
+plt.figure(figsize=(6, 9))
+plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(fvalscomb,bplet)
+plt.title("Nominal and PLS curves ", fontsize = 16)
+# plt.legend(loc = (1.05,0.5), fontsize = 14)
+plt.grid(True) 
+plt.xlim(ffmin, ffmax) 
+plt.xlabel(r'$f$ (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.show()
-
-
-
-
-
-
-
-
 
 
 

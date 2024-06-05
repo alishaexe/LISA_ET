@@ -48,10 +48,10 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 
-
-fs = 1e-2
+om = 9e-13
+fs = 1e-1
 rho = 1
-om = 1e-6
+
 
 #%%
 P = 12
@@ -123,7 +123,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=18
 g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
-g.triangle_plot([samples], contour_colors = ['red'],
+g.triangle_plot([samples], contour_colors = ['purple'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
 # plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om), ha='center', size='x-large')
 # plt.text(-0.1,1.9, r'$\rho = {rho}$'.format(rho = rho), ha='center', size='x-large')
@@ -182,7 +182,7 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=14
 g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
-g.triangle_plot([samples], contour_colors = ['darkblue'], 
+g.triangle_plot([samples], contour_colors = ['darkorchid'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET_A.png')
 #%%

@@ -47,18 +47,18 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
-size = 16
+size = 20
 
 
 #case 1
-o1 = 1e-6
+o1 = 5e-10
 n1 = 2.4
 n2 = -2.4
 fstar = 2e-1
 s1 = 1.2
 
 #case 2
-o2 = 10**(-6.3)
+o2 = 1e-5
 nom1 = 3
 nom2 = -1
 fbreak = 5e-2
