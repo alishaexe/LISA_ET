@@ -58,11 +58,11 @@ def P_ims(f):#* (1e-12)**2 after P
 
 def N_aa(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    res = 8 * (np.sin(f/fLisa))**2 * (4*(1+np.cos(f/fLisa)+(np.cos(f/fLisa))**2)*P_acc(f)+(2+np.cos(f/fLisa))*P_ims(f))
     return res
 
 def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+    res = 16*(np.sin(f/fLisa))**2  * (f/fLisa)**2 * 9/20 * 1/(1+0.7*(f/fLisa)**2)
     return res
 
 def S_n(f):
@@ -149,7 +149,7 @@ plt.tick_params(axis='both', which='major', labelsize=14)
 plt.grid(True)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal and PLS curve LISA", fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLS.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLS.png', bbox_inches='tight')
 plt.show()
 #%%
 def sigp(f):
@@ -253,7 +253,7 @@ plt.xlabel("f (Hz)", fontsize = 16)
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -340,7 +340,7 @@ plt.grid(True)
 plt.xlim(ffmin, ffmax) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
 plt.show()
 
 

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import quad
-import time
 #%%
 #Now going to define constants
 yr = 365*24*60*60 #in seconds
@@ -148,6 +147,23 @@ maxbpl = np.array(list(map( maxbplvals, maxpos)))
 
 
 
+#%%
+fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
+
+np.save("FtabbigsigLISA.npy", fbplo)
+
+plt.figure(figsize=(6, 9))
+plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.grid(True)
+plt.title("LISA BPLS Curves", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xscale('log')
+plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
+#%%
 def sigp(f):
     f0 = 1
     t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
@@ -167,9 +183,6 @@ def etnomonly(f):
         return
     return res
 
-def sigETapp(f):#Sigma_Ohm approx
-    res = sigp(f)
-    return res
 #%%
 fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
@@ -185,7 +198,7 @@ def bplET(f, fstar, n1, n2, s):
     return res
 
 def AbplminET(fs, n1, n2, s):
-    integrand = lambda f, fs, n1, n2, s:(bplET(f, fs, n1, n2,s)/sigETapp(f))**2
+    integrand = lambda f, fs, n1, n2, s:(bplET(f, fs, n1, n2,s)/sigp(f))**2
     I1 = quad(integrand, 1.6, 100, args=(fs, n1, n2, s))[0]
     I2 = quad(integrand, 100, 445, args=(fs, n1, n2, s))[0]
     res = snr5/np.sqrt(T*sum((I1, I2)))
@@ -202,23 +215,6 @@ inputsET[:,[0,1,2,3]] = inputsET[:,[3,2,1,0]]
 #%%
 AminET = np.array(list(map(lambda args: AbplminET(*args), inputsET)))
 AtabET = np.vstack((inputsET.T, AminET)).T.reshape(len(fs),len(n1r),len(n2r), len(sigma),5)
-#%%
-fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
-
-# np.save("FtabbigsigLISA.npy", fbplo)
-
-plt.figure(figsize=(6, 9))
-plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.grid(True)
-plt.title("LISA BPLS Curves", fontsize = 16)
-plt.legend(fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.xscale('log')
-# plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
-#%%
 i = range(len(fs))
 j = range(len(n1r))
 k = range(len(n2r))
@@ -249,7 +245,7 @@ maxbplvals = np.array(list(map(maxETbplvals, maxposET)))
 
 fbploET = maxbplvals
 
-# np.save("FtabbigsigET.npy", fbploET)
+np.save("FtabbigsigET.npy", fbploET)
 # fbploET = np.load('FtabsigET.npy')
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
@@ -263,7 +259,7 @@ plt.legend(fontsize="16", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
+plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
 
 
 #%%
@@ -272,19 +268,19 @@ plt.yscale('log')
 #######################
 
 def omegatog(f):
-    if f <= 10**(-1):
+    if f <= 10**(-0.95):
         return Ohms(f)
     if f > 1.6:
-        return sigETapp(f)
+        return sigp(f)
     
 def nomtog(f):
-    if f <= 10**(-1):
+    if f <= 10**(-0.95):
         res = Ohms(f)
         if res > 1e-5:
             return
         return res
     if f > 1:
-        res = sigETapp(f)
+        res = sigp(f)
         if res > 1e-5:
             return
         return res
@@ -308,7 +304,7 @@ def Abplmincomb(fs, n1, n2, s):
     I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2, s))[0]
     I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2, s))[0]
     I4 = quad(integrand, 10, ffmax, args = (fs, n1, n2, s))[0]
-    integrand2 = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/sigETapp(f))**2
+    integrand2 = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/sigp(f))**2
     I5 = quad(integrand2, ffmin, 10**(0), args=(fs, n1, n2, s))[0]
     I6 = quad(integrand2, 10**(0), 100, args=(fs, n1, n2, s))[0]
     I7 = quad(integrand2, 100, ffmax, args=(fs, n1, n2, s))[0]
@@ -367,18 +363,18 @@ def combmaxbplvals(i):
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
 combfbplo = maxbplcomb
-# np.save("Ftabbigsigcomb.npy", combfbplo)
+np.save("Ftabbigsigcomb.npy", combfbplo)
 
 #%%
-plt.figure(figsize=(6, 9))
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.grid(True)
-plt.title("Combined BPLS Curves", fontsize = 16)
-plt.legend(fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.xscale('log')
+# plt.figure(figsize=(6, 9))
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.grid(True)
+# plt.title("Combined BPLS Curves", fontsize = 16)
+# plt.legend(fontsize = 16)
+# plt.xlabel('f (Hz)', fontsize = 16)
+# plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+# plt.tick_params(axis='both', which='major', labelsize=14) 
+# plt.xscale('log')
 # plt.savefig('CombBPLSbigsigma.png', bbox_inches='tight')
 
 # #%%
@@ -395,5 +391,5 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-# plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
+plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
  
