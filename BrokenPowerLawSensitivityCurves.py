@@ -32,8 +32,8 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 200
-
+itera = 100
+nitera = 10
 ##########
 
 elminL = (np.log10(ffmin))
@@ -74,7 +74,7 @@ def Ohms(f):
     res = const *f**3*S_n(f)
     return res
 
-freqvals = np.logspace(elminL, elmaxL, itera)   
+freqvals = np.logspace(elminL, elmaxL, 200)   
 sigvals = np.array(list(map(Ohms, freqvals)))
 
 #%%
@@ -96,8 +96,8 @@ def Abplmin(fs, n1, n2):
 
 elstep = (elmaxL-elminL)/itera
 elbpl = np.arange(elminL, elmaxL, elstep)
-n1r = np.linspace(ntmin, ntmax, itera)
-n2r = np.linspace(ntmin, ntmax, itera)
+n1r = np.linspace(ntmin, ntmax, nitera)
+n2r = np.linspace(ntmin, ntmax, nitera)
 fs = 10**elbpl
 
 inputs = np.array(np.meshgrid(fs, n2r, n1r)).T.reshape(-1,3)
@@ -108,7 +108,7 @@ inputs[:,[0,1,2]] = inputs[:,[0,2,1]]
 #%%
 
 Amin2 = np.array(list(map(lambda args: Abplmin(*args), inputs)))
-Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(n1r),len(n1r),len(n1r),4)
+Atab2 = np.vstack((inputs.T, Amin2)).T.reshape(len(fs),len(n1r),len(n2r),4)
 
 #%%
 i = np.array(range(len(fs)))#defining them as arrays here means that in
@@ -123,7 +123,7 @@ def fbpltab(i, j, k, m):
     bplres = bpl(fs[m], Atab2[i,j,k,0], Atab2[i,j,k,1], Atab2[i,j,k,2])
     return Atab2[i,j,k,3]*bplres
 
-Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+Ftab2 = np.array(list(map(lambda args: fbpltab(*args), coords))).reshape(len(fs),len(n1r),len(n2r),len(fs))
 
 #%%
 maxims = []
@@ -136,7 +136,7 @@ maxpos = range(len(Ftab2))
 maxbpl = np.array(list(map(maxbplvals, maxpos)))
 #%%
 fbplo = np.vstack((np.log(fs), maxbpl)).T
-np.save("ftablisa.npy", fbplo)
+# np.save("ftablisa.npy", fbplo)
 
 
 plt.figure(figsize=(6, 9))
@@ -149,7 +149,7 @@ plt.xlabel('f (Hz)')
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 12)
 plt.xscale('log')
 plt.ylim(1e-14, 1e-4)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomBPLS.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -214,7 +214,7 @@ def fbpltabET(i, j, k, m):
     return AtabET[i,j,k,3]*bplres
 
    
-FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(n1r),len(fs),len(n1r),len(n2r))
+FtabET = np.array(list(map(lambda args: fbpltabET(*args), coords))).reshape(len(fs),len(n1r),len(n2r),len(fs))
 
 def maxETbplvals(i):
     maximsET = np.log(np.max(FtabET[i]))
@@ -347,7 +347,7 @@ def fbpltabcomb(i, j, k, m):
 
 
 
-Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(fsc),len(fsc),len(fsc),len(fsc))
+Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(fsc),len(n1c),len(n2c),len(fsc))
    
 
 #%%

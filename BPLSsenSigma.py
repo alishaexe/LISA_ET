@@ -31,8 +31,8 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 5
-
+itera = 100
+nitera = 12
 ##########
 
 elminL = (np.log10(ffmin))
@@ -78,7 +78,7 @@ def Ohms(f):
     res = const *f**3*S_n(f)
     return res
 
-freqvals = np.logspace(elminL, elmaxL, itera)   
+freqvals = np.logspace(elminL, elmaxL, 200)   
 sigvals = np.array(list(map(Ohms, freqvals)))
 
 #%%
@@ -150,7 +150,7 @@ maxbpl = np.array(list(map( maxbplvals, maxpos)))
 #%%
 fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
-np.save("FtabbigsigLISA.npy", fbplo)
+# np.save("FtabbigsigLISA.npy", fbplo)
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
@@ -162,7 +162,7 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 #%%
 def sigp(f):
     f0 = 1

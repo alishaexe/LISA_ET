@@ -85,7 +85,8 @@ def Almin(nt):
     integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
     I2 = quad(integrand, 10**(-3), 10**(0), args=(nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2)))
+    I3 = quad(integrand, 10**(0), ffmax, args=(nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1,I2,I3)))
     return nt, res
 
 

@@ -344,11 +344,15 @@ def bpls(f):
     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
-bplet = np.array(list(map(pls, fvalscomb)))
-
+bplet = np.array(list(map(bpls, fvalscomb)))
+# phase = np.array(list(map(bpl, freqs)))
+et = np.load('/Users/alisha/Documents/LISA/ftabET.npy')
+lisa = np.load('/Users/alisha/Documents/LISA/ftablisa.npy')
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(fvalscomb,bplet)
+plt.plot(fvalscomb,bplet)
+plt.plot(np.exp(et[:,0]), np.exp(et[:,1]))
+plt.plot(np.exp(lisa[:,0]),np.exp(lisa[:,1]))
 plt.title("Nominal and PLS curves ", fontsize = 16)
 # plt.legend(loc = (1.05,0.5), fontsize = 14)
 plt.grid(True) 
