@@ -51,18 +51,18 @@ size = 20
 
 
 #case 1
-o1 = 5e-10
+o1 = 1e-10
 n1 = 2.4
 n2 = -2.4
 fstar = 2e-1
 s1 = 1.2
 
 #case 2
-o2 = 1e-5
-nom1 = 3
-nom2 = -1
-fbreak = 5e-2
-s2 = 7.2
+o2 = 1e-7
+nom1 = 4
+nom2 = -4
+fbreak = 0.45
+s2 = 1.2
 
 #%%
 P = 12

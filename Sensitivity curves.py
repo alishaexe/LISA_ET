@@ -76,7 +76,7 @@ col2 = np.array(list(map(tabETapp, vals)))
 #as a list, and np.array() then turns them into an array. This is all assigned to col2
 tabET = np.vstack((col1, col2)).T # this combines the two columns in a 2d array with 2 rows 
                                 #and the .T transposes the array so that it instead has 2 columns
-# tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less than 10**-5
+tabET2 = tabET[col2 < 10**(-5)] #this looks at the second column for values less than 10**-5
                                 #and indexes the ET table so that it only containes these 
                                 #rows where the 2nd column
 
@@ -130,7 +130,8 @@ plt.show()
 #Plots both curves overlayed each other
 
 plt.figure(figsize=(6, 9)) 
-plt.loglog(tabET[:,0], tabET[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
+plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
+# plt.loglog(tabET[:,0], tabET[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
 plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
 plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2.5,color = "indigo" )
 plt.legend(fontsize = 16)
@@ -342,7 +343,7 @@ def P_acc(f):
     res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
     return res
 
-def P_ims(f):#* (1e-12)**2 after P
+def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
@@ -362,7 +363,7 @@ def S_n(f):
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
     res = const *f**3*S_n(f)
-    return res
+    return res*2*np.sqrt(2)
 
 
 

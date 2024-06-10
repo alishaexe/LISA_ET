@@ -151,18 +151,18 @@ elLISA = np.arange(elminL, elmaxL, elstep)
 # fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
 # # np.save("FtabbigsigLISA.npy", fbplo)
-
-# plt.figure(figsize=(6, 9))
-# plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-# plt.grid(True)
-# plt.title("LISA BPLS Curves", fontsize = 16)
-# plt.legend(fontsize = 16)
-# plt.xlabel('f (Hz)', fontsize = 16)
-# plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-# plt.tick_params(axis='both', which='major', labelsize=14) 
-# plt.xscale('log')
-# plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
+fbplo = np.load('/Users/alisha/Documents/LISA/FtabbigsigLISA.npy')
+plt.figure(figsize=(6, 9))
+plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.grid(True)
+plt.title("LISA BPLS Curves", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xscale('log')
+plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 #%%
 def sigp(f):
     f0 = 1
@@ -184,8 +184,8 @@ def etnomonly(f):
     return res
 
 #%%
-# fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
-# sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
+fvalsET = np.logspace(np.log10(1), np.log10(445),2000)#frequency values
+sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 # #%%
 # #Now the BPLS for ET
 # #Now for BPL
@@ -246,20 +246,21 @@ def etnomonly(f):
 # fbploET = maxbplvals
 
 # np.save("FtabbigsigET.npy", fbploET)
+fbploET = np.load('/Users/alisha/Documents/LISA/FtabbigsigET.npy')
 # # fbploET = np.load('FtabsigET.npy')
-# #plots all 3 graphs on same plot
-# plt.figure(figsize=(6, 9)) 
-# plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
-# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
-# plt.title('ET Nominal and BPL Curves', fontsize = 16)
-# plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-# plt.xlabel('f (Hz)', fontsize = 16)
-# plt.tick_params(axis='both', which='major', labelsize=14) 
-# plt.legend(fontsize="16", loc = 'upper center')
-# plt.grid(True)
-# plt.xscale('log')
-# plt.yscale('log')
-# plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
+#plots all 3 graphs on same plot
+plt.figure(figsize=(6, 9)) 
+plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
+plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
+plt.title('ET Nominal and BPL Curves', fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.legend(fontsize="16", loc = 'upper center')
+plt.grid(True)
+plt.xscale('log')
+plt.yscale('log')
+plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
 
 
 #%%
@@ -363,33 +364,34 @@ def combmaxbplvals(i):
 combmaxpos = range(len(Ftab4))
 maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
 combfbplo = maxbplcomb
-np.save("Ftabbigsigcomb.npy", combfbplo)
+# np.save("Ftabbigsigcomb.npy", combfbplo)
 
 #%%
-# plt.figure(figsize=(6, 9))
-# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-# plt.grid(True)
-# plt.title("Combined BPLS Curves", fontsize = 16)
-# plt.legend(fontsize = 16)
-# plt.xlabel('f (Hz)', fontsize = 16)
-# plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-# plt.tick_params(axis='both', which='major', labelsize=14) 
-# plt.xscale('log')
+combfbplo = np.load('/Users/alisha/Documents/LISA/Ftabbigsigcomb.npy')
+plt.figure(figsize=(6, 9))
+plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.grid(True)
+plt.title("Combined BPLS Curves", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.xlabel('f (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xscale('log')
 # plt.savefig('CombBPLSbigsigma.png', bbox_inches='tight')
 
 # # #%%
-# plt.figure(figsize=(6, 9))
-# plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
-# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "Combined BPLS", color = "lime", linewidth=2.5)
-# plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]),':', color = "teal", label = 'LISA BPLS', linewidth=2.5)
-# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), ':',color = "black", label = " ET BPLS", linewidth=2.5)
-# plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-# plt.title("Nominal and BPLS Curve for LISA and ET", fontsize = 16)
-# plt.xlabel("f (Hz)", fontsize = 16)
-# plt.legend(loc = (1.05,0.5), fontsize = 14)
-# plt.yscale('log')
-# plt.xscale('log')
-# plt.xlim(ffmin, ffmax)
-# plt.grid(True)
+plt.figure(figsize=(6, 9))
+plt.loglog(otog[:,0], nom, label = "Nominal Curve", color = "indigo", linewidth=2.5)
+plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "Combined BPLS", color = "lime", linewidth=2.5)
+plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]),':', color = "teal", label = 'LISA BPLS', linewidth=2.5)
+plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), ':',color = "black", label = " ET BPLS", linewidth=2.5)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.title("Nominal and BPLS Curve for LISA and ET", fontsize = 16)
+plt.xlabel("f (Hz)", fontsize = 16)
+plt.legend(loc = (1.05,0.5), fontsize = 14)
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(ffmin, ffmax)
+plt.grid(True)
 # plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
  
