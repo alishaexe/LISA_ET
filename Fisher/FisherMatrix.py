@@ -45,9 +45,9 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
-
+size = 18
 #benchmarks LISA case 1
-om1 = 4e-12
+om1 = 1e-12
 nt1 = -0.1
 fs1 = 1e-9
 
@@ -122,16 +122,16 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scena
 
 
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=18
-g.settings.legend_fontsize = 18
-g.settings.axes_labelsize = 18
-g.triangle_plot([samples], contour_colors = ['red'],
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['darkblue'],
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
 plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
 plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
-# plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
+plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
 
 #%%
 def sigp(f):
@@ -182,12 +182,16 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scena
 
 
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=14
-g.settings.legend_fontsize = 16
-g.settings.axes_labelsize = 16
-g.triangle_plot([samples], contour_colors = ['darkblue'], #param_limits=param_limitsA,
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
+plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
+plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
+plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
+plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
 
 
 #%%
@@ -210,13 +214,16 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scena
 
 
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=18
-g.settings.legend_fontsize = 18
-g.settings.axes_labelsize = 18
-g.triangle_plot([samples], contour_colors = ['indigo'],
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['blue'],
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
+plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
+plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
 
 
 

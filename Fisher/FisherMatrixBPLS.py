@@ -116,7 +116,11 @@ def f02(f0, n1, n2, om, s):
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
-
+def f03(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/Ohms(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 def f11(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: ((om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
@@ -128,17 +132,32 @@ def f12(f0, n1, n2, om, s):
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
-
+def f13(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/Ohms(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 def f22(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+def f23(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)*np.log(0.5*(f/f0)**s + 0.5)/s)/Ohms(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
+def f33(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)**2)/Ohms(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 
 def fisher(f0, n1, n2, om, s):
-    res = np.array(((f00(f0, n1, n2, om, s), f01(f0, n1, n2, om, s), f02(f0, n1, n2, om, s)), 
-                    (f01(f0, n1, n2, om, s), f11(f0, n1, n2, om, s), f12(f0, n1, n2, om, s)),
-                    (f02(f0, n1, n2, om, s), f12(f0, n1, n2, om, s), f22(f0, n1, n2, om, s))))
+    res = np.array(((f00(f0, n1, n2, om, s), f01(f0, n1, n2, om, s), f02(f0, n1, n2, om, s), f03(f0, n1, n2, om, s)), 
+                    (f01(f0, n1, n2, om, s), f11(f0, n1, n2, om, s), f12(f0, n1, n2, om, s), f13(f0, n1, n2, om, s)),
+                    (f02(f0, n1, n2, om, s), f12(f0, n1, n2, om, s), f22(f0, n1, n2, om, s), f23(f0, n1, n2, om, s)),
+                    (f03(f0, n1, n2, om, s), f13(f0, n1, n2, om, s), f23(f0, n1, n2, om, s), f33(f0, n1, n2, om, s))))
     return res
 
 lisa = [(fstar, n1, n2, o1, s1), (fbreak, nom1, nom2, o2, s2)]
@@ -152,24 +171,24 @@ covmB = np.linalg.inv((FMLB))
 
 
 
-meansA = np.array((o1, n1, n2))
-meansB = np.array((o2, nom1, nom2))
+meansA = np.array((o1, n1, n2,s1))
+meansB = np.array((o2, nom1, nom2,s2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
-names = [r'\Omega_*',r'n1', r'n2']
-labels =  [r'\Omega_*',r'n1', r'n2']
+names = [r'\Omega_*',r'n1', r'n2',r'\sigma']
+labels =  [r'\Omega_*',r'n1', r'n2',r'\sigma']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
-g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['Green'], 
-                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=size
+# g.settings.legend_fontsize = size
+# g.settings.axes_labelsize = size
+# g.triangle_plot([samples], contour_colors = ['Green'], 
+#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of LISA BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase1.png')
 #%%
@@ -178,7 +197,7 @@ g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['darkblue'], 
-                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of LISA BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase2.png')
 
@@ -196,38 +215,64 @@ def sigp(f):
 
 def f00et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, s: (f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, s))[0]
-    return 2*T*res
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, s))[0]
+    I2 = quad(integrand, 1e-1, 1e1, args=(f0, n1, n2, s))[0]
+    I3 = quad(integrand, 1e1, ffmax, args=(f0, n1, n2, s))[0]
+    return 2*T*sum((I1,I2,I3))
 
 def f01et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: ((f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s))/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, om, s))[0]
-    return 2*T*res
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 
 def f02et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, om, s))[0]
-    return 2*T*res
-
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
+def f03et(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/sigp(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 def f11et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: ((om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, om, s))[0]
-    return 2*T*res
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 
 def f12et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, om, s))[0]
-    return 2*T*res
-
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
+def f13et(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/sigp(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 def f22et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/sigp(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, n1, n2, om, s))[0]
-    return 2*T*res
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
+def f23et(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)*np.log(0.5*(f/f0)**s + 0.5)/s)/sigp(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
+def f33et(f0, n1, n2, om, s):
+    integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)**2)/sigp(f)**2
+    I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
+    I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
+    return 2*T*sum((I1,I2))
 
 def fisheret(f0, n1, n2, om, s):
-    res = np.array(((f00et(f0, n1, n2, om, s), f01et(f0, n1, n2, om, s), f02et(f0, n1, n2, om, s)), 
-                    (f01et(f0, n1, n2, om, s), f11et(f0, n1, n2, om, s), f12et(f0, n1, n2, om, s)),
-                    (f02et(f0, n1, n2, om, s), f12et(f0, n1, n2, om, s), f22et(f0, n1, n2, om, s))))
+    res = np.array(((f00et(f0, n1, n2, om, s), f01et(f0, n1, n2, om, s), f02et(f0, n1, n2, om, s), f03et(f0, n1, n2, om, s)), 
+                    (f01et(f0, n1, n2, om, s), f11et(f0, n1, n2, om, s), f12et(f0, n1, n2, om, s), f13et(f0, n1, n2, om, s)),
+                    (f02et(f0, n1, n2, om, s), f12et(f0, n1, n2, om, s), f22et(f0, n1, n2, om, s), f23et(f0, n1, n2, om, s)),
+                    (f03et(f0, n1, n2, om, s), f13et(f0, n1, n2, om, s), f23et(f0, n1, n2, om, s), f33et(f0, n1, n2, om, s))))
     return res
 
 ET = [(fstar, n1, n2, o1, s1), (fbreak, nom1, nom2, o2, s2)]
@@ -240,23 +285,23 @@ covmA = np.linalg.inv((FMEA))
 covmB = np.linalg.inv((FMEB))
 
 
-meansA = np.array((o1, n1, n2))
-meansB = np.array((o2, nom1, nom2))
+meansA = np.array((o1, n1, n2,s1))
+meansB = np.array((o2, nom1, nom2,s2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
-names = [r'\Omega_*',r'n1', r'n2']
-labels =  [r'\Omega_*',r'n1', r'n2']
+names = [r'\Omega_*',r'n1', r'n2', r'\sigma']
+labels =  [r'\Omega_*',r'n1', r'n2', r'\sigma']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
-g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['forestgreen'], 
-                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=size
+# g.settings.legend_fontsize = size
+# g.settings.axes_labelsize = size
+# g.triangle_plot([samples], contour_colors = ['forestgreen'], 
+#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of ET BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase1.png')
 #%%
@@ -265,7 +310,7 @@ g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['mediumblue'], 
-                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2': meansB[2]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2': meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase2.png')
 
@@ -278,23 +323,23 @@ covmA = np.linalg.inv((FMAC))
 covmB = np.linalg.inv((FMBC))
 
 
-meansA = np.array((o1, n1, n2))
-meansB = np.array((o2, nom1, nom2))
+meansA = np.array((o1, n1, n2,s1))
+meansB = np.array((o2, nom1, nom2,s2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
-names = [r'\Omega_*',r'n1', r'n2']
-labels =  [r'\Omega_*',r'n1', r'n2']
+names = [r'\Omega_*',r'n1', r'n2',r'\sigma']
+labels =  [r'\Omega_*',r'n1', r'n2',r'\sigma']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 
-g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
-g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['limegreen'], 
-                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2]}, title_limit=1)
+# g = plots.get_subplot_plotter(subplot_size=5)
+# g.settings.axes_fontsize=size
+# g.settings.legend_fontsize = size
+# g.settings.axes_labelsize = size
+# g.triangle_plot([samples], contour_colors = ['limegreen'], 
+#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2],r'\sigma':meansA[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase1.png')
 
@@ -303,7 +348,7 @@ g.settings.axes_fontsize=20
 g.settings.legend_fontsize = 20
 g.settings.axes_labelsize = 20
 g.triangle_plot([samples2], contour_colors = ['blue'], 
-                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2]}, title_limit=1)
+                filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 # plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase2.png')
 

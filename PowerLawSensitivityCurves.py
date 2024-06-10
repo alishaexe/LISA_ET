@@ -85,8 +85,11 @@ def Almin(nt):
     integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
     I2 = quad(integrand, 10**(-3), 10**(0), args=(nt))[0]
-    I3 = quad(integrand, 10**(0), ffmax, args=(nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2,I3)))
+    I3 = quad(integrand, 10**(0), 1e2, args=(nt))[0]
+    I4 = quad(integrand, 1e2, 200, args=(nt))[0]
+    I5 = quad(integrand, 200, 300, args=(nt))[0]
+    I6 = quad(integrand, 300, ffmax, args=(nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4,I5,I6)))
     return nt, res
 
 
@@ -112,8 +115,8 @@ def Ftab(i, j):
 
 
 
-elstep = (elmaxL-elminL)/itera
-elLISA = np.arange(elminL, elmaxL+elstep, elstep)
+elstep = (elmax-elmin)/itera
+elLISA = np.arange(elmin, elmax+elstep, elstep)
 i = range(len(elLISA))
 j = range(len(Atab))
 coordsl1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
@@ -129,7 +132,17 @@ maxposlisa = range(len(FtabLISA))
 maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
 maxpls = maxplvals
 flogom = np.vstack((np.log(10**elLISA), maxpls)).T
-
+#%%
+plt.figure(figsize=(6, 9)) 
+plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.legend(fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.grid(True)
+plt.xlabel("f (Hz)", fontsize = 16)
+plt.title("Nominal Sensitivity curve of LISA", fontsize = 16)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
+plt.show()
 #%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", linewidth=2.5)
@@ -193,9 +206,13 @@ plt.show()
 #I separate the integration into 4 to help with the accuracy and avoid warnings
 def AETmin(nt):
     integrand = lambda f, nt:((f/fetstar)**(nt)/sigp(f))**2
-    I1 = quad(integrand, 1.6, 100, args=(nt))[0]
-    I2 = quad(integrand, 100, 445, args = (nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1, I2)))
+    I1 = quad(integrand, ffmin, 1e-3, args=(nt))[0]
+    I2 = quad(integrand, 1e-3, 1e-2, args = (nt))[0]
+    I3 = quad(integrand, 1e-2, 1e-1, args = (nt))[0]
+    I4 = quad(integrand, 1e-1, 1e-0, args = (nt))[0]
+    I5 = quad(integrand, 1e-0, 1e2, args = (nt))[0]
+    I6 = quad(integrand, 1e-2, ffmax, args = (nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1, I2,I3,I4,I5,I6)))
     return res
 
 ntmin = -9/2
@@ -215,8 +232,8 @@ def FETtab(i, j):
 
 #%%
 
-elstep = (elmaxet-elminet)/itera
-elET = np.arange(elminet, elmaxet, elstep)
+elstep = (elmax-elmin)/itera
+elET = np.arange(elmin, elmax+elstep, elstep)
 i = range(len(elET))
 j = range(len(AETtab))
 coordset = np.array(np.meshgrid(i,j)).T.reshape(-1,2)
@@ -240,8 +257,19 @@ plt.ylabel(r"$\Omega_{gw}$")
 plt.grid(True)
 plt.xscale('log')
 plt.show()
-
-
+#%%
+plt.figure(figsize=(6, 9)) 
+plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
+plt.legend(fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.xlabel("f (Hz)", fontsize = 16)
+plt.yscale('log')
+plt.xscale('log')
+plt.grid(True)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png', bbox_inches='tight')
+plt.show()
 #%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
@@ -329,14 +357,14 @@ def maxtabcomb(i):
 maxposco = range(len(Ftabcomb))
 maxcompls = np.array(list(map(maxtabcomb, maxposco)))
 flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
-
+#%%
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
 plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
 plt.title("Nominal and PLS curves ", fontsize = 16)
-plt.legend(loc = (1.05,0.5), fontsize = 14)
+plt.legend(loc = (0.45,0.75), fontsize = 14)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
@@ -346,9 +374,22 @@ plt.show()
 
 
 
+#%%
 
-
-
+plt.figure(figsize=(6, 9))
+plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
+plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
+plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
+plt.title("Nominal and PLS curves ", fontsize = 16)
+plt.legend(loc = (1.05,0.5), fontsize = 14)
+plt.grid(True) 
+plt.ylim(1e-13,1e-3)
+plt.xlim(ffmin, ffmax) 
+plt.xlabel(r'$f$ (Hz)', fontsize = 16)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
+plt.show()
 
 
 

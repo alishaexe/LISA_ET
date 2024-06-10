@@ -28,7 +28,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 200
+itera = 2000
 
 ##########
 
@@ -80,8 +80,8 @@ sigvals = np.array(list(map(Ohms, freqvals)))
 
 # rhom = np.linspace(-1, 0, 5)
 def lognL(f, fstar, rho):
+    # res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
     res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
-    # res = np.exp(-1/(2*10**rho)*(np.log(f/fstar))**2)
     return res
 
 def aminlogL(fstar, rho):
@@ -138,21 +138,21 @@ plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
-
+#%%
 
 
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.title("Nominal and LogNs curve for LISA")
+plt.title("Nominal and LogNs curve for LISA", fontsize = 14)
 plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.legend()
+plt.legend(fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
 plt.show()
 
 
@@ -241,19 +241,20 @@ plt.yscale('log')
 plt.show()
 
 
-
+#%%
 plt.figure(figsize=(6, 9))
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), color = "aqua", label = "LogNs", linewidth=2.5)
-plt.legend()
-plt.title("Nominal and LogNs curve for ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
+plt.legend(fontsize = 16)
+plt.title("Nominal and LogNs curve for ET", fontsize = 14)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14)
+plt.xlabel("f (Hz)", fontsize = 16)
 plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -353,12 +354,13 @@ plt.loglog(np.exp(flogplotc[:,0]), np.exp(flogplotc[:,1]), color = "aqua", label
 plt.loglog(np.exp(flogplot[:,0]), np.exp(flogplot[:,1]), ':',color = "black", label = "ET LogNs", linewidth=2.5)
 plt.loglog(np.exp(np.log(fls)), np.exp(maxlogL),':', color = "teal", label = "LISA LogNs", linewidth=2.5)
 plt.title(" Combined LogNS curve for LISA and ET",fontsize = 14)
-plt.legend(loc = (0.02,0.8),fontsize = 14)
+plt.legend(loc = (1.03,0.5),fontsize = 14)
+plt.tick_params(axis='both', which='major', labelsize=14)
 plt.xlim(ffmin, ffmax)
-plt.xlabel('f (Hz)',fontsize = 14)
+plt.xlabel('f (Hz)',fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
 plt.show()

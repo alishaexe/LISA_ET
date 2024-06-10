@@ -89,7 +89,7 @@ def Ohms(f):
 def pls(f):
     n = -0.1
     om = 1e-12
-    fst = 1e-10
+    fst = 1e-9
     res = om * (f/fst)**(n)
     return res
 #Now finding the PLS for LISA
@@ -180,12 +180,7 @@ def etnomonly(f):
 fvalsET = np.logspace(0, 3,200)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))
 
-def pls(f):
-    n = -0.1
-    om = 1.5e-11
-    fst = 1e-2
-    res = om * (f/fst)**(n)
-    return res
+
 
 def AETmin(nt):
     integrand = lambda f, nt:(((f/fetstar)**(nt))/sigp(f))**2
@@ -248,77 +243,77 @@ plt.grid(True)
 plt.show()
 
 #%%
-def omegatog(f):
-    if f <= 10**(-1):
-        return Ohms(f)
-    if f > 1.6:
-        return sigp(f)
+# def omegatog(f):
+#     if f <= 10**(-1):
+#         return Ohms(f)
+#     if f > 1.6:
+#         return sigp(f)
     
-def nomtog(f):
-    if f <= 10**(-1):
-        res = Ohms(f)
-        if res > 1e-5:
-            return
-        return res
-    if f > 1:
-        res = sigp(f)
-        if res > 1e-5:
-            return
-        return res
+# def nomtog(f):
+#     if f <= 10**(-1):
+#         res = Ohms(f)
+#         if res > 1e-5:
+#             return
+#         return res
+#     if f > 1:
+#         res = sigp(f)
+#         if res > 1e-5:
+#             return
+#         return res
  
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
-combine = np.array(list(map(omegatog, fvalscomb)))
-nom = np.array(list(map(nomtog, fvalscomb)))
-otog = np.vstack((fvalscomb, combine)).T
-#combine pls curves
-fstar = 1.1
-ntmin = -9/2
-ntmax = 9/2
+# fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
+# combine = np.array(list(map(omegatog, fvalscomb)))
+# nom = np.array(list(map(nomtog, fvalscomb)))
+# otog = np.vstack((fvalscomb, combine)).T
+# #combine pls curves
+# fstar = 1.1
+# ntmin = -9/2
+# ntmax = 9/2
 
-def Amincomb(nt):
-    integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
-    I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
-    I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
-    I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
-    I4 = quad(integrand, 10, ffmax, args = (nt))[0]
-    integrand2 = lambda f, nt:((f/fstar)**(nt)/sigp(f))**2
-    I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
-    I6 = quad(integrand2, 10**(0), 100, args=(nt))[0]
-    I7 = quad(integrand2, 100, ffmax, args=(nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4,I5,I6,I7)))
-    return res    
+# def Amincomb(nt):
+#     integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
+#     I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
+#     I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
+#     I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
+#     I4 = quad(integrand, 10, ffmax, args = (nt))[0]
+#     integrand2 = lambda f, nt:((f/fstar)**(nt)/sigp(f))**2
+#     I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
+#     I6 = quad(integrand2, 10**(0), 100, args=(nt))[0]
+#     I7 = quad(integrand2, 100, ffmax, args=(nt))[0]
+#     res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4,I5,I6,I7)))
+#     return res    
 
-Amin3 = []
-ntcombvals = np.linspace(ntmin, ntmax, itera)
-Amin3 = np.array(list(map(Amincomb, ntcombvals)))
-
-
-Atab3 = np.vstack((ntcombvals, Amin3)).T
+# Amin3 = []
+# ntcombvals = np.linspace(ntmin, ntmax, itera)
+# Amin3 = np.array(list(map(Amincomb, ntcombvals)))
 
 
-def ftab3(i, j):
-    res = Atab3[j,1]*(10**combel[i]/fstar)**Atab3[j,0]
-    return res
-
-elmin = np.log10(ffmin)
-elmax = np.log10(ffmax)
-
-combel = np.linspace(elmin, elmax, itera)
-i = range(len(combel))
-j = range(len(Atab3))
-coordsc1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
-
-Ftabcomb = np.array(list(map(lambda args: ftab3(*args), coordsc1))).reshape(len(combel), len(Atab3))
+# Atab3 = np.vstack((ntcombvals, Amin3)).T
 
 
-combmaxed = []
-def maxtabcomb(i):
-    combmaxed = np.log(np.max(Ftabcomb[i]))
-    return combmaxed
+# def ftab3(i, j):
+#     res = Atab3[j,1]*(10**combel[i]/fstar)**Atab3[j,0]
+#     return res
 
-maxposco = range(len(Ftabcomb))
-maxcompls = np.array(list(map(maxtabcomb, maxposco)))
-flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
+# elmin = np.log10(ffmin)
+# elmax = np.log10(ffmax)
+
+# combel = np.linspace(elmin, elmax, itera)
+# i = range(len(combel))
+# j = range(len(Atab3))
+# coordsc1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
+
+# Ftabcomb = np.array(list(map(lambda args: ftab3(*args), coordsc1))).reshape(len(combel), len(Atab3))
+
+
+# combmaxed = []
+# def maxtabcomb(i):
+#     combmaxed = np.log(np.max(Ftabcomb[i]))
+#     return combmaxed
+
+# maxposco = range(len(Ftabcomb))
+# maxcompls = np.array(list(map(maxtabcomb, maxposco)))
+# flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
 # plt.figure(figsize=(6, 9))
 # plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
@@ -335,31 +330,31 @@ flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
 #%%
 
-def bpls(f):
-    om = 5e-10
-    n1 = 2.4
-    n2 = -2.4
-    fstar = 2e-1
-    s = 1.2
-    res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-    return res
+# def bpls(f):
+#     om = 5e-10
+#     n1 = 2.4
+#     n2 = -2.4
+#     fstar = 2e-1
+#     s = 1.2
+#     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res
 
-bplet = np.array(list(map(bpls, fvalscomb)))
-# phase = np.array(list(map(bpl, freqs)))
-et = np.load('/Users/alisha/Documents/LISA/ftabET.npy')
-lisa = np.load('/Users/alisha/Documents/LISA/ftablisa.npy')
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-plt.plot(fvalscomb,bplet)
-plt.plot(np.exp(et[:,0]), np.exp(et[:,1]))
-plt.plot(np.exp(lisa[:,0]),np.exp(lisa[:,1]))
-plt.title("Nominal and PLS curves ", fontsize = 16)
-# plt.legend(loc = (1.05,0.5), fontsize = 14)
-plt.grid(True) 
-plt.xlim(ffmin, ffmax) 
-plt.xlabel(r'$f$ (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-plt.show()
+# bplet = np.array(list(map(bpls, fvalscomb)))
+# # phase = np.array(list(map(bpl, freqs)))
+# et = np.load('/Users/alisha/Documents/LISA/ftabET.npy')
+# lisa = np.load('/Users/alisha/Documents/LISA/ftablisa.npy')
+# plt.figure(figsize=(6, 9))
+# plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+# plt.plot(fvalscomb,bplet)
+# plt.plot(np.exp(et[:,0]), np.exp(et[:,1]))
+# plt.plot(np.exp(lisa[:,0]),np.exp(lisa[:,1]))
+# plt.title("Nominal and PLS curves ", fontsize = 16)
+# # plt.legend(loc = (1.05,0.5), fontsize = 14)
+# plt.grid(True) 
+# plt.xlim(ffmin, ffmax) 
+# plt.xlabel(r'$f$ (Hz)', fontsize = 16)
+# plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
+# plt.show()
 
 
 
