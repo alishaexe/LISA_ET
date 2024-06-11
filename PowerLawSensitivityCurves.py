@@ -37,7 +37,7 @@ itera = 2000
 ##########
 
 elminL = (np.log10(ffmin))
-elmaxL = (np.log10(10**(-0.95)))
+elmaxL = (np.log10(10**(-1.05)))
 elminet = np.log10(1.6)
 elmaxet = (np.log10(ffmax))
 ntmin = -9/2
@@ -79,7 +79,8 @@ def Ohms(f):
 #%%
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
-
+x = freqvals[sigvals <1.7e-6]
+y = sigvals[sigvals < 1.7e-6]
 #Now finding the PLS for LISA
 def Almin(nt):
     integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
@@ -130,11 +131,11 @@ def maxtablisa(i):
    
 maxposlisa = range(len(FtabLISA))
 maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
-maxpls = maxplvals
-flogom = np.vstack((np.log(10**elLISA), maxpls)).T
+maxpls = maxplvals[np.exp(maxplvals) <1.7e-6]
+flogom = np.vstack((np.log(10**elLISA)[np.exp(maxplvals) <1.7e-6], maxpls)).T
 #%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(x, y, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.legend(fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
@@ -155,7 +156,7 @@ plt.show()
 
 #%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(x, y, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.legend(fontsize = 16)
@@ -246,8 +247,8 @@ def maxETpls(i):
 
 maxposet = range(len(Ftabetpls))
 maxvals = np.array(list(map(maxETpls, maxposet)))
-maxplsvals = maxvals
-flogomET = np.vstack((np.log(10**elET), maxplsvals)).T
+maxplsvals = maxvals[np.exp(maxvals) <1e-5]
+flogomET = np.vstack((np.log(10**elET)[np.exp(maxvals) <1e-5], maxplsvals)).T
 #%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", linewidth=2.5)

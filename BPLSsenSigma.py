@@ -393,5 +393,5 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(ffmin, ffmax)
 plt.grid(True)
-# plt.savefig('CombineNomBPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('CombineNomBPLSsigma.png', bbox_inches='tight')
  

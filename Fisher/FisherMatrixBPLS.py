@@ -47,22 +47,39 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
-size = 20
+size = 26
 
 
 #case 1
-o1 = 1e-10
-n1 = 2.4
-n2 = -2.4
-fstar = 2e-1
-s1 = 1.2
+o1 = 1e-9
+n1 = 3
+n2 = -1.5
+fstar = 0.05
+s1 = 7.2
 
 #case 2
 o2 = 1e-7
-nom1 = 4
-nom2 = -4
-fbreak = 0.45
-s2 = 1.2
+nom1 = 5
+nom2 = -5
+fbreak = 0.3
+s2 = 1.8
+
+#%%
+props = dict(boxstyle='square', facecolor='white', alpha=1)
+txt = 36
+textstr1 = '\n'.join((
+    r'$\Omega_* = {om}$'.format(om = o1),
+    r'$n_1 = {n1}$'.format(n1 = n1),
+    r'$n_2 = {n2}$'.format(n2 = n2),
+    r'$\sigma = {s}$'.format(s = s1),
+    r'$f_\star = {fs}$'.format(fs = fstar)))
+
+textstr2 = '\n'.join((
+    r'$\Omega_* = {om}$'.format(om = o2),
+    r'$n_1 = {n1}$'.format(n1 = nom1),
+    r'$n_2 = {n2}$'.format(n2 = nom2),
+    r'$\sigma = {s}$'.format(s = s2),
+    r'$f_\star = {fs}$'.format(fs = fbreak)))
 
 #%%
 P = 12
@@ -183,14 +200,17 @@ samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 
 
 
 #%%
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['Green'], 
-#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['Green'], 
+                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
+plt.suptitle(r'Fisher Analysis for SNR of LISA BPL', fontsize=size)
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase1.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Cosmic1.png')
+
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
@@ -198,8 +218,10 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['darkblue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis for SNR of LISA BPL', fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase2.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Cosmic2.png')
 
 #%%
 def sigp(f):
@@ -296,14 +318,17 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 #%%
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['forestgreen'], 
-#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of ET BPL case 1: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['forestgreen'], 
+                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis for SNR of ET BPL', fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase1.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Cosmic1.png')
+
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
@@ -311,8 +336,11 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2': meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis for SNR of ET BPL', fontsize=size)
+
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase2.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Cosmic2.png')
 
 #%%
 #all together now
@@ -333,25 +361,29 @@ labels =  [r'\Omega_*',r'n1', r'n2',r'\sigma']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
-
-# g = plots.get_subplot_plotter(subplot_size=5)
-# g.settings.axes_fontsize=size
-# g.settings.legend_fontsize = size
-# g.settings.axes_labelsize = size
-# g.triangle_plot([samples], contour_colors = ['limegreen'], 
-#                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2],r'\sigma':meansA[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=n1, nom2=n2, fbreak=fstar), fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase1.png')
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=20
-g.settings.legend_fontsize = 20
-g.settings.axes_labelsize = 20
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
+g.triangle_plot([samples], contour_colors = ['limegreen'], 
+                filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2],r'\sigma':meansA[3]}, title_limit=1)
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL', fontsize=size)
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase1.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Cosmic1.png')
+
+#%%
+g = plots.get_subplot_plotter(subplot_size=5)
+g.settings.axes_fontsize=size
+g.settings.legend_fontsize = size
+g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL: n1 = {nom1}, n2 = {nom2} $f_\star$ = {fbreak}'.format(nom1=nom1, nom2=nom2, fbreak=fbreak), fontsize=size)
+plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL', fontsize=size)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase2.png')
-
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Cosmic2.png')
 
 
 

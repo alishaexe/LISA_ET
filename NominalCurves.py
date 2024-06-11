@@ -220,17 +220,17 @@ plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.grid(True)
 plt.legend(fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
-plt.title("Flauger with 2 root 2", fontsize = 16)
+plt.title("Nominal sensitivity curve of LISA ", fontsize = 16)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
 plt.show()
 
 #%%
 def bpls(f):
     om = 1e-7
-    n1 = 4
-    n2 = -4
-    fstar = 0.45
-    s = 1.2
+    n1 = -0.1
+    n2 = -2/3
+    fstar = 2e-2
+    s = 10.2
     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res
 
@@ -253,17 +253,22 @@ def nomtog(f):
             return
         return res
 
+
+ins = np.array(((1e-9,3,-1.5,0.05,7.2), (1e-7, 5, -5, 0.3,1.8)))
+
+
 fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
-
+combfbplo = np.load('/Users/alisha/Documents/LISA/Ftabbigsigcomb.npy')
 bpl = np.array(list(map(bpls, fvalscomb)))
 
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
 plt.plot(fvalscomb, bpl)
-plt.ylim(1e-12,1e-5)
+plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.ylim(1e-13,1e-5)
 plt.grid(True)
 
 

@@ -50,6 +50,13 @@ size = 18
 om1 = 1e-12
 nt1 = -0.1
 fs1 = 1e-9
+#%%
+props = dict(boxstyle='square', facecolor='white', alpha=1)
+txt = 20
+textstr1 = '\n'.join((
+    r'$\Omega_* = {om}$'.format(om = om1),
+    r'$n_t = {n1}$'.format(n1 = nt1),
+    r'$f_\star = {fs}$'.format(fs = fs1)))
 
 
 #%%
@@ -119,17 +126,14 @@ samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 names = [r'\Omega_*',r'nt']
 labels =  [r'\Omega_*',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
-
-
+#%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['darkblue'],
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
-plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
-plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
 
@@ -187,9 +191,7 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
-plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
-plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
 
@@ -219,9 +221,7 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['blue'],
                 filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om1), ha='center', size='x-large')
-plt.text(-0.1,1.9, r'$nt = {nt}$'.format(nt = nt1), ha='center', size='x-large')
-plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs1), ha='center', size='x-large')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
 

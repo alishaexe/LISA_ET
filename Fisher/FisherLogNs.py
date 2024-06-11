@@ -52,6 +52,14 @@ om = 9e-13
 fs = 1e-1
 rho = 1
 
+#%%
+props = dict(boxstyle='square', facecolor='white', alpha=1)
+txt = 20
+textstr1 = '\n'.join((
+    r'$\Omega_* = {om}$'.format(om = om),
+    r'$\rho = {r}$'.format(r = rho),
+    r'$f_\star = {fs}$'.format(fs = fs)))
+
 
 #%%
 P = 12
@@ -125,10 +133,9 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['purple'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
-# plt.text(-0.1,2, r'$\Omega_* = {om}$'.format(om = om), ha='center', size='x-large')
-# plt.text(-0.1,1.9, r'$\rho = {rho}$'.format(rho = rho), ha='center', size='x-large')
-# plt.text(-0.1,1.8, r'$f_* = {fs}$'.format(fs = fs), ha='center', size='x-large')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLogLISA_A.png')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis of LISA', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogLISA.png')
 
 #%%
 
@@ -184,7 +191,9 @@ g.settings.legend_fontsize = 16
 g.settings.axes_labelsize = 16
 g.triangle_plot([samples], contour_colors = ['darkorchid'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET_A.png')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis of ET', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET.png')
 #%%
 #all together now
 FMA = FMLA + FMEA
@@ -206,8 +215,9 @@ g.settings.legend_fontsize = 18
 g.settings.axes_labelsize = 18
 g.triangle_plot([samples], contour_colors = ['indigo'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
-# plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISAcomb_A.png')
+plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.suptitle(r'Fisher Analysis of LISA + ET', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogComb.png')
 
 
 
