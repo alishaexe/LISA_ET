@@ -48,9 +48,9 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 
-om = 9e-13
-fs = 1e-1
-rho = 1
+om = 1e-12
+fs = 1e-4
+rho = 5
 
 #%%
 props = dict(boxstyle='square', facecolor='white', alpha=1)
@@ -135,7 +135,7 @@ g.triangle_plot([samples], contour_colors = ['purple'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of LISA', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogLISA.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogLISA_2.png')
 
 #%%
 
@@ -193,7 +193,7 @@ g.triangle_plot([samples], contour_colors = ['darkorchid'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of ET', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogET_2.png')
 #%%
 #all together now
 FMA = FMLA + FMEA
@@ -217,7 +217,7 @@ g.triangle_plot([samples], contour_colors = ['indigo'],
                 filled=True, markers={r'\Omega_*': meansA[0],'\rho': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.suptitle(r'Fisher Analysis of LISA + ET', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogComb.png')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERlogComb_2.png')
 
 
 
