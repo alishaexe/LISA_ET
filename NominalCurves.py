@@ -174,7 +174,7 @@ def sigtab(f, r1, r2):
         return
     return res
 
-og = np.array(list(map(lambda args: sigtab(*args), Rtab)))
+og = np.array(list(map(lambda args: sigtab(*args), Rtab)),dtype = float)
 #%%
 P = 12
 A = 3
@@ -204,18 +204,57 @@ def S_n(f):
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
     res = const *f**3*S_n(f)
-    return res*2*np.sqrt(2)
+    return res
 
 #This is flauger with the 2*root 2 factor
+def RAA(f):
+    res = 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+    return res
 
-
+def RXX(f):
+    res = 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
+    return res
 #%%
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
+#%%
+fvals = np.linspace(1e-5,1,num = 1000)
+plt.loglog(f, Rae, color = "indigo", label = "SmithCaldwell Rtab")
+Raa = np.array(list(map(RAA, fvals)))
+Rxx = np.array(list(map(RXX, fvals)))
+plt.loglog(fvals, Raa, color = "green", label = "Flauger RAA")
+plt.loglog(fvals, Rxx, color = "red", label = "Flauger RXX")
+# plt.xlim(1e-5,1e-3)
+plt.legend()
+plt.xlabel("f (Hz")
+plt.ylabel("R")
+# plt.ylim(2e-1,0.6)
+plt.show()
+#%%
+plt.loglog(fvals, Raa/Rxx)
+plt.ylabel("Raa/Rxx")
+plt.xlabel("f")
+plt.show()
+#%%
+fvals = np.linspace(1e-5,1,num = 231)
+Raa = np.array(list(map(RAA, fvals)))
+plt.loglog(fvals, Rae/Raa)
+# plt.xlim(1e-3,1e-2)
+# plt.ylim(1,2)
+plt.ylabel("Rae/Raa")
+plt.xlabel("f")
+#%%
+fvals = np.linspace(1e-5,1,num = 231)
+Rxx = np.array(list(map(RXX, fvals)))
+plt.loglog(fvals, Rae/Rxx)
+plt.ylabel("Rae/Rxx")
+plt.xlabel("f")
 
+#%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(f, og,'--' ,color = "darkviolet", label = "Numerical", linewidth=2.5)
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Approximate", linewidth=2.5)
+plt.loglog(fvals, Rxx, color = "green")
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.grid(True)
 plt.legend(fontsize = 16)
@@ -223,53 +262,82 @@ plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal sensitivity curve of LISA ", fontsize = 16)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
 plt.show()
+#%%
+freqvals = np.linspace(1e-5, 1, 231)
+sigvals = np.array(list(map(Ohms, freqvals)))
+test = og/sigvals
+plt.loglog(f,og/sigvals)
+plt.show()
+
+
+
+freqvals = np.linspace(1e-5, 1, 1000)
+sigvals = np.array(list(map(Ohms, freqvals)))
+
+plt.loglog(f, og, label = "smith caldwell")
+plt.loglog(freqvals, sigvals, label = "flauger")
+plt.legend()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #%%
-def bpls(f):
-    om = 1e-7
-    n1 = -0.1
-    n2 = -2/3
-    fstar = 2e-2
-    s = 10.2
-    res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-    return res
+# def bpls(f):
+#     om = 1e-7
+#     n1 = -0.1
+#     n2 = -2/3
+#     fstar = 2e-2
+#     s = 10.2
+#     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res
 
 
-def omegatog(f):
-    if f <= 10**(-1):
-        return Ohms(f)
-    if f > 1.6:
-        return sigp(f)
+# def omegatog(f):
+#     if f <= 10**(-1):
+#         return Ohms(f)
+#     if f > 1.6:
+#         return sigp(f)
     
-def nomtog(f):
-    if f <= 10**(-1):
-        res = Ohms(f)
-        if res > 1e-5:
-            return
-        return res
-    if f > 1:
-        res = sigp(f)
-        if res > 1e-5:
-            return
-        return res
+# def nomtog(f):
+#     if f <= 10**(-1):
+#         res = Ohms(f)
+#         if res > 1e-5:
+#             return
+#         return res
+#     if f > 1:
+#         res = sigp(f)
+#         if res > 1e-5:
+#             return
+#         return res
 
 
-ins = np.array(((1e-9,3,-1.5,0.05,7.2), (1e-7, 5, -5, 0.3,1.8)))
+# ins = np.array(((1e-9,3,-1.5,0.05,7.2), (1e-7, 5, -5, 0.3,1.8)))
 
 
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
-combine = np.array(list(map(omegatog, fvalscomb)))
-nom = np.array(list(map(nomtog, fvalscomb)))
-otog = np.vstack((fvalscomb, combine)).T
-combfbplo = np.load('/Users/alisha/Documents/LISA/Ftabbigsigcomb.npy')
-bpl = np.array(list(map(bpls, fvalscomb)))
+# fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
+# combine = np.array(list(map(omegatog, fvalscomb)))
+# nom = np.array(list(map(nomtog, fvalscomb)))
+# otog = np.vstack((fvalscomb, combine)).T
+# combfbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/Ftabbigsigcomb.npy')
+# bpl = np.array(list(map(bpls, fvalscomb)))
 
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-plt.plot(fvalscomb, bpl)
-plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.ylim(1e-13,1e-5)
-plt.grid(True)
+# plt.figure(figsize=(6, 9))
+# plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+# plt.plot(fvalscomb, bpl)
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.ylim(1e-13,1e-5)
+# plt.grid(True)
 
 
 
