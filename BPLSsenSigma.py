@@ -78,14 +78,14 @@ def Ohms(f):
     res = const *f**3*S_n(f)
     return res
 
-freqvals = np.logspace(elminL, elmaxL, 200)   
-sigvals = np.array(list(map(Ohms, freqvals)))
+# freqvals = np.logspace(elminL, elmaxL, 200)   
+# sigvals = np.array(list(map(Ohms, freqvals)))
 
-#%%
+# #%%
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
-elstep = (elmaxL-elminL)/itera
-elLISA = np.arange(elminL, elmaxL, elstep)
+# elstep = (elmaxL-elminL)/itera
+# elLISA = np.arange(elminL, elmaxL, elstep)
 
 #%%
 # #Now for BPL
@@ -151,7 +151,7 @@ elLISA = np.arange(elminL, elmaxL, elstep)
 # fbplo = maxbpl#np.vstack((np.log(fs), maxbpl)).T
 
 # # np.save("FtabbigsigLISA.npy", fbplo)
-fbplo = np.load('/Users/alisha/Documents/LISA/FtabbigsigLISA.npy')
+fbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/FtabbigsigLISA.npy')
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
 plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
@@ -162,7 +162,7 @@ plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xscale('log')
-plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('LISABPLSbigsigma.png', bbox_inches='tight')
 #%%
 def sigp(f):
     f0 = 1
@@ -246,7 +246,7 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the
 # fbploET = maxbplvals
 
 # np.save("FtabbigsigET.npy", fbploET)
-fbploET = np.load('/Users/alisha/Documents/LISA/FtabbigsigET.npy')
+fbploET = np.load('/Users/alisha/Documents/LISA_ET/LISA/FtabbigsigET.npy')
 # # fbploET = np.load('FtabsigET.npy')
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
@@ -260,7 +260,7 @@ plt.legend(fontsize="16", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
+# plt.savefig('ETBPLSbigsigma.png', bbox_inches='tight')
 
 
 #%%
@@ -293,81 +293,81 @@ otog = np.vstack((fvalscomb, combine)).T
 
 #%%
 #bpls
-def combbpl(f, fstar, n1, n2,s):
+# def combbpl(f, fstar, n1, n2,s):
 
-    res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-    return res 
-
-
-def Abplmincomb(fs, n1, n2, s):
-    integrand = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/Ohms(f))**2
-    I1 = quad(integrand, ffmin, 10**(-4), args=(fs, n1, n2, s))[0]
-    I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2, s))[0]
-    I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2, s))[0]
-    I4 = quad(integrand, 10, ffmax, args = (fs, n1, n2, s))[0]
-    integrand2 = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/sigp(f))**2
-    I5 = quad(integrand2, ffmin, 10**(0), args=(fs, n1, n2, s))[0]
-    I6 = quad(integrand2, 10**(0), 100, args=(fs, n1, n2, s))[0]
-    I7 = quad(integrand2, 100, ffmax, args=(fs, n1, n2, s))[0]
-    res = snr5/np.sqrt(T*sum((I1,I2,I3,I4, I5, I6, I7)))
-    return res   
-
-elmin = np.log10(ffmin)
-elmax = np.log10(ffmax)
-step = (ntmax-ntmin)/itera
-
-elc = np.linspace(elmin, elmax, itera)
-
-n1c = np.arange(ntmin, ntmax, step)
-n2c = np.arange(ntmin, ntmax, step)
-
-fsc = 10**elc
+#     res = (f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
+#     return res 
 
 
+# def Abplmincomb(fs, n1, n2, s):
+#     integrand = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/Ohms(f))**2
+#     I1 = quad(integrand, ffmin, 10**(-4), args=(fs, n1, n2, s))[0]
+#     I2 = quad(integrand, 10**(-4), 10**(0), args=(fs, n1, n2, s))[0]
+#     I3 = quad(integrand, 10**(0), 10, args=(fs, n1, n2, s))[0]
+#     I4 = quad(integrand, 10, ffmax, args = (fs, n1, n2, s))[0]
+#     integrand2 = lambda f, fs, n1, n2, s:(combbpl(f, fs, n1, n2, s)/sigp(f))**2
+#     I5 = quad(integrand2, ffmin, 10**(0), args=(fs, n1, n2, s))[0]
+#     I6 = quad(integrand2, 10**(0), 100, args=(fs, n1, n2, s))[0]
+#     I7 = quad(integrand2, 100, ffmax, args=(fs, n1, n2, s))[0]
+#     res = snr5/np.sqrt(T*sum((I1,I2,I3,I4, I5, I6, I7)))
+#     return res   
 
-inputsc = np.array(np.meshgrid(sigma, n2c, n1c, fsc)).T.reshape(-1,4)
-#This makes it so n1r is in the second column
-# so inputs(fs, n1r, n2r)
-inputsc[:,[0,1,2,3]] = inputsc[:,[3,2,1,0]]
+# elmin = np.log10(ffmin)
+# elmax = np.log10(ffmax)
+# step = (ntmax-ntmin)/itera
 
-#%%
+# elc = np.linspace(elmin, elmax, itera)
 
-Amin4 = np.array(list(map(lambda args: Abplmincomb(*args), inputsc)))
-Atab4 = np.vstack((inputsc.T, Amin4)).T.reshape(len(fsc),len(n1c),len(n2c), len(sigma),5)
+# n1c = np.arange(ntmin, ntmax, step)
+# n2c = np.arange(ntmin, ntmax, step)
+
+# fsc = 10**elc
+
+
+
+# inputsc = np.array(np.meshgrid(sigma, n2c, n1c, fsc)).T.reshape(-1,4)
+# #This makes it so n1r is in the second column
+# # so inputs(fs, n1r, n2r)
+# inputsc[:,[0,1,2,3]] = inputsc[:,[3,2,1,0]]
 
 #%%
-ic = range(len(fsc))
-jc = range(len(n1c))
-kc = range(len(n2c))
-mc = range(len(sigma))
-fcvals = 10**elc
-coordsc = np.array(np.meshgrid(mc,kc,jc,ic, fcvals)).T.reshape(-1,5)
-coordsc[:,[0,1,2,3,4]] = coordsc[:,[4,3,2,1,0]]  
+
+# Amin4 = np.array(list(map(lambda args: Abplmincomb(*args), inputsc)))
+# Atab4 = np.vstack((inputsc.T, Amin4)).T.reshape(len(fsc),len(n1c),len(n2c), len(sigma),5)
+
 #%%
-def fbpltabcomb(f, i, j, k, m):
-    i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
-    bplres = combbpl(f, Atab4[i,j,k,m,0], Atab4[i,j,k,m,1], Atab4[i,j,k,m,2],Atab4[i,j,k,m,3])
-    return Atab4[i,j,k,m,4]*bplres
+# ic = range(len(fsc))
+# jc = range(len(n1c))
+# kc = range(len(n2c))
+# mc = range(len(sigma))
+# fcvals = 10**elc
+# coordsc = np.array(np.meshgrid(mc,kc,jc,ic, fcvals)).T.reshape(-1,5)
+# coordsc[:,[0,1,2,3,4]] = coordsc[:,[4,3,2,1,0]]  
+#%%
+# def fbpltabcomb(f, i, j, k, m):
+#     i,j,k,m = i.astype(int), j.astype(int), k.astype(int), m.astype(int)
+#     bplres = combbpl(f, Atab4[i,j,k,m,0], Atab4[i,j,k,m,1], Atab4[i,j,k,m,2],Atab4[i,j,k,m,3])
+#     return Atab4[i,j,k,m,4]*bplres
 
 
 
-Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(Atab4),len(fsc),len(n1c),len(n2c), len(sigma))
+# Ftab4 = np.array(list(map(lambda args: fbpltabcomb(*args), coordsc))).reshape(len(Atab4),len(fsc),len(n1c),len(n2c), len(sigma))
    
 
 #%%
-maximsc = []
-def combmaxbplvals(i):
-    maximsc = np.log(np.max(Ftab4[i]))
-    fh = np.log(fcvals[i])
-    return fh, maximsc
+# maximsc = []
+# def combmaxbplvals(i):
+#     maximsc = np.log(np.max(Ftab4[i]))
+#     fh = np.log(fcvals[i])
+#     return fh, maximsc
 
-combmaxpos = range(len(Ftab4))
-maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
-combfbplo = maxbplcomb
+# combmaxpos = range(len(Ftab4))
+# maxbplcomb = np.array(list(map(combmaxbplvals, combmaxpos)))
+# combfbplo = maxbplcomb
 # np.save("Ftabbigsigcomb.npy", combfbplo)
 
 #%%
-combfbplo = np.load('/Users/alisha/Documents/LISA/Ftabbigsigcomb.npy')
+combfbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/Ftabbigsigcomb.npy')
 plt.figure(figsize=(6, 9))
 plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
 plt.grid(True)

@@ -21,7 +21,6 @@ snr5 = 5
 #L = 2.5e9
 L = 25/3
 
-c = 3e8
 fetstar = 10**(-2)
 fi = 0.4*10**(-3)
 
@@ -33,12 +32,12 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 200
+itera = 2000
 
 ##########
 
 elminL = (np.log10(ffmin))
-elmaxL = (np.log10(10**(-1)))
+elmaxL = (np.log10(10**(-0.95)))
 elminet = np.log10(1.6)
 elmaxet = (np.log10(ffmax))
 ntmin = -9/2
@@ -47,14 +46,14 @@ step = (ntmax-ntmin)/itera
 
 size = 18
 #benchmarks LISA case 1
-om1 = 1e-12
+om1 = 4e-13
 nt1 = -0.1
-fs1 = 1e-9
+fs1 = 0.02
 #%%
 props = dict(boxstyle='square', facecolor='white', alpha=1)
 txt = 20
 textstr1 = '\n'.join((
-    r'$\Omega_* = {om}$'.format(om = om1),
+    r'$\Omega_\star = {om}$'.format(om = om1),
     r'$n_t = {n1}$'.format(n1 = nt1),
     r'$f_\star = {fs}$'.format(fs = fs1)))
 
@@ -71,45 +70,45 @@ def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
-def N_aa(f):
+def N_xx(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    res = 16 * (np.sin(con))**2 * ((3+np.cos(2*con))*P_acc(f)+P_ims(f))
     return res
 
-def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+def R_XX(f):#this is Rxx
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
-    res = N_aa(f)/R(f)
+    res = 1/np.sqrt(2)*N_xx(f)/R_XX(f)
     return res
 
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
-    res = const *f**3*S_n(f)
+    res = const*f**3*S_n(f)
     return res
 
 
 #%%
 def f00(f0, nt, om):
     integrand = lambda f, f0, nt, om: ((f/f0)**(2*nt))/Ohms(f)**2
-    res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
+    res = quad(integrand, ffmin, 10**(-0.95), args=(f0, nt, om))[0]
     return 2*T*res
 
 def f01(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
-    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
+    res = quad(integrand, ffmin, 10**(-0.95), args=( f0, nt, om))[0]
     return 2*T*res
 
 def f11(f0, nt, om):
     integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
-    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
+    res = quad(integrand, ffmin, 10**(-0.95), args=( f0, nt, om))[0]
     return 2*T*res
 
 
 def fisher(f0, nt, om):
     res = np.array(((f00(f0, nt, om), f01(f0, nt, om)), 
-                        (f01(f0, nt, om), f11(f0, nt, om))))
+                    (f01(f0, nt, om), f11(f0, nt, om))))
     return res
 
 # lisa = np.array((fs1, nt1, om1))
@@ -123,19 +122,19 @@ covmA = np.linalg.inv((FMLA))
 meansA = np.array((om1,nt1))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-names = [r'\Omega_*',r'nt']
-labels =  [r'\Omega_*',r'nt']
+names = [r'\Omega_\star',r'nt']
+labels =  [r'\Omega_\star',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['darkblue'],
-                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+g.triangle_plot([samples], contour_colors = ['Green'],
+                filled=True, markers={r'\Omega_\star': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis of LISA Scenario A', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERLISA_A.png')
+plt.suptitle(r'LISA CS1', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_CS1.png')
 
 #%%
 def sigp(f):
@@ -147,7 +146,7 @@ def sigp(f):
     t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
     t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
+    return 0.816**2 *res
 
 def f00et(f0, nt, om):
     integrand = lambda f, f0, nt, om: (f/f0)**(2*nt)/sigp(f)**2
@@ -167,7 +166,7 @@ def f11et(f0, nt, om):
 
 def fisheret(f0, nt, om):
     res = np.array(((f00et(f0, nt, om), f01et(f0, nt, om)), 
-                        (f01et(f0, nt, om), f11et(f0, nt, om))))
+                    (f01et(f0, nt, om), f11et(f0, nt, om))))
     return res
 
 ET = np.array((fs1, nt1, om1))
@@ -180,8 +179,8 @@ covmA = np.linalg.inv((FMEA))
 meansA = np.array((om1,nt1))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-names = [r'\Omega_*',r'nt']
-labels =  [r'\Omega_*',r'nt']
+names = [r'\Omega_\star',r'nt']
+labels =  [r'\Omega_\star',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 
 
@@ -189,20 +188,44 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['mediumblue'], 
-                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+g.triangle_plot([samples], contour_colors = ['forestgreen'], 
+                filled=True, markers={r'\Omega_\star': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis of ET Scenario A', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERET_A.png')
+plt.suptitle(r'ET CS1', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_CS1.png')
 
 
 #%%
 ########################
 #Combining
 ########################
+def f00(f0, nt, om):
+    integrand = lambda f, f0, nt, om: ((f/f0)**(2*nt))/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=(f0, nt, om))[0]
+    return 2*T*res
 
+def f01(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om*(f/f0)**(2*nt)*np.log(f/f0))/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
+    return 2*T*res
+
+def f11(f0, nt, om):
+    integrand = lambda f, f0, nt, om: (om**2*(f/f0)**(2*nt)*np.log(f/f0)**2)/Ohms(f)**2
+    res = quad(integrand, ffmin, ffmax, args=( f0, nt, om))[0]
+    return 2*T*res
+
+
+def fisher(f0, nt, om):
+    res = np.array(((f00(f0, nt, om), f01(f0, nt, om)), 
+                    (f01(f0, nt, om), f11(f0, nt, om))))
+    return res
+
+# lisa = np.array((fs1, nt1, om1))
+LISAfm2 = fisher(fs1, nt1, om1)#np.array(list(map(lambda args: fisher(*args), lisa)))
+
+FMLA2 = LISAfm2
 #all together now
-FMA = FMLA + FMEA
+FMA = FMLA2 + FMEA
 
 covmA = np.linalg.inv((FMA))
 
@@ -210,8 +233,8 @@ covmA = np.linalg.inv((FMA))
 meansA = np.array((om1,nt1))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
-names = [r'\Omega_*',r'nt']
-labels =  [r'\Omega_*',r'nt']
+names = [r'\Omega_\star',r'nt']
+labels =  [r'\Omega_\star',r'nt']
 samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
 
 
@@ -219,11 +242,11 @@ g = plots.get_subplot_plotter(subplot_size=5)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
-g.triangle_plot([samples], contour_colors = ['blue'],
-                filled=True, markers={r'\Omega_*': meansA[0],'nt': meansA[1]}, title_limit=1)
+g.triangle_plot([samples], contour_colors = ['limegreen'],
+                filled=True, markers={r'\Omega_\star': meansA[0],'nt': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis of LISA + ET Scenario A', fontsize = 18)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHERcomb_A.png')
+plt.suptitle(r'LISA + ET CS1', fontsize = 18)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_CS1.png')
 
 
 

@@ -14,6 +14,8 @@ def diff(param1, param2):
     res = ogw.diff(param1)*ogw.diff(param2)
     return res
 
+#om1*np.exp(-1/(2*r1)*np.log10(f/fs1)**2)
+
 #A logarithm function with any base b can be written as the natural log over the
 #log of that base: log10(x) = ln(x)/log(10) or log6(x) = ln(x)/log(6)
 
@@ -24,3 +26,5 @@ rows_to_remove = [2]
 params = np.delete(params, rows_to_remove, axis=0)
 
 diffs = np.array(list(map(lambda args: diff(*args), params)))
+
+deriv1 = -om*sp.exp(-sp.log(f/f0)**2/(2*rho**2))*sp.log(f/f0)/(f*rho**2)

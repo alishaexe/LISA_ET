@@ -19,30 +19,30 @@ def diff(param1, param2):
     return res
 
 #%% Powerlaw
-# ogw = om *(f/f0)**nt
+ogw = om *(f/f0)**nt
 
-# paramlist = np.array([[om], [nt]])
+paramlist = np.array([[om], [nt]])
 
-# A = Matrix([[om], [nt]])
+A = Matrix([[om], [nt]])
 
-# params = np.array(np.meshgrid(A, A)).T.reshape(-1,2)
-# rows_to_remove = [2]
+params = np.array(np.meshgrid(A, A)).T.reshape(-1,2)
+rows_to_remove = [2]
 
-# # # Remove rows
-# params = np.delete(params, rows_to_remove, axis=0)
+# # Remove rows
+params = np.delete(params, rows_to_remove, axis=0)
 
-# diffs = np.array(list(map(lambda args: diff(*args), params)))
+diffs = np.array(list(map(lambda args: diff(*args), params)))
 
 #%% Broken powerlaw
-ogw = om * (f/f0)**n1 * (1/2 + (1/2)*(f/f0)**s)**(-(n1-n2)/s)
-paramlist = np.array([[om], [n1], [n2], [s]])
-A = Matrix([[om], [n1], [n2],[s]])
-params = np.array(np.meshgrid(A, A)).T.reshape(-1,2)
+# ogw = om * (f/f0)**n1 * (1/2 + (1/2)*(f/f0)**s)**(-(n1-n2)/s)
+# paramlist = np.array([[om], [n1], [n2], [s]])
+# A = Matrix([[om], [n1], [n2],[s]])
+# params = np.array(np.meshgrid(A, A)).T.reshape(-1,2)
 
-# rows_to_remove = [3, 6, 7]
-rows_to_remove = [4, 8, 9,12,13,14]
-params = np.delete(params, rows_to_remove, axis=0)
-diffs = np.array(list(map(lambda args: diff(*args), params)))
+# # rows_to_remove = [3, 6, 7]
+# rows_to_remove = [4, 8, 9,12,13,14]
+# params = np.delete(params, rows_to_remove, axis=0)
+# diffs = np.array(list(map(lambda args: diff(*args), params)))
 
 
 

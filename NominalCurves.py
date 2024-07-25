@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import quad
+from scipy.interpolate import interp1d
 import time
 #%%
 #Now we want to start looking at what we get for broken power laws.
@@ -18,6 +19,7 @@ r1 = Rtab[:,1]#auto correlation response
 r2 = Rtab[:,2]#cross-correlation response.
 
 Rae = r1-r2
+RAnum = interp1d(f, Rae)
 #Now going to define constants
 yr = 365*24*60*60 #in seconds
 H0 = 100*0.67*10**(3)/(3.086*10**(22)) #1/seconds
@@ -66,7 +68,7 @@ step = (ntmax-ntmin)/itera
 #we use i to iterate through each row of the data
 def tabETapp(i):
     res = (4*pi**2 *Etab[i,0]**3 * Etab[i,3]**2/ (3*H0**2))
-    return res
+    return 0.816**2 * res
 
 col1 = Etab[:,0] # assigning the first column of the data to the name col1
 vals = range(len(Etab))#this makes the list of numbers to iterate through for i
@@ -90,7 +92,7 @@ def sigp(f):
     t5 = 1-(0.2*np.exp(-((((f/f0)-47)**2)**0.85)/100))
     t6 = 1-(0.12*np.exp(-((((f/f0)-50)**2)**0.7)/100))-(0.2*np.exp(-(((f/f0)-45)**2)/250))+(0.15*np.exp(-(((f/f0)-85)**2)/400))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
+    return 0.816**2 * res
 
 
 
@@ -104,17 +106,17 @@ def etnomonly(f):
 fvalsET = np.logspace(0, 3,2000)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 
-plt.figure(figsize=(6, 9)) 
-plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth=2.5)
-plt.title("Nominal sensitivity curve ET")
-plt.ylabel(r"$\Omega_{gw}$")
-plt.xlabel("f (Hz)")
-#plt.ylim(10**(-9), 10**(-5))
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10**0, 400)
-plt.grid(True)
-plt.show()
+# plt.figure(figsize=(6, 9)) 
+# plt.loglog(fvalsET, sigETvals, color = "indigo", linewidth=2.5)
+# plt.title("Nominal sensitivity curve ET")
+# plt.ylabel(r"$\Omega_{gw}$")
+# plt.xlabel("f (Hz)")
+# #plt.ylim(10**(-9), 10**(-5))
+# plt.yscale('log')
+# plt.xscale('log')
+# plt.xlim(10**0, 400)
+# plt.grid(True)
+# plt.show()
 #%%
 #Plots both curves overlayed each other
 
@@ -122,7 +124,7 @@ plt.figure(figsize=(6, 9))
 plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkviolet", linewidth=2.5)
 plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
 plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2.5,color = "indigo" )
-plt.legend(fontsize = 16)
+plt.legend(fontsize = 16, loc=9)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
 #plt.ylim(10**(-9), 10**(-5))
@@ -149,15 +151,7 @@ def Sa(f):
 SII = 3.6*10**(-41)
 Ss = SII
 
-f2 = 25*10**(-3)
-
-####LOW FREQUENCY APPROXIMATION
-#Now make the low frequency approximation
-#this is equation 63 in the paper
-
-def sigI(f):#Sigma_I
-    sig = np.sqrt(2)*20/3 * (SI(f)/(2*pi*f)**4 + SII)*(1+(f/(4*fLisa/3))**2)
-    return sig
+f2 = 4*fLisa/3
 
 
 def n1(f):
@@ -168,93 +162,63 @@ def n2(f):
     res = -((2*Ss+8*Sa(f))*np.cos(f/fLisa))
     return res
 
+
 def sigtab(f, r1, r2):
     res = 1/np.sqrt((3*H0**2/(4*pi**2*f**3))**2 * (2*((r1-r2)/(n1(f)-n2(f)))**2))
     if res > 1e-5:
         return
-    return res
+    return 1/np.sqrt(2)*res
 
 og = np.array(list(map(lambda args: sigtab(*args), Rtab)),dtype = float)
 #%%
 P = 12
 A = 3
 
-
 def P_acc(f):
-    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
+    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*1/(2*pi*f)**(4)*(2*pi*f/c)**2
     return res
 
 def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
-def N_aa(f):
+def N_AA(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    res = 8 * np.sin(con)**2 * ((4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f))+((2+np.cos(con))*P_ims(f)))
     return res
 
-def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+def N_xx(f):
+    con = 2*pi*f*L
+    res = 16 * (np.sin(con))**2 * ((3+np.cos(2*con))*P_acc(f)+P_ims(f))
+    return res
+
+def R_XX(f):#this is Rxx
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
-    res = N_aa(f)/R(f)
+    res = 1/np.sqrt(2)*N_xx(f)/R_XX(f)
     return res
 
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
-    res = const *f**3*S_n(f)
+    res = const*f**3*S_n(f)
     return res
 
-#This is flauger with the 2*root 2 factor
-def RAA(f):
-    res = 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+def sigtab(f):
+    const = 4*pi**2/(3*H0**2)
+    res = (1/np.sqrt(2)*N_xx(f)/(16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2*RAnum(f)))*const*f**3 
     return res
 
-def RXX(f):
-    res = 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
-    return res
-#%%
+
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
-#%%
-fvals = np.linspace(1e-5,1,num = 1000)
-plt.loglog(f, Rae, color = "indigo", label = "SmithCaldwell Rtab")
-Raa = np.array(list(map(RAA, fvals)))
-Rxx = np.array(list(map(RXX, fvals)))
-plt.loglog(fvals, Raa, color = "green", label = "Flauger RAA")
-plt.loglog(fvals, Rxx, color = "red", label = "Flauger RXX")
-# plt.xlim(1e-5,1e-3)
-plt.legend()
-plt.xlabel("f (Hz")
-plt.ylabel("R")
-# plt.ylim(2e-1,0.6)
-plt.show()
-#%%
-plt.loglog(fvals, Raa/Rxx)
-plt.ylabel("Raa/Rxx")
-plt.xlabel("f")
-plt.show()
-#%%
-fvals = np.linspace(1e-5,1,num = 231)
-Raa = np.array(list(map(RAA, fvals)))
-plt.loglog(fvals, Rae/Raa)
-# plt.xlim(1e-3,1e-2)
-# plt.ylim(1,2)
-plt.ylabel("Rae/Raa")
-plt.xlabel("f")
-#%%
-fvals = np.linspace(1e-5,1,num = 231)
-Rxx = np.array(list(map(RXX, fvals)))
-plt.loglog(fvals, Rae/Rxx)
-plt.ylabel("Rae/Rxx")
-plt.xlabel("f")
+og = np.array(list(map(sigtab, freqvals)))
 
-#%%
+
 plt.figure(figsize=(6, 9)) 
-plt.loglog(f, og,'--' ,color = "darkviolet", label = "Numerical", linewidth=2.5)
-plt.loglog(freqvals, sigvals, color = "indigo", label = "Approximate", linewidth=2.5)
-plt.loglog(fvals, Rxx, color = "green")
+plt.loglog(freqvals, og,'--' ,color = "darkviolet", label = "Numerical", linewidth=2.5)
+plt.loglog(freqvals, sigvals, color = "indigo", label = r"Approximate", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.grid(True)
 plt.legend(fontsize = 16)
@@ -262,99 +226,6 @@ plt.xlabel("f (Hz)", fontsize = 16)
 plt.title("Nominal sensitivity curve of LISA ", fontsize = 16)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
 plt.show()
-#%%
-freqvals = np.linspace(1e-5, 1, 231)
-sigvals = np.array(list(map(Ohms, freqvals)))
-test = og/sigvals
-plt.loglog(f,og/sigvals)
-plt.show()
-
-
-
-freqvals = np.linspace(1e-5, 1, 1000)
-sigvals = np.array(list(map(Ohms, freqvals)))
-
-plt.loglog(f, og, label = "smith caldwell")
-plt.loglog(freqvals, sigvals, label = "flauger")
-plt.legend()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#%%
-# def bpls(f):
-#     om = 1e-7
-#     n1 = -0.1
-#     n2 = -2/3
-#     fstar = 2e-2
-#     s = 10.2
-#     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
-#     return res
-
-
-# def omegatog(f):
-#     if f <= 10**(-1):
-#         return Ohms(f)
-#     if f > 1.6:
-#         return sigp(f)
-    
-# def nomtog(f):
-#     if f <= 10**(-1):
-#         res = Ohms(f)
-#         if res > 1e-5:
-#             return
-#         return res
-#     if f > 1:
-#         res = sigp(f)
-#         if res > 1e-5:
-#             return
-#         return res
-
-
-# ins = np.array(((1e-9,3,-1.5,0.05,7.2), (1e-7, 5, -5, 0.3,1.8)))
-
-
-# fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
-# combine = np.array(list(map(omegatog, fvalscomb)))
-# nom = np.array(list(map(nomtog, fvalscomb)))
-# otog = np.vstack((fvalscomb, combine)).T
-# combfbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/Ftabbigsigcomb.npy')
-# bpl = np.array(list(map(bpls, fvalscomb)))
-
-# plt.figure(figsize=(6, 9))
-# plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-# plt.plot(fvalscomb, bpl)
-# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
-# plt.ylim(1e-13,1e-5)
-# plt.grid(True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

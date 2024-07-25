@@ -4,6 +4,7 @@ from scipy.integrate import quad
 import getdist
 from getdist import plots, MCSamples
 from scipy.interpolate import UnivariateSpline
+from fractions import Fraction
 #%%
 
 #Now going to define constants
@@ -47,37 +48,43 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
-size = 26
+tsize = 30
+size=26
 
+# subject = "PT"
+subject = "CS"
+
+# file = "Phase"
+file = "Cosmic"
 
 #case 1
 o1 = 1e-9
-n1 = 3
-n2 = -1.5
-fstar = 0.05
-s1 = 7.2
+n1 = -0.1
+n2 = -0.2
+s1 = 10.2
+fstar = 0.02
 
 #case 2
-o2 = 1e-7
-nom1 = 5
-nom2 = -5
-fbreak = 0.3
-s2 = 1.8
+o2 = 6e-10
+nom1 = -0.1
+nom2 = -2/3
+s2 = 10
+fbreak = 0.02
 
-#%%
+
 props = dict(boxstyle='square', facecolor='white', alpha=1)
 txt = 36
 textstr1 = '\n'.join((
-    r'$\Omega_* = {om}$'.format(om = o1),
+    r'$\Omega_\star = {om}$'.format(om = o1),
     r'$n_1 = {n1}$'.format(n1 = n1),
-    r'$n_2 = {n2}$'.format(n2 = n2),
+    r'$n_2 = {n2}$'.format(n2 = Fraction(n2).limit_denominator()),
     r'$\sigma = {s}$'.format(s = s1),
     r'$f_\star = {fs}$'.format(fs = fstar)))
 
 textstr2 = '\n'.join((
-    r'$\Omega_* = {om}$'.format(om = o2),
+    r'$\Omega_\star = {om}$'.format(om = o2),
     r'$n_1 = {n1}$'.format(n1 = nom1),
-    r'$n_2 = {n2}$'.format(n2 = nom2),
+    r'$n_2 = {n2}$'.format(n2 = Fraction(nom2).limit_denominator()),
     r'$\sigma = {s}$'.format(s = s2),
     r'$f_\star = {fs}$'.format(fs = fbreak)))
 
@@ -93,23 +100,24 @@ def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
-def N_aa(f):
+def N_xx(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    res = 16 * (np.sin(con))**2 * ((3+np.cos(2*con))*P_acc(f)+P_ims(f))
     return res
 
-def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+def R_XX(f):#this is Rxx
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
-    res = N_aa(f)/R(f)
+    res = 1/np.sqrt(2)*N_xx(f)/R_XX(f)
     return res
 
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
-    res = const *f**3*S_n(f)
+    res = const*f**3*S_n(f)
     return res
+
 
 
 
@@ -133,11 +141,13 @@ def f02(f0, n1, n2, om, s):
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f03(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f11(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: ((om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
@@ -149,21 +159,25 @@ def f12(f0, n1, n2, om, s):
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f13(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*(om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f22(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)**2/s**2)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f23(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)*np.log(0.5*(f/f0)**s + 0.5)/s)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f33(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s:  (om**2*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2)**2)/Ohms(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
@@ -206,10 +220,9 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['Green'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
-plt.suptitle(r'Fisher Analysis for SNR of LISA BPL', fontsize=size)
+plt.suptitle(r'LISA {sub}1'.format(sub=subject), fontsize=tsize)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase1.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Cosmic1.png')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}1.png'.format(fl=file))
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -219,21 +232,20 @@ g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['darkblue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis for SNR of LISA BPL', fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Phase2.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_Cosmic2.png')
+plt.suptitle(r'LISA {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}2.png'.format(fl=file))
 
 #%%
 def sigp(f):
     f0 = 1
-    t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
-    t2 = ((0.01e-11*((f/f0)**(1.9))) + (20.0e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42.0)))
-    t3 = 1.0-(0.475*np.exp(-(((f/f0)-25.0)**2.0)/50.0))
-    t4 = 1.0-(5.0e-4*np.exp(-(((f/f0)-20.0)**2.0)/100.0))
-    t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
-    t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
+    t1 = ((9*((f/f0)**(-30))) + (5.5e-6*((f/f0)**(-4.5))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42))))
+    t2 = ((1e-13*((f/f0)**(1.9))) + (20e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42)))
+    t3 = 1-(0.475*np.exp(-(((f/f0)-25)**2)/50))
+    t4 = 1-(5e-4*np.exp(-(((f/f0)-20)**2)/100))
+    t5 = 1-(0.2*np.exp(-((((f/f0)-47)**2)**0.85)/100))
+    t6 = 1-(0.12*np.exp(-((((f/f0)-50)**2)**0.7)/100))-(0.2*np.exp(-(((f/f0)-45)**2)/250))+(0.15*np.exp(-(((f/f0)-85)**2)/400))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
+    return 0.816**2 * res
 
 def f00et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, s: (f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)/sigp(f)**2
@@ -253,11 +265,13 @@ def f02et(f0, n1, n2, om, s):
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f03et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: (om*(f/f0)**(2*n1)*(0.5*(f/f0)**s + 0.5)**(2*(-n1 + n2)/s)*(0.5*(f/f0)**s*(-n1 + n2)*np.log(f/f0)/(s*(0.5*(f/f0)**s + 0.5)) - (-n1 + n2)*np.log(0.5*(f/f0)**s + 0.5)/s**2))/sigp(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
     I2 = quad(integrand, 1e-1, ffmax, args=(f0, n1, n2, om, s))[0]
     return 2*T*sum((I1,I2))
+
 def f11et(f0, n1, n2, om, s):
     integrand = lambda f, f0, n1, n2, om, s: ((om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(f/f0) - om*(f/f0)**n1*(0.5*(f/f0)**s + 0.5)**((-n1 + n2)/s)*np.log(0.5*(f/f0)**s + 0.5)/s)**2)/sigp(f)**2
     I1 = quad(integrand, ffmin, 1e-1, args=(f0, n1, n2, om, s))[0]
@@ -325,9 +339,8 @@ g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['forestgreen'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2], r'\sigma':meansA[3]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis for SNR of ET BPL', fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase1.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Cosmic1.png')
+plt.suptitle(r'ET {sub}1'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file))
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -337,10 +350,9 @@ g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2': meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis for SNR of ET BPL', fontsize=size)
+plt.suptitle(r'ET {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}2.png'.format(fl=file))
 
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Phase2.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_Cosmic2.png')
 
 #%%
 #all together now
@@ -369,9 +381,8 @@ g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['limegreen'], 
                 filled=True, markers={r'\Omega_*': meansA[0],'n1': meansA[1], 'n2':meansA[2],r'\sigma':meansA[3]}, title_limit=1)
 plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL', fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase1.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Cosmic1.png')
+plt.suptitle(r'LISA+ET {sub}1'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}1.png'.format(fl=file))
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -381,9 +392,8 @@ g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\Omega_*': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
 plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'Fisher Analysis for SNR of LISA + ET BPL', fontsize=size)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Phase2.png')
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_Cosmic2.png')
+plt.suptitle(r'LISA+ET {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}2.png'.format(fl=file))
 
 
 

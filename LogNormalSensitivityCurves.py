@@ -17,7 +17,7 @@ snr5 = 5
 #L = 2.5e9
 L = 25/3
 
-rhom = np.linspace(0.1, 1, 15)
+rhom = np.linspace(0.1, 10, 50)
 
 fLisa = 1/(2*pi*L)
 ffmin = 10**(-5)
@@ -28,7 +28,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 2000
+itera = 1000
 
 ##########
 
@@ -80,8 +80,7 @@ sigvals = np.array(list(map(Ohms, freqvals)))
 
 # rhom = np.linspace(-1, 0, 5)
 def lognL(f, fstar, rho):
-    # res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
-    res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
+    res = np.exp(-1/(2*rho**2)*(np.log10(f/fstar))**2)
     return res
 
 def aminlogL(fstar, rho):
@@ -152,7 +151,7 @@ plt.legend(fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomlognset.png', bbox_inches='tight')
 plt.show()
 
 
@@ -166,8 +165,7 @@ def sigp(f):
     t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
     t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
-
+    return 0.816**2 * res
 
 
 def etnomonly(f):
@@ -184,7 +182,7 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))
 #ET Logns
 
 def logn(f, fstar, rho):
-    res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
+    res = np.exp(-1/(2*rho**2)*(np.log10(f/fstar))**2)
     return res
 
 
@@ -254,7 +252,7 @@ plt.ylim(10**(-13),10**(-5))
 plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomlognslisa.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -284,21 +282,21 @@ combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
 
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2.5)
-plt.title("Nominal curves for ET and LISA")
-plt.grid(True) 
-plt.xlim(ffmin, ffmax) 
-plt.xlabel('f (Hz)')
-plt.ylabel(r"$\Omega_{gw}$")
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png', bbox_inches='tight')
-plt.show()
+# plt.figure(figsize=(6, 9))
+# plt.loglog(otog[:,0], nom, color = "indigo", linewidth=2.5)
+# plt.title("Nominal curves for ET and LISA")
+# plt.grid(True) 
+# plt.xlim(ffmin, ffmax) 
+# plt.xlabel('f (Hz)')
+# plt.ylabel(r"$\Omega_{gw}$")
+# # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETLISAnom.png', bbox_inches='tight')
+# plt.show()
 
 
 
 #%%
 def logncomb(f, fstar, rho):
-    res = np.exp(-1/(2*rho)*(np.log10(f/fstar))**2)
+    res = np.exp(-1/(2*rho**2)*(np.log10(f/fstar))**2)
     return res
 
 def aminlogcomb(fstar, rho):
@@ -362,5 +360,5 @@ plt.ylabel(r"$\Omega_{gw}$",fontsize = 16)
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomlogNswold.png', bbox_inches='tight')
 plt.show()
