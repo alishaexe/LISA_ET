@@ -342,10 +342,10 @@ plt.show()
 #%%
 
 def bpls(f):
-    om = 1e-9
+    om = 2e-10
     n1 = 3
-    n2 = -3/2
-    fstar = 0.07
+    n2 = -1
+    fstar = 0.04
     s = 7.2
     res = om*(f/fstar)**n1 * (1/2+(1/2)*(f/fstar)**s)**(-(n1-n2)/s)
     return res

@@ -57,18 +57,18 @@ file = "PT"
 # file = "CS"
 
 #case 1
-o1 = 1e-9
+o1 = 1e-10
 n1 = 3
-n2 = -1.5
+n2 = -1
 s1 = 7.2
-fstar = 0.05
+fstar = 0.04
 
 #case 2
-o2 = 1e-7
-nom1 = 5
-nom2 = -5
-s2 = 1.8
-fbreak = 0.3
+o2 = 1e-8
+nom1 = 2.4
+nom2 = -2.4
+s2 = 1.2
+fbreak = 0.2
 
 
 props = dict(boxstyle='square', facecolor='white', alpha=1)
@@ -76,14 +76,14 @@ txt = 36
 textstr1 = '\n'.join((
     r'$\Omega_\star = {om}$'.format(om = o1),
     r'$n_1 = {n1}$'.format(n1 = n1),
-    r'$n_2 = {n2}$'.format(n2 = Fraction(n2).limit_denominator()),
+    r'$n_2 = {n2}$'.format(n2 = n2), #Fraction(n2).limit_denominator()),
     r'$\sigma = {s}$'.format(s = s1),
     r'$f_\star = {fs}$'.format(fs = fstar)))
 
 textstr2 = '\n'.join((
     r'$\Omega_\star = {om}$'.format(om = o2),
     r'$n_1 = {n1}$'.format(n1 = nom1),
-    r'$n_2 = {n2}$'.format(n2 = Fraction(nom2).limit_denominator()),
+    r'$n_2 = {n2}$'.format(n2 = nom2), #Fraction(nom2).limit_denominator()),
     r'$\sigma = {s}$'.format(s = s2),
     r'$f_\star = {fs}$'.format(fs = fbreak)))
 
