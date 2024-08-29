@@ -23,16 +23,12 @@ f = Rtab[:,0]#Measured in Hz
 r1 = Rtab[:,1]#auto correlation response
 r2 = Rtab[:,2]#cross-correlation response.
 
-#%%
 Rae = r1-r2
-
-#%%
 #Now going to define constants
 yr = 365*24*60*60 #in seconds
 H0 = 100*0.67*10**(3)/(3.086*10**(22)) #1/seconds
 pi = np.pi
 
-#%%
 fetstar = 10**(-2)
 fi = 0.4*10**(-3)
 #For the LISA mission they have designed the
@@ -97,7 +93,7 @@ sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the
 # In[6]:
 L = 25/3
 fLisa = 1/(2*pi*L)
-c=3e8
+c = 3e8
 
 P = 12
 A = 3
@@ -141,39 +137,28 @@ freqvals = np.logspace(elminL, elmaxL, itera)
 sigvals = np.array(list(map(Ohms, freqvals)))
 
 
-# In[16]:
+# In[66]:
+
+om1 = 3e-10
+fs1 = 0.2
+r1 = 0.45
 
 
-s1 = 7.2
-nA1 = 3
-nB1 = -1
-fS1 = 0.04
-a1 = -10
 
 def bpl1(f):
-    res = 10**a1 \
-    * (f/fS1)**nA1 \
-    * (1/2+1/2*(f/fS1)**s1)**(-(nA1-nB1)/s1)
+    res = om1*np.exp(-(1/(2*r1**2)) * (np.log10(f/fs1))**2)
     return res
-
-
-# In[31]:
-
-
-s2 = 1.2
-nA2 = 2.4
-nB2 = -2.4
-fS2 = 0.2
-a2 = -8
+# In[67]:
+om2 = 7e-13
+fs2 = 0.25
+r2 = 1.6
 
 def bpl2(f):
-    res = 10**a2 \
-    * (f/fS2)**nA2 \
-    * (1/2+1/2*(f/fS2)**s2)**(-(nA2-nB2)/s2)
+    res = om2*np.exp(-(1/(2*r2**2)) * (np.log10(f/fs2))**2)
     return res
 
 
-# In[18]:
+# In[68]:
 
 
 def omegatog(f):
@@ -183,7 +168,7 @@ def omegatog(f):
         return sigETapp(f)
 
 
-# In[19]:
+# In[69]:
 
 
 def nomtog(f):
@@ -199,50 +184,45 @@ def nomtog(f):
         return res
 
 
-# In[20]:
+# In[70]:
 
 
 step = (ffmax-ffmin)/itera
 freqs = np.arange(ffmin, ffmax, step)
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),10000)
 
 
-# In[21]:
+# In[71]:
 
 
 phase1 = np.array(list(map(bpl1, freqs)))
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
-
-
-# In[32]:
-
-
 phase2 = np.array(list(map(bpl2, freqs)))
-combfbplo = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo.txt')
+# flogomcomb = np.load('/Users/alisha/Documents/LISA_ET/PLS.npy')
+# combfbplo = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo.txt')
+combln = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo-lnls.txt')
+# In[75]:
 
-flogomcomb = np.load('/Users/alisha/Documents/LISA_ET/PLS.npy')
-# In[35]:
-
+# combfbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/Ftabbigsigcomb.npy')
 
 plt.figure(figsize=(6, 8))
-plt.loglog(otog[:,0], nom,color = "indigo", linewidth=1.5, label = "Nominal Curves")
-# plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
-plt.loglog((combfbplo[:,0]), (combfbplo[:,1]*0.67**2), label = "BPLS curve", color = "lime", linewidth=2.5)
-plt.loglog(freqs, phase1,linewidth=2.5,color = "darkgreen",label = "PT 1")
-plt.loglog(freqs, phase2,linewidth=2.5,color = "blue",linestyle='--',label = "PT 2")
+plt.loglog(otog[:,0], nom, color = "indigo", linewidth=1.5, label = "Nominal Curves")
+plt.loglog(combln[:,0], combln[:,1]*0.67**2, label = "LNS curve", color = "aqua", linewidth=2.5)
+plt.loglog(freqs, phase1,linewidth=2.5,color = "darkgreen",label = "Inf1")
+plt.loglog(freqs, phase2,linewidth=2.5,color = "blue",linestyle='--',label = "Inf2")
+# plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1])/0.67**2, label = "BPLS curve", color = "lime", linewidth=2.5)
 
 plt.legend(fontsize = 12, loc = (0.08,0.8))
-plt.title('SGWB from Phase Transitions', fontsize = 16)#plt.title(r"Values: \
+plt.title('SGWB from Inflation', fontsize = 16)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
+plt.ylim(2e-14,1e-5)
 plt.xlabel('f (Hz)', fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.ylim(2e-14,1e-5)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig2a.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/Inflation.png', bbox_inches='tight')
 plt.show()
-
 
 
 

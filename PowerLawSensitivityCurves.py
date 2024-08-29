@@ -37,7 +37,7 @@ itera = 2000
 ##########
 
 elminL = (np.log10(ffmin))
-elmaxL = (np.log10(10**(-1.05)))
+elmaxL = (np.log10(10**(-0.88)))
 elminet = np.log10(1.6)
 elmaxet = (np.log10(ffmax))
 ntmin = -9/2
@@ -49,29 +49,34 @@ A = 3
 
 
 def P_acc(f):
-    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
+    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*1/(2*pi*f)**(4)*(2*pi*f/c)**2
     return res
 
-def P_ims(f):#* (1e-12)**2 after P
+def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
-def N_aa(f):
+def N_AA(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(f/fLisa))**2 * (4*(1+np.cos(f/fLisa)+(np.cos(f/fLisa))**2)*P_acc(f)+(2+np.cos(f/fLisa))*P_ims(f))
+    res = 8 * np.sin(con)**2 * ((4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f))+((2+np.cos(con))*P_ims(f)))
     return res
 
-def R(f):
-    res = 16*(np.sin(f/fLisa))**2  * (f/fLisa)**2 * 9/20 * 1/(1+0.7*(f/fLisa)**2)
+def N_xx(f):
+    con = 2*pi*f*L
+    res = 16 * (np.sin(con))**2 * ((3+np.cos(2*con))*P_acc(f)+P_ims(f))
+    return res
+
+def R_XX(f):#this is Rxx
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
-    res = N_aa(f)/R(f)
+    res = 1/np.sqrt(2)*N_xx(f)/R_XX(f)
     return res
 
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
-    res = const *f**3*S_n(f)
+    res = const*f**3*S_n(f)
     return res
 
 
@@ -79,18 +84,13 @@ def Ohms(f):
 #%%
 freqvals = np.logspace(elminL, elmaxL, itera)   
 sigvals = np.array(list(map(Ohms, freqvals)))
-x = freqvals[sigvals <1.7e-6]
-y = sigvals[sigvals < 1.7e-6]
+
 #Now finding the PLS for LISA
 def Almin(nt):
     integrand = lambda f, nt:((f/fLisa)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-3), args=(nt))[0]
     I2 = quad(integrand, 10**(-3), 10**(0), args=(nt))[0]
-    I3 = quad(integrand, 10**(0), 1e2, args=(nt))[0]
-    I4 = quad(integrand, 1e2, 200, args=(nt))[0]
-    I5 = quad(integrand, 200, 300, args=(nt))[0]
-    I6 = quad(integrand, 300, ffmax, args=(nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1,I2,I3,I4,I5,I6)))
+    res = snr5/np.sqrt(2*T*sum((I1,I2)))
     return nt, res
 
 
@@ -116,8 +116,8 @@ def Ftab(i, j):
 
 
 
-elstep = (elmax-elmin)/itera
-elLISA = np.arange(elmin, elmax+elstep, elstep)
+elstep = (elmaxL-elminL)/itera
+elLISA = np.arange(elminL, elmaxL+elstep, elstep)
 i = range(len(elLISA))
 j = range(len(Atab))
 coordsl1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
@@ -131,11 +131,10 @@ def maxtablisa(i):
    
 maxposlisa = range(len(FtabLISA))
 maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
-maxpls = maxplvals[np.exp(maxplvals) <1.7e-6]
-flogom = np.vstack((np.log(10**elLISA)[np.exp(maxplvals) <1.7e-6], maxpls)).T
-#%%
+maxpls = maxplvals
+flogom = np.vstack((np.log(10**elLISA), maxpls)).T#%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(x, y, color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.legend(fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
@@ -156,7 +155,7 @@ plt.show()
 
 #%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(x, y, color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.legend(fontsize = 16)
@@ -176,7 +175,7 @@ def sigp(f):
     t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
     t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
+    return 0.816**2*res
 
 
 
@@ -187,7 +186,7 @@ def etnomonly(f):
     return res
 
 #%%
-fvalsET = np.logspace(0, 3,itera)#frequency values
+fvalsET = np.logspace(np.log10(1), np.log10(445),itera)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 
 plt.figure(figsize=(6, 9)) 
@@ -207,13 +206,9 @@ plt.show()
 #I separate the integration into 4 to help with the accuracy and avoid warnings
 def AETmin(nt):
     integrand = lambda f, nt:((f/fetstar)**(nt)/sigp(f))**2
-    I1 = quad(integrand, ffmin, 1e-3, args=(nt))[0]
-    I2 = quad(integrand, 1e-3, 1e-2, args = (nt))[0]
-    I3 = quad(integrand, 1e-2, 1e-1, args = (nt))[0]
-    I4 = quad(integrand, 1e-1, 1e-0, args = (nt))[0]
-    I5 = quad(integrand, 1e-0, 1e2, args = (nt))[0]
-    I6 = quad(integrand, 1e-2, ffmax, args = (nt))[0]
-    res = snr5/np.sqrt(2*T*sum((I1, I2,I3,I4,I5,I6)))
+    I1 = quad(integrand, 1.6, 100, args=(nt))[0]
+    I2 = quad(integrand, 100, 445, args = (nt))[0]
+    res = snr5/np.sqrt(2*T*sum((I1, I2)))
     return res
 
 ntmin = -9/2
@@ -233,8 +228,8 @@ def FETtab(i, j):
 
 #%%
 
-elstep = (elmax-elmin)/itera
-elET = np.arange(elmin, elmax+elstep, elstep)
+elstep = (elmaxet-elminet)/itera
+elET = np.arange(elminet, elmaxet, elstep)
 i = range(len(elET))
 j = range(len(AETtab))
 coordset = np.array(np.meshgrid(i,j)).T.reshape(-1,2)
@@ -247,9 +242,8 @@ def maxETpls(i):
 
 maxposet = range(len(Ftabetpls))
 maxvals = np.array(list(map(maxETpls, maxposet)))
-maxplsvals = maxvals[np.exp(maxvals) <1e-5]
-flogomET = np.vstack((np.log(10**elET)[np.exp(maxvals) <1e-5], maxplsvals)).T
-#%%
+maxplsvals = maxvals
+flogomET = np.vstack((np.log(10**elET), maxplsvals)).T#%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", linewidth=2.5)
 plt.title("PLS curve for Einstein Telescope")
@@ -288,13 +282,13 @@ plt.show()
 
 #%%
 def omegatog(f):
-    if f <= 10**(-0.95):
+    if f <= 10**(-0.88):
         return Ohms(f)
     if f > 1.6:
         return sigp(f)
     
 def nomtog(f):
-    if f <= 10**(-0.95):
+    if f <= 10**(-0.88):
         res = Ohms(f)
         if res > 1e-5:
             return
@@ -305,7 +299,7 @@ def nomtog(f):
             return
         return res
  
-fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),750)
+fvalscomb = np.logspace(np.log10(ffmin), np.log10(ffmax),itera)
 combine = np.array(list(map(omegatog, fvalscomb)))
 nom = np.array(list(map(nomtog, fvalscomb)))
 otog = np.vstack((fvalscomb, combine)).T
@@ -318,7 +312,7 @@ def Amincomb(nt):
     integrand = lambda f, nt:((f/fstar)**(nt)/Ohms(f))**2
     I1 = quad(integrand, ffmin, 10**(-4), args=(nt))[0]
     I2 = quad(integrand, 10**(-4), 10**(0), args=(nt))[0]
-    I3 = quad(integrand, 10**(0), 10, args=(nt))[0]
+    I3 = quad(integrand, 10**(0), 10, args=(nt), limit = 1000)[0]
     I4 = quad(integrand, 10, ffmax, args = (nt))[0]
     integrand2 = lambda f, nt:((f/fstar)**(nt)/sigp(f))**2
     I5 = quad(integrand2, ffmin, 10**(0), args=(nt))[0]
@@ -358,6 +352,9 @@ def maxtabcomb(i):
 maxposco = range(len(Ftabcomb))
 maxcompls = np.array(list(map(maxtabcomb, maxposco)))
 flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
+
+np.save("PLS.npy", flogomcomb)
+
 #%%
 plt.figure(figsize=(6, 9))
 plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
@@ -368,6 +365,7 @@ plt.title("Nominal and PLS curves ", fontsize = 16)
 plt.legend(loc = (0.45,0.75), fontsize = 14)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
+plt.ylim(6e-14,1e-5)
 plt.xlabel(r'$f$ (Hz)', fontsize = 16)
 plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
@@ -375,22 +373,6 @@ plt.show()
 
 
 
-#%%
-
-plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
-plt.title("Nominal and PLS curves ", fontsize = 16)
-plt.legend(loc = (1.05,0.5), fontsize = 14)
-plt.grid(True) 
-plt.ylim(1e-13,1e-3)
-plt.xlim(ffmin, ffmax) 
-plt.xlabel(r'$f$ (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
-plt.show()
 
 
 

@@ -66,15 +66,7 @@ rho2 = 1.6
 #%%
 props = dict(boxstyle='square', facecolor='white', alpha=1)
 txt = 28
-textstr1 = '\n'.join((
-    r'$\Omega_\star = {om}$'.format(om = om1),
-    r'$\rho = {r}$'.format(r = rho1),
-    r'$f_\star = {fs}$'.format(fs = fs1)))
 
-textstr2 = '\n'.join((
-    r'$\Omega_\star = {om}$'.format(om = om2),
-    r'$\rho = {r}$'.format(r = rho2),
-    r'$f_\star = {fs}$'.format(fs = fs2)))
 
 def leg(tele, scen):
     if scen == 1:
@@ -178,18 +170,18 @@ g.triangle_plot([samples], contour_colors = ['Green'],
                 filled=True, markers={r'\Omega_\star': meansA[0],'\rho': meansA[1]}, title_limit=1)
 plt.text(0.7,0.7, leg("LISA", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 # plt.suptitle(r'LISA {sub}1'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}1.png'.format(fl=file))
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=5)
-g.settings.axes_fontsize=size
+g.settings.axes_fontsize=26
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['darkblue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],'\rho': meansB[1]}, title_limit=1)
-plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'LISA {sub}2'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}2.png'.format(fl=file))
+plt.text(0.7,0.7, leg("LISA", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'LISA {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 #%%
 
@@ -254,9 +246,9 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['Green'], 
                 filled=True, markers={r'\Omega_\star': meansA[0],'\rho': meansA[1]}, title_limit=1)
-plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'ET {sub}1'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file))
+plt.text(0.7,0.7, leg("ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'ET {sub}1'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -265,9 +257,9 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],'\rho': meansB[1]}, title_limit=1)
-plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'ET {sub}2'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}2.png'.format(fl=file))
+plt.text(0.7,0.7, leg("ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'ET {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 #%%
 #all together now
@@ -295,9 +287,9 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['Green'],
                 filled=True, markers={r'\Omega_\star': meansA[0],'\rho': meansA[1]}, title_limit=1)
-plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'LISA+ET {sub}1'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_{fl}1.png'.format(fl=file))
+plt.text(0.7,0.7, leg("LISA+ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'LISA+ET {sub}1'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 
 g = plots.get_subplot_plotter(subplot_size=5)
@@ -306,9 +298,9 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],'\rho': meansB[1]}, title_limit=1)
-plt.text(0.7,0.7, textstr2, ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'LISA+ET {sub}2'.format(sub=subject), fontsize=tsize)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_{fl}2.png'.format(fl=file))
+plt.text(0.7,0.7, leg("LISA+ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'LISA+ET {sub}2'.format(sub=subject), fontsize=tsize)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 
 

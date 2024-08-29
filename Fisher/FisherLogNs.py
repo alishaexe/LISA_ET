@@ -48,30 +48,30 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 file = "LNS"
-subject = "LNS"
+subject = "Inf"
 
-size = 18
-tsize = 22
+size = 35
+tsize = 45
 
 
-om1 = 10**(-9.9)
-fs1 = 1e-3
-rho1 = (10**(-0.13))**2
+om1 = 3e-10
+fs1 = 0.2
+rho1 = 0.45
 
-om2 = 10**(-11.8)
-fs2 = 1e-3
-rho2 = (10**(-0.37))**2
+om2 = 7e-13
+fs2 = 0.25
+rho2 = 1.6
 
 #%%
 props = dict(boxstyle='square', facecolor='white', alpha=1)
-txt = 20
+txt = 40
 textstr1 = '\n'.join((
-    r'$\Omega_* = {om}$'.format(om = om1),
+    r'$\Omega_\star = {om}$'.format(om = om1),
     r'$\rho = {r}$'.format(r = rho1),
     r'$f_\star = {fs}$'.format(fs = fs1)))
 
 textstr2 = '\n'.join((
-    r'$\Omega_* = {om}$'.format(om = om2),
+    r'$\Omega_\star = {om}$'.format(om = om2),
     r'$\rho = {r}$'.format(r = rho2),
     r'$f_\star = {fs}$'.format(fs = fs2)))
 
@@ -163,7 +163,7 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
@@ -173,7 +173,7 @@ plt.text(0.7,0.7, textstr1, ha='center', fontsize=txt, bbox = props, transform=p
 plt.suptitle(r'LISA {sub}1'.format(sub=subject), fontsize=tsize)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}2.png'.format(fl=file))
 
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
@@ -254,7 +254,7 @@ samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 
 
 #%%
 
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
@@ -265,7 +265,7 @@ plt.suptitle(r'ET {sub}1'.format(sub=subject), fontsize=tsize)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file)
 
 
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
@@ -295,7 +295,7 @@ samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 
 samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
 
 #%%
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
@@ -306,7 +306,7 @@ plt.suptitle(r'LISA+ET {sub}1'.format(sub=subject), fontsize=tsize)
 # plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_COMB_{fl}1.png'.format(fl=file))
 
 
-g = plots.get_subplot_plotter(subplot_size=5)
+g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
