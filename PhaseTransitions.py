@@ -241,7 +241,7 @@ plt.xlim(ffmin, ffmax)
 plt.xlabel(r'$f$ (Hz)', fontsize = 20)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
 plt.ylim(1e-13,1e-5)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/PhaseTransition.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/PhaseTransition.png', bbox_inches='tight')
 plt.show()
 
 #%%

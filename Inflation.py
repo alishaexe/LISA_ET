@@ -218,7 +218,7 @@ plt.ylim(2e-14,1e-5)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.xlabel(r'$f$ (Hz)', fontsize = 20)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/Inflation.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/Inflation.png', bbox_inches='tight')
 plt.show()
 
 #%%
