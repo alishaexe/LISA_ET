@@ -32,7 +32,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 2000
+itera = 1000
 
 ##########
 
@@ -116,8 +116,8 @@ def Ftab(i, j):
 
 
 
-elstep = (elmaxL-elminL)/itera
-elLISA = np.arange(elminL, elmaxL+elstep, elstep)
+elstep = (elmax-elmin)/itera
+elLISA = np.arange(elmin, elmax+elstep, elstep)
 i = range(len(elLISA))
 j = range(len(Atab))
 coordsl1 = np.array(np.meshgrid(i, j)).T.reshape(-1,2)
@@ -133,6 +133,9 @@ maxposlisa = range(len(FtabLISA))
 maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
 maxpls = maxplvals
 flogom = np.vstack((np.log(10**elLISA), maxpls)).T#%%
+
+np.save("/Users/alisha/Documents/LISA_ET/Datafiles/PLS/PLS_LISA.npy", np.exp(flogom))
+
 plt.figure(figsize=(6, 9)) 
 plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
@@ -155,15 +158,17 @@ plt.show()
 
 #%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.legend(fontsize = 16)
+plt.loglog(freqvals, sigvals, color = "indigo", label = "Nominal curve", linewidth=2.5)
+plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", label = "PLS curve", linewidth=2.5)
+plt.legend(loc=2,fontsize = 18)
 plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.grid(True)
-plt.xlabel("f (Hz)", fontsize = 16)
-plt.title("Nominal and PLS curve LISA", fontsize = 16)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnomPLS.png', bbox_inches='tight')
+plt.xlabel(r"$f$ (Hz)", fontsize = 20)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
+# plt.title("Nominal and PLS curve LISA", fontsize = 20)
+plt.ylim(1e-14,1e-5)
+plt.xlim(1e-5,1e-1)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig5a.png', bbox_inches='tight')
 plt.show()
 #%%
 def sigp(f):
@@ -186,7 +191,7 @@ def etnomonly(f):
     return res
 
 #%%
-fvalsET = np.logspace(np.log10(1), np.log10(445),itera)#frequency values
+fvalsET = np.logspace(np.log10(1e-5), np.log10(445),itera)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))#The Omega_gw values from the ET data
 
 plt.figure(figsize=(6, 9)) 
@@ -228,8 +233,8 @@ def FETtab(i, j):
 
 #%%
 
-elstep = (elmaxet-elminet)/itera
-elET = np.arange(elminet, elmaxet, elstep)
+elstep = (elmax-elmin)/itera
+elET = np.arange(elmin, elmax, elstep)
 i = range(len(elET))
 j = range(len(AETtab))
 coordset = np.array(np.meshgrid(i,j)).T.reshape(-1,2)
@@ -244,6 +249,8 @@ maxposet = range(len(Ftabetpls))
 maxvals = np.array(list(map(maxETpls, maxposet)))
 maxplsvals = maxvals
 flogomET = np.vstack((np.log(10**elET), maxplsvals)).T#%%
+np.save("/Users/alisha/Documents/LISA_ET/Datafiles/PLS/PLS_ET.npy", np.exp(flogomET))
+
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", linewidth=2.5)
 plt.title("PLS curve for Einstein Telescope")
@@ -257,7 +264,7 @@ plt.figure(figsize=(6, 9))
 plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
 plt.legend(fontsize = 16)
 plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
+# plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
 plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
 plt.xlabel("f (Hz)", fontsize = 16)
 plt.yscale('log')
@@ -267,17 +274,19 @@ plt.grid(True)
 plt.show()
 #%%
 plt.figure(figsize=(6, 9)) 
-plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal", linewidth = 2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", label = "PLS", linewidth = 2.5)
-plt.legend(fontsize = 16)
+plt.loglog(fvalsET, sigETvals, color = "indigo", label = "Nominal curve", linewidth = 2.5)
+plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), color = "orangered", label = "PLS curve", linewidth = 2.5)
+plt.legend(loc=2,fontsize = 18)
 plt.tick_params(axis='both', which='major', labelsize=14) 
-plt.title("Nominal and PLS curve for ET", fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.xlabel("f (Hz)", fontsize = 16)
+# plt.title("Nominal and PLS curve for ET", fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
+plt.xlabel(r"$f$ (Hz)", fontsize = 20)
 plt.yscale('log')
 plt.xscale('log')
+plt.xlim(1e0,450)
+plt.ylim(9e-14,1e-6)
 plt.grid(True)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnomandPLS.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig5b.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -353,22 +362,30 @@ maxposco = range(len(Ftabcomb))
 maxcompls = np.array(list(map(maxtabcomb, maxposco)))
 flogomcomb = np.vstack((np.log(10**combel), maxcompls)).T
 
-np.save("PLS.npy", flogomcomb)
+np.save("/Users/alisha/Documents/LISA_ET/Datafiles/PLS/PLS_combined.npy", np.exp(flogomcomb))
 
 #%%
+
+lisaplsx=np.exp(flogom[:,0])
+lisaplsy=np.exp(flogom[:,1])
+
+etplsx = np.exp(flogomET[:,0])
+etplsy = np.exp(flogomET[:,1])
+
 plt.figure(figsize=(6, 9))
-plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal", linewidth=2.5)
+plt.loglog(otog[:,0], nom , color = "indigo", label = "Nominal curve", linewidth=2.5)
 plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
-plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
-plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=2.5)
-plt.title("Nominal and PLS curves ", fontsize = 16)
-plt.legend(loc = (0.45,0.75), fontsize = 14)
+plt.loglog(lisaplsx[lisaplsx<1e-1], lisaplsy[lisaplsx<1e-1], ':',color = "teal", label = 'LISA PLS', linewidth=2.5)
+plt.loglog(etplsx[etplsx>1e0], etplsy[etplsx>1e0], ':',color = "black", label = 'ET PLS', linewidth=2.5)
+# plt.title("Nominal and PLS curves ", fontsize = 16)
+plt.legend(loc = 2, fontsize = 18)
+plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
-plt.ylim(6e-14,1e-5)
-plt.xlabel(r'$f$ (Hz)', fontsize = 16)
-plt.ylabel(r'$\Omega_{gw}$', fontsize = 16)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CombineNomPLSwold.png', bbox_inches='tight')
+plt.ylim(5e-14,1e-6)
+plt.xlabel(r'$f$ (Hz)', fontsize = 20)
+plt.ylabel(r'$\Omega_{gw}$', fontsize = 20)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig5c.png', bbox_inches='tight')
 plt.show()
 
 

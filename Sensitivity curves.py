@@ -430,7 +430,7 @@ maxposlisa = range(len(FtabLISA))
 maxplvals = np.array(list(map(maxtablisa, maxposlisa)))
 maxpls = maxplvals
 flogom = np.vstack((np.log(10**elLISA), maxpls)).T
-
+np.save("/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISA_PLS.npy", flogom)
 #%%
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), color = "orangered", linewidth=2.5)

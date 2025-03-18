@@ -48,7 +48,7 @@ ntmax = 9/2
 step = (ntmax-ntmin)/itera
 
 tsize = 45
-size=35
+size=40
 
 subject = "PT"
 
@@ -70,7 +70,7 @@ fbreak = 0.2
 
 
 props = dict(boxstyle='square', facecolor='white', alpha=1)
-txt = 40
+txt = 50
 def leg(tele, scen):
     if scen ==1:
         textstr1 = '\n'.join((
@@ -92,7 +92,7 @@ def leg(tele, scen):
         return textstr2
 
 #%%
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -227,7 +227,7 @@ g.triangle_plot([samples], contour_colors = ['Green'], fig_width_inch = 7,
 plt.text(0.7,0.7, leg("LISA", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
-#%%
+# #%%
 g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=33
 g.settings.legend_fontsize = size
@@ -328,11 +328,12 @@ meansA = np.array((o1, n1, n2,s1))
 meansB = np.array((o2, nom1, nom2,s2))
 nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp, tol=1e-6)
+# cutsamps = samps[samps[:,0]>-0.5,:]
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\Omega_\star',r'n1', r'n2', r'\sigma']
 labels =  [r'\Omega_\star',r'n1', r'n2', r'\sigma']
-samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1')
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Case 1', ranges={'\\Omega_\\star': (0, None)})
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2', ranges={'\\Omega_\\star': (0, None)})
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=6)
@@ -345,7 +346,7 @@ g.triangle_plot([samples], contour_colors = ['forestgreen'],
 plt.text(0.7,0.7, leg("ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
-#%%
+# #%%
 g = plots.get_subplot_plotter(subplot_size=6)
 g.settings.axes_fontsize=34
 g.settings.legend_fontsize = size
@@ -378,24 +379,24 @@ samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=6)
-g.settings.axes_fontsize=32
+g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
+g.settings.axes_labelsize = 45
 g.settings.scaling = False
 g.triangle_plot([samples], contour_colors = ['limegreen'], 
                 filled=True, markers={r'\Omega_\star': meansA[0],'n1': meansA[1], 'n2':meansA[2],r'\sigma':meansA[3]}, title_limit=1)
-plt.text(0.7,0.7, leg("LISA+ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.text(0.7,0.65, leg("LISA+ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=6)
-g.settings.axes_fontsize=30
+g.settings.axes_fontsize=size
 g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
+g.settings.axes_labelsize = 45
 g.settings.scaling = False
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],'n1': meansB[1], 'n2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-plt.text(0.7,0.7, leg("LISA+ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.text(0.7,0.65, leg("LISA+ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 

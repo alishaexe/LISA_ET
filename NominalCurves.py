@@ -125,14 +125,17 @@ plt.loglog(tabET2[:,0], tabET2[:,1], '--', label = "Numerical", color = "darkvio
 plt.title("Nominal Sensitivity curve of ET", fontsize = 16)
 plt.loglog(fvalsET, sigETvals, '-',label = "Approximate", linewidth = 2.5,color = "indigo" )
 plt.legend(fontsize = 16, loc=9)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.xlabel("f (Hz)", fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
+plt.xlabel("f (Hz)", fontsize = 20)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+
 #plt.ylim(10**(-9), 10**(-5))
 plt.yscale('log')
 plt.xscale('log')
-plt.xlim(10**0, 400)
+plt.xlim(1, 445)
+plt.ylim(1e-9,1e-5)
 plt.grid(True)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETnoms.png', bbox_inches='tight')
 plt.show()
 
 #%%
@@ -171,7 +174,7 @@ def sigtab(f, r1, r2):
 
 og = np.array(list(map(lambda args: sigtab(*args), Rtab)),dtype = float)
 #%%
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -207,7 +210,7 @@ def Ohms(f):
 
 def sigtab(f):
     const = 4*pi**2/(3*H0**2)
-    res = (1/np.sqrt(2)*N_xx(f)/(16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2*RAnum(f)))*const*f**3 
+    res = 1/np.sqrt(2)*(N_AA(f)/(16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2*RAnum(f)))*const*f**3
     return res
 
 
@@ -215,16 +218,18 @@ freqvals = np.logspace(elminL, elmaxL, itera)
 sigvals = np.array(list(map(Ohms, freqvals)))
 og = np.array(list(map(sigtab, freqvals)))
 
-
 plt.figure(figsize=(6, 9)) 
 plt.loglog(freqvals, og,'--' ,color = "darkviolet", label = "Numerical", linewidth=2.5)
 plt.loglog(freqvals, sigvals, color = "indigo", label = r"Approximate", linewidth=2.5)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
 plt.grid(True)
+plt.ylim(1e-11,1e-5)
+plt.xlim(1e-5,1.5e-1)
 plt.legend(fontsize = 16)
-plt.xlabel("f (Hz)", fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xlabel("f (Hz)", fontsize = 20)
 plt.title("Nominal sensitivity curve of LISA ", fontsize = 16)
-# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/LISAnoms.png', bbox_inches='tight')
 plt.show()
 
 

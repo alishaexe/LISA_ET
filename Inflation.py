@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import quad
@@ -95,7 +89,7 @@ L = 25/3
 fLisa = 1/(2*pi*L)
 c = 3e8
 
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -202,28 +196,46 @@ otog = np.vstack((fvalscomb, combine)).T
 phase2 = np.array(list(map(bpl2, freqs)))
 # flogomcomb = np.load('/Users/alisha/Documents/LISA_ET/PLS.npy')
 # combfbplo = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo.txt')
-combln = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo-lnls.txt')
+combln = np.loadtxt('/Users/alisha/Documents/LISA_ET/Datafiles/LogNS/combo-lnls.txt')
 # In[75]:
 
 # combfbplo = np.load('/Users/alisha/Documents/LISA_ET/LISA/Ftabbigsigcomb.npy')
 
 plt.figure(figsize=(6, 8))
 plt.loglog(otog[:,0], nom, color = "indigo", linewidth=1.5, label = "Nominal Curves")
-plt.loglog(combln[:,0], combln[:,1]*0.67**2, label = "LNS curve", color = "aqua", linewidth=2.5)
+plt.loglog(combln[:,0], combln[:,1]/0.67**2, label = "LNS curve", color = "aqua", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "black", label = 'LISA PLS', linewidth=1.5)
+# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=1.5)
 plt.loglog(freqs, phase1,linewidth=2.5,color = "darkgreen",label = "Inf1")
 plt.loglog(freqs, phase2,linewidth=2.5,color = "blue",linestyle='--',label = "Inf2")
 # plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1])/0.67**2, label = "BPLS curve", color = "lime", linewidth=2.5)
 
-plt.legend(fontsize = 12, loc = (0.08,0.8))
+plt.legend(fontsize = 12, loc = (0.08,0.82))
 plt.title('SGWB from Inflation', fontsize = 16)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
 plt.ylim(2e-14,1e-5)
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xlabel(r'$f$ (Hz)', fontsize = 20)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/Inflation.png', bbox_inches='tight')
 plt.show()
 
+#%%
+# combinf = np.loadtxt('/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/combo-lnls.txt')
 
+# combinf[:,1]=combinf[:,1]/0.67**2
+
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/logns_comb.npy", combinf)
+
+# ET=np.loadtxt('/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/etd-lnls.txt')
+# ET[:,1]=ET[:,1]/0.67**2
+
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/logns_ET.npy", ET)
+
+# lisa=np.loadtxt('/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/lisa-lnls.txt')
+# lisa[:,1]=lisa[:,1]/0.67**2
+
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/LogNs/logns_lisa.npy", lisa)
 
 

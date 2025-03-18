@@ -95,7 +95,7 @@ L = 25/3
 fLisa = 1/(2*pi*L)
 c = 3e8
 
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -225,21 +225,24 @@ combfbplo = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo.txt')
 
 plt.figure(figsize=(6, 8))
 plt.loglog(otog[:,0], nom,color = "indigo", linewidth=1.5, label = "Nominal Curves")
-plt.loglog((combfbplo[:,0]), (combfbplo[:,1]*0.67**2), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.loglog((combfbplo[:,0]), (combfbplo[:,1]*0.67**2), label = "BPLS curve", color = "lime", linewidth=2.5)
 plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "PLS curve", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "black", label = 'LISA PLS', linewidth=1.5)
+# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=1.5)
 plt.loglog(freqs, phase1,linewidth=2.5,color = "darkgreen",label = "CS 1")
 plt.loglog(freqs, phase2,linewidth=2.5,color = "blue",linestyle='--',label = "CS 2")
 
 # plt.loglog(np.exp(combfbplo[:,0]), np.exp(combfbplo[:,1])/0.67**2, label = "BPLS curve", color = "lime", linewidth=2.5)
 
-plt.legend(fontsize = 12, loc = (0.08,0.75))
+plt.legend(fontsize = 12, loc = (0.06,0.8))
 plt.title('SGWB from Cosmic Strings', fontsize = 16)
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
-plt.ylim(2e-14,1e-5)
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig2b.png', bbox_inches='tight')
+plt.ylim(1e-14,1e-5)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.xlabel(r'$f$ (Hz)', fontsize = 20)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/CosmicStrings.png', bbox_inches='tight')
 plt.show()
 
 

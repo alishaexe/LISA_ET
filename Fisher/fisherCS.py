@@ -70,7 +70,7 @@ fbreak = 2
 
 
 props = dict(boxstyle='square', facecolor='white', alpha=1)
-txt = 36
+txt = 40
 def leg(tele, scen):
     if scen == 1:
         textstr1 = '\n'.join((
@@ -91,7 +91,7 @@ def leg(tele, scen):
         return textstr2
 
 #%%
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -250,7 +250,7 @@ nsamp = int(1E6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\Omega_\star',r'n_1', r'n_2',r'\sigma']
 labels =  [r'\Omega_\star',r'n_1', r'n_2',r'\sigma']
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2', ranges={'\\Omega_\\star': (0, None)})
 
 
 
@@ -261,7 +261,7 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['darkblue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],r'n_1': meansB[1], r'n_2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-plt.text(0.7,0.7, leg("LISA", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.text(0.7,0.65, leg("LISA", 2), ha='center', fontsize=50, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_LISA_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 #%%
@@ -308,7 +308,7 @@ nsamp = int(1E6)
 samps = np.random.multivariate_normal(meansA, covmA, size=nsamp)
 names = [r'\Omega_\star',r'n_t']
 labels =  [r'\Omega_\star',r'n_t']
-samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A')
+samples = MCSamples(samples=samps,names = names, labels = labels, label = 'Scenario A', ranges={'\\Omega_\\star': (0, None)})
 #%%
 
 g = plots.get_subplot_plotter(subplot_size=6)
@@ -317,7 +317,7 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples], contour_colors = ['forestgreen'], 
                 filled=True, markers={r'\Omega_\star': meansA[0],'nt': meansA[1]}, title_limit=1)
-plt.text(0.7,0.7, leg("ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.text(0.7,0.65, leg("ET", 1), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 #%%
@@ -398,7 +398,7 @@ nsamp = int(1E6)
 samps2 = np.random.multivariate_normal(meansB, covmB, size=nsamp, tol=1e-6)
 names = [r'\Omega_\star',r'n_1', r'n_2',r'\sigma']
 labels =  [r'\Omega_\star',r'n_1', r'n_2',r'\sigma']
-samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2')
+samples2 = MCSamples(samples=samps2,names = names, labels = labels, label='Case 2', ranges={'\\Omega_\\star': (0, None)})
 
 #%%
 g = plots.get_subplot_plotter(subplot_size=6)
@@ -407,7 +407,7 @@ g.settings.legend_fontsize = size
 g.settings.axes_labelsize = size
 g.triangle_plot([samples2], contour_colors = ['mediumblue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],r'n_1': meansB[1], r'n_2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-plt.text(0.7,0.7, leg("ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+plt.text(0.7,0.65, leg("ET", 2), ha='center', fontsize=50, bbox = props, transform=plt.gcf().transFigure)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_ET_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 
@@ -443,14 +443,15 @@ plt.text(0.72,0.65, leg("LISA+ET", 1), ha='center', fontsize=txt, bbox = props, 
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}1.png'.format(fl=file), bbox_inches='tight')
 
 #%%
+txt=50
 g = plots.get_subplot_plotter(subplot_size=6)
-g.settings.axes_fontsize=size
+g.settings.axes_fontsize=40
 g.settings.legend_fontsize = size
-g.settings.axes_labelsize = size
+g.settings.axes_labelsize = 50
 g.triangle_plot([samples2], contour_colors = ['blue'], 
                 filled=True, markers={r'\Omega_\star': meansB[0],r'n_1': meansB[1], r'n_2':meansB[2], r'\sigma':meansB[3]}, title_limit=1)
-plt.text(0.7,0.7, leg("LISA+ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
-plt.suptitle(r'LISA+ET {sub}2'.format(sub=subject), fontsize=tsize)
+plt.text(0.7,0.65, leg("LISA+ET", 2), ha='center', fontsize=txt, bbox = props, transform=plt.gcf().transFigure)
+# plt.suptitle(r'LISA+ET {sub}2'.format(sub=subject), fontsize=tsize)
 plt.savefig('/Users/alisha/Documents/LISA_ET/Fisher graphs/FISHER_Comb_{fl}2.png'.format(fl=file), bbox_inches='tight')
 
 

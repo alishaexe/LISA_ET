@@ -99,7 +99,7 @@ L = 25/3
 fLisa = 1/(2*pi*L)
 c=3e8
 
-P = 12
+P = 15
 A = 3
 
 def P_acc(f):
@@ -147,13 +147,11 @@ sigvals = np.array(list(map(Ohms, freqvals)))
 s1 = 7.2
 nA1 = 3
 nB1 = -1
-fS1 = 0.04
+fS1 = 0.03
 a1 = -10
 
 def bpl1(f):
-    res = 10**a1 \
-    * (f/fS1)**nA1 \
-    * (1/2+1/2*(f/fS1)**s1)**(-(nA1-nB1)/s1)
+    res = 10**a1 * (f/fS1)**nA1 * (1/2+1/2*(f/fS1)**s1)**(-(nA1-nB1)/s1)
     return res
 
 
@@ -229,21 +227,37 @@ flogomcomb = np.load('/Users/alisha/Documents/LISA_ET/PLS.npy')
 plt.figure(figsize=(6, 8))
 plt.loglog(otog[:,0], nom,color = "indigo", linewidth=1.5, label = "Nominal Curves")
 # plt.loglog(np.exp(flogomcomb[:,0]), np.exp(flogomcomb[:,1]), color = "orangered", label = "Combined PLS", linewidth=2.5)
-plt.loglog((combfbplo[:,0]), (combfbplo[:,1]*0.67**2), label = "BPLS curve", color = "lime", linewidth=2.5)
+plt.loglog((combfbplo[:,0]), (combfbplo[:,1]/0.67**2), label = "BPLS curve", color = "lime", linewidth=2.5)
+# plt.loglog(np.exp(flogom[:,0]), np.exp(flogom[:,1]), ':',color = "black", label = 'LISA PLS', linewidth=1.5)
+# plt.loglog(np.exp(flogomET[:,0]), np.exp(flogomET[:,1]), ':',color = "black", label = 'ET PLS', linewidth=1.5)
 plt.loglog(freqs, phase1,linewidth=2.5,color = "darkgreen",label = "PT 1")
 plt.loglog(freqs, phase2,linewidth=2.5,color = "blue",linestyle='--',label = "PT 2")
-
-plt.legend(fontsize = 12, loc = (0.08,0.8))
-plt.title('SGWB from Phase Transitions', fontsize = 16)#plt.title(r"Values: \
+plt.legend(fontsize = 12, loc = (0.07,0.82))
+plt.title('SGWB from Phase Transitions', fontsize = 16)
+plt.tick_params(axis='both', which='major', labelsize=14) 
+plt.tick_params(axis='both', which='major', labelsize=14) 
 plt.grid(True) 
 plt.xlim(ffmin, ffmax) 
-plt.xlabel('f (Hz)', fontsize = 16)
-plt.ylabel(r"$\Omega_{gw}$", fontsize = 16)
-plt.ylim(2e-14,1e-5)
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/fig2a.png', bbox_inches='tight')
+plt.xlabel(r'$f$ (Hz)', fontsize = 20)
+plt.ylabel(r"$\Omega_{gw}$", fontsize = 20)
+plt.ylim(1e-13,1e-5)
+plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/PhaseTransition.png', bbox_inches='tight')
 plt.show()
 
+#%%
 
+# combfbplo = np.loadtxt('/Users/alisha/Documents/LISA_ET/combo.txt')
 
+# combfbplo[:,1]=combfbplo[:,1]/0.67**2
 
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/BPLS/BPLS_comb.npy", combfbplo)
 
+# ET=np.loadtxt("/Users/alisha/Documents/LISA_ET/Datafiles/BPLS/et.txt")
+# ET[:,1]=ET[:,1]/0.67**2
+
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/BPLS/BPLS_ET.npy", ET)
+
+# lisa=np.loadtxt("/Users/alisha/Documents/LISA_ET/Datafiles/BPLS/lisa.txt")
+# lisa[:,1]=lisa[:,1]/0.67**2
+
+# np.save("/Users/alisha/Documents/LISA_ET/Datafiles/BPLS/BPLS_lisa.npy", lisa)

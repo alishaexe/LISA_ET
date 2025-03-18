@@ -32,7 +32,7 @@ elmax = np.log10(ffmax)
 ###############
 #Change this value for how many 'steps' you want in the range of values
 
-itera = 100
+itera = 1000
 nitera = 10
 ##########
 
@@ -44,39 +44,44 @@ ntmin = -9/2
 ntmax = 9/2
 step = (ntmax-ntmin)/itera
 #%%
-P = 12
+P = 15
 A = 3
 
-
 def P_acc(f):
-    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*(2*pi*f)**(-4)*(2*pi*f/c)**2
+    res = A**2 *(1e-15)**2 * (1+(0.4e-3 / f)**2)*(1+(f/8e-3)**4)*1/(2*pi*f)**(4)*(2*pi*f/c)**2
     return res
 
-def P_ims(f):#* (1e-12)**2 after P
+def P_ims(f):
     res = P**2 * (1e-12)**2 *(1+(2e-3/f)**4)*(2*pi*f/c)**2
     return res
 
-def N_aa(f):
+def N_AA(f):
     con = 2*pi*f*L
-    res = 8 * (np.sin(con))**2 * (4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f)+(2+np.cos(con))*P_ims(f))
+    res = 8 * np.sin(con)**2 * ((4*(1+np.cos(con)+(np.cos(con))**2)*P_acc(f))+((2+np.cos(con))*P_ims(f)))
     return res
 
-def R(f):
-    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 9/20 * 1/(1+0.7*(2*pi*f*L)**2)
+def N_xx(f):
+    con = 2*pi*f*L
+    res = 16 * (np.sin(con))**2 * ((3+np.cos(2*con))*P_acc(f)+P_ims(f))
+    return res
+
+def R_XX(f):#this is Rxx
+    res = 16*(np.sin(2*pi*f*L))**2  * (2*pi*f*L)**2 * 3/10 * 1/(1+0.6*(2*pi*f*L)**2)
     return res
 
 def S_n(f):
-    res = N_aa(f)/R(f)
+    res = 1/np.sqrt(2)*N_xx(f)/R_XX(f)
     return res
 
 def Ohms(f):
     const = 4*pi**2/(3*H0**2)
-    res = const *f**3*S_n(f)
+    res = const*f**3*S_n(f)
     return res
 
 freqvals = np.logspace(elminL, elmaxL, 200)   
 sigvals = np.array(list(map(Ohms, freqvals)))
 
+plt.loglog(freqvals, sigvals)
 #%%
 #Now for BPL
 
@@ -135,13 +140,13 @@ maxpos = range(len(Ftab2))
 
 maxbpl = np.array(list(map(maxbplvals, maxpos)))
 #%%
-fbplo = np.vstack((np.log(fs), maxbpl)).T
+# fbplo = np.vstack((np.log(fs), maxbpl)).T
 # np.save("ftablisa.npy", fbplo)
-
-
+fbplo = np.load("/Users/alisha/Documents/LISA_ET/Datafiles/ftablisa.npy")
 plt.figure(figsize=(6, 9))
 plt.loglog(freqvals, sigvals, label = "Nominal Curve", color = "indigo", linewidth=2.5)
 plt.loglog(np.exp(fbplo[:,0]), np.exp(fbplo[:,1]), label = "BPLS curve", color = "lime", linewidth=2.5)
+
 plt.grid(True)
 plt.title("LISA BPLS Curves")
 plt.legend()
@@ -155,14 +160,14 @@ plt.show()
 #%%
 def sigp(f):
     f0 = 1
-    t1 = ((9.0*((f/f0)**(-30.0))) + (5.5e-6*((f/f0)**(-4.5e0))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42.0))))
-    t2 = ((0.01e-11*((f/f0)**(1.9))) + (20.0e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42.0)))
-    t3 = 1.0-(0.475*np.exp(-(((f/f0)-25.0)**2.0)/50.0))
-    t4 = 1.0-(5.0e-4*np.exp(-(((f/f0)-20.0)**2.0)/100.0))
-    t5 = 1.0-(0.2*np.exp(-((((f/f0)-47.0)**2.0)**0.85)/100.0))
-    t6 = 1.0-(0.12*np.exp(-((((f/f0)-50.0)**2.0)**0.7)/100.0))-(0.2*np.exp(-(((f/f0)-45.0)**2.0)/250.0))+(0.15*np.exp(-(((f/f0)-85.0)**2.0)/400.0))
+    t1 = ((9*((f/f0)**(-30))) + (5.5e-6*((f/f0)**(-4.5))) +(0.28e-11*((f/f0)**3.2)))*(0.5-0.5*(np.tanh(0.06*((f/f0)-42))))
+    t2 = ((1e-13*((f/f0)**(1.9))) + (20e-13*((f/f0)**(2.8))))*0.5*(np.tanh(0.06*((f/f0)-42)))
+    t3 = 1-(0.475*np.exp(-(((f/f0)-25)**2)/50))
+    t4 = 1-(5e-4*np.exp(-(((f/f0)-20)**2)/100))
+    t5 = 1-(0.2*np.exp(-((((f/f0)-47)**2)**0.85)/100))
+    t6 = 1-(0.12*np.exp(-((((f/f0)-50)**2)**0.7)/100))-(0.2*np.exp(-(((f/f0)-45)**2)/250))+(0.15*np.exp(-(((f/f0)-85)**2)/400))
     res = 0.88*(t1+t2)*t3*t4*t5*t6
-    return res
+    return 0.816**2 * res
 
 
 
@@ -174,7 +179,7 @@ def etnomonly(f):
 
 fvalsET = np.logspace(0, 3,itera)#frequency values
 sigETvals = np.array(list(map(etnomonly, fvalsET)))
-
+#%%
 #Now for BPL
 def bplET(f, fstar, n1, n2):
     s = 10
@@ -228,7 +233,7 @@ maxbplET = maxbplvals
 #%%
 fbploET = np.vstack((np.log(fs), maxbplET)).T
 
-np.save("ftabET.npy", fbploET)
+# np.save("ftabET.npy", fbploET)
 #plots the bpl curve
 plt.figure(figsize=(6, 9)) 
 plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), '-',color = "lime", linewidth=2.5)
@@ -245,14 +250,14 @@ plt.show()
 #plots all 3 graphs on same plot
 plt.figure(figsize=(6, 9)) 
 plt.loglog(fvalsET, sigETvals, color = "indigo",linewidth=2.5, label = "Nominal")
-plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
+# plt.loglog(np.exp(fbploET[:,0]), np.exp(fbploET[:,1]), linewidth=2.5,color = "lime", label = "BPLS")
 plt.title('ET Nominal and BPL Curves')
 plt.ylabel(r"$\Omega_{gw}$")
 plt.legend(fontsize="10", loc = 'upper center')
 plt.grid(True)
 plt.xscale('log')
 plt.yscale('log')
-plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png', bbox_inches='tight')
+# plt.savefig('/Users/alisha/Documents/LISA_ET/Sensitivity Curves/ETBPLScurves.png', bbox_inches='tight')
 plt.show()
 
 #%%

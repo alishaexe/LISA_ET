@@ -80,7 +80,7 @@ def c1(x, x1s, sig):
     return res
 
 
-x = np.linspace(0.05,100,1000)
+x = np.linspace(0.005,100,1000)
 y = c1(x, 1.25, 3)
 
 plt.figure(figsize=(6, 9))
@@ -93,15 +93,16 @@ plt.savefig(save.format(nom = tabc1), bbox_inches='tight')
 
 #%%
 
-plt.figure(figsize=(6, 9))
-plt.loglog(TabC[:,0], TabC[:,1], color = "red", linewidth=2.5, label="{nom}".format(nom = tabc))
-plt.loglog(x, y,'--' ,color = "red", linewidth=2.5, label="{nom}".format(nom = tabc1))
+# plt.figure(figsize=(6, 9))
+plt.loglog(TabC[:,0], TabC[:,1],'--' , color = "red", linewidth=1.5, label=r"$\mathcal{R}_{A^\ell, E^\ell}$")
+plt.loglog(x, y,color = "red", linewidth=1.5, label=r"$\mathcal{R}^{fit}_{A^\ell, E^\ell}$")
 plt.grid(True)
-plt.legend(fontsize = 16, loc=6)
-plt.title("{nom1} and {nom2} Response Function".format(nom1 = tabc, nom2 = tabc1), fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
+plt.xlim(0.005,30)
+plt.legend(fontsize = 16, loc=3)
+# plt.title("{nom1} and {nom2} Response Function".format(nom1 = tabc, nom2 = tabc1), fontsize = 16)
+plt.xlabel(r'$f/f_\star$', fontsize = 16)
 plt.ylabel(r'$\mathcal{R}$', fontsize = 20)
-plt.savefig(save.format(nom = tabcc1), bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/TwoP/redrep.png', bbox_inches='tight')
 
 
 #%%
@@ -116,24 +117,24 @@ plt.figure(figsize=(6, 9))
 plt.loglog(m, n, '--',color = "blue", linewidth=2.5, label="{nom}".format(nom = tabd1))
 plt.grid(True)
 plt.title("{nom} Response Function".format(nom = tabd1), fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
+plt.xlabel(r'$f (Hz)$', fontsize = 16)
 plt.ylabel(r'$\mathcal{R}$', fontsize = 20)
 plt.savefig(save.format(nom = tabd1), bbox_inches='tight')
 
 #%%
 
-plt.figure(figsize=(6, 9))
-plt.loglog(m, n, '--',color = "blue", linewidth=2.5, label="{nom}".format(nom = tabd1))
-plt.loglog(TabD[:,0], TabD[:,1], color = "blue", linewidth=2.5, label="{nom}".format(nom = tabd))
+# plt.figure(figsize=(6, 9))
+plt.loglog(TabD[:,0], TabD[:,1],'--', color = "blue", linewidth=1.5, label=r"$\mathcal{R}_{T^\ell}$")
+plt.loglog(m, n, color = "blue", linewidth=1.5, label=r"$\mathcal{R}^{fit}_{T^\ell}$")
 plt.grid(True)
-plt.ylim(1e-7, 1e-1)
+plt.ylim(1e-14, 1e-1)
 plt.xlim(0.05,40)
 
-plt.legend(fontsize = 16, loc=6)
-plt.title("{nom1} and {nom2} Response Function".format(nom1 = tabd, nom2 = tabd1), fontsize = 16)
-plt.xlabel('f (Hz)', fontsize = 16)
+plt.legend(fontsize = 16, loc=4)
+# plt.title("{nom1} and {nom2} Response Function".format(nom1 = tabd, nom2 = tabd1), fontsize = 16)
+plt.xlabel(r'$f/f_\star$', fontsize = 16)
 plt.ylabel(r'$\mathcal{R}$', fontsize = 20)
-plt.savefig(save.format(nom = tabdd1), bbox_inches='tight')
+plt.savefig('/Users/alisha/Documents/LISA_ET/TwoP/bluerep.png', bbox_inches='tight')
 
 
 
